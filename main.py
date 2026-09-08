@@ -5,7 +5,7 @@ import fitz
 
 app = FastAPI()
 
-# Cho phép frontend gọi backend
+# CORS: cho phép frontend gọi backend
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -25,21 +25,30 @@ def home():
 @app.post("/upload-pdf")
 async def upload_pdf(pdf: UploadFile = File(...)):
 
+    # Đọc file PDF
     pdf_data = await pdf.read()
 
+    # Mở PDF
     document = fitz.open(
         stream=pdf_data,
         filetype="pdf"
     )
 
+    # Lấy text từ PDF
     text = ""
 
     for page in document:
         text += page.get_text()
 
+    # Đóng PDF
+    document.close()
+
     return {
         "filename": pdf.filename,
-        "pages": len(document),
+        "pages": len(fitz.open(
+            stream=pdf_data,
+            filetype="pdf"
+        )),
         "text_length": len(text),
         "text": text[:5000]
     }
