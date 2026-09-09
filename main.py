@@ -44,3 +44,21 @@ return {
     "text": text[:5000]
 }
 ```
+
+
+text = ""
+
+for page in document:
+    text += page.get_text()
+
+pages = len(document)
+
+document.close()
+
+return {
+    "filename": pdf.filename,
+    "pages": pages,
+    "text_length": len(text),
+    "text": text[:5000]
+}
+```
