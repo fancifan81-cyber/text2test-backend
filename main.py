@@ -8,88 +8,87 @@ from google import genai
 app = FastAPI()
 
 app.add_middleware(
-CORSMiddleware,
-allow_origins=["*"],
-allow_credentials=True,
-allow_methods=["*"],
-allow_headers=["*"],
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
-# Kết nối Gemini bằng API key trong Render
-
+# Kết nối Gemini bằng API key đã lưu trên Render
 client = genai.Client(
-api_key=os.environ.get("GEMINI_API_KEY")
+    api_key=os.environ.get("GEMINI_API_KEY")
 )
+
 
 @app.get("/")
 def home():
-return {
-"message": "Text2Test AI backend is running!"
-}
+    return {
+        "message": "Text2Test AI backend is running!"
+    }
 
+
+# API upload PDF
 @app.post("/upload-pdf")
 async def upload_pdf(pdf: UploadFile = File(...)):
-pdf_data = await pdf.read()
+    pdf_data = await pdf.read()
 
-```
-document = fitz.open(
-    stream=pdf_data,
-    filetype="pdf"
-)
+    document = fitz.open(
+        stream=pdf_data,
+        filetype="pdf"
+    )
 
-text = ""
+    text = ""
 
-for page in document:
-    text += page.get_text()
+    for page in document:
+        text += page.get_text()
 
-pages = len(document)
+    pages = len(document)
 
-document.close()
+    document.close()
 
-return {
-    "filename": pdf.filename,
-    "pages": pages,
-    "text_length": len(text),
-    "text": text[:5000]
-}
-```
+    return {
+        "filename": pdf.filename,
+        "pages": pages,
+        "text_length": len(text),
+        "text": text[:5000]
+    }
 
+
+# API dùng Gemini để tạo đề
 @app.post("/generate-test")
 async def generate_test(pdf: UploadFile = File(...)):
-pdf_data = await pdf.read()
+    pdf_data = await pdf.read()
 
-```
-document = fitz.open(
-    stream=pdf_data,
-    filetype="pdf"
-)
+    document = fitz.open(
+        stream=pdf_data,
+        filetype="pdf"
+    )
 
-text = ""
+    text = ""
 
-for page in document:
-    text += page.get_text()
+    for page in document:
+        text += page.get_text()
 
-document.close()
+    document.close()
 
-prompt = f"""
-```
-
+    prompt = f"""
 You are an expert test creator.
 
-Read the following textbook content and create a test based ONLY
-on the information contained in the text.
+Read the textbook content below and create a test based ONLY
+on the information contained in the textbook.
 
 Create 10 multiple-choice questions.
 
 Each question must have:
+- One clear question
+- Four answer choices: A, B, C, D
+- One correct answer
 
-* One clear question
-* Four answer choices: A, B, C, D
-* One correct answer
+Focus on important concepts and key knowledge.
+Avoid questions about tiny or unimportant details.
 
-Focus on important concepts rather than tiny details.
-
-Return the result in this exact format:
+Return the result in exactly this format:
 
 Question 1: ...
 A. ...
@@ -105,18 +104,18 @@ C. ...
 D. ...
 Answer: B
 
+Continue until Question 10.
+
 Textbook content:
 
 {text[:30000]}
 """
 
-```
-response = client.models.generate_content(
-    model="gemini-2.5-flash",
-    contents=prompt
-)
+    response = client.models.generate_content(
+        model="gemini-2.5-flash",
+        contents=prompt
+    )
 
-return {
-    "test": response.text
-}
-```
+    return {
+        "test": response.text
+    }
