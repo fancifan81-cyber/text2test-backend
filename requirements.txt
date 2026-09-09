@@ -1,6 +1,5 @@
-fastapi
+  fastapi
 uvicorn
-pymupdf
 python-multipart
-openai
-python-dotenv
+PyMuPDF
+google-genai
