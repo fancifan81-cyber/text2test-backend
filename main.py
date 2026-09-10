@@ -5,7 +5,9 @@ from fastapi.middleware.cors import CORSMiddleware
 import fitz
 from google import genai
 
+
 app = FastAPI()
+
 
 # =========================
 # CORS
@@ -18,6 +20,7 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
 
 # =========================
 # GEMINI
@@ -40,7 +43,7 @@ def home():
 
 
 # =========================
-# UPLOAD PDF + GENERATE TEST
+# GENERATE TEST
 # =========================
 
 @app.post("/upload-pdf")
@@ -48,11 +51,11 @@ async def upload_pdf(
     pdf: UploadFile = File(...),
     question_count: int = Form(20),
     difficulty: str = Form("medium"),
-    question_type: str = Form("multiple_choice")
+    question_type: str = Form("multiple_choice"),
 ):
 
     # -------------------------
-    # Limit question number
+    # Limit number of questions
     # -------------------------
 
     if question_count < 10:
@@ -84,11 +87,10 @@ async def upload_pdf(
 
 
     # -------------------------
-    # Check PDF
+    # Check PDF text
     # -------------------------
 
     if not text.strip():
-
         return {
             "success": False,
             "message": "Could not extract text from this PDF."
@@ -106,12 +108,15 @@ Create exactly {question_count} multiple-choice questions.
 
 Each question must contain:
 
-Question
-A. option
-B. option
-C. option
-D. option
-Answer: A/B/C/D
+Question 1: ...
+A. ...
+B. ...
+C. ...
+D. ...
+Answer: A
+
+Use four answer choices for every question.
+Only one answer should be correct.
 """
 
     elif question_type == "true_false":
@@ -121,10 +126,12 @@ Create exactly {question_count} True/False questions.
 
 Each question must contain:
 
-Question
+Question 1: ...
 A. True
 B. False
-Answer: A/B
+Answer: A
+
+Only one answer should be correct.
 """
 
     else:
@@ -134,8 +141,10 @@ Create exactly {question_count} short-answer questions.
 
 Each question must contain:
 
-Question
+Question 1: ...
 Answer: ...
+
+The answer should be concise and directly supported by the textbook.
 """
 
 
@@ -144,9 +153,14 @@ Answer: ...
     # -------------------------
 
     difficulty_instruction = {
-        "easy": "Make the questions easy and test basic understanding.",
-        "medium": "Make the questions moderately challenging and test understanding and application.",
-        "hard": "Make the questions challenging. Require deeper understanding, comparison, reasoning, or application of concepts."
+        "easy":
+            "Make the questions easy and test basic understanding.",
+
+        "medium":
+            "Make the questions moderately challenging and test understanding and application.",
+
+        "hard":
+            "Make the questions challenging and require deeper understanding, comparison, reasoning, or application of concepts."
     }.get(
         difficulty,
         "Make the questions moderately challenging."
@@ -158,44 +172,36 @@ Answer: ...
     # -------------------------
 
     prompt = f"""
-
 You are an expert educational test creator.
 
-Your task is to create a test from the textbook content below.
+Your task is to create a test based ONLY on the textbook content provided below.
 
 IMPORTANT RULES:
 
 1. Use ONLY information contained in the textbook.
-2. Do not invent facts that are not in the textbook.
-3. Do not use outside knowledge.
-4. Avoid extremely minor details.
-5. Focus on important concepts and key knowledge.
-6. All questions and answers must be written in ENGLISH.
-7. Create exactly {question_count} questions.
-8. Difficulty: {difficulty}.
-9. {difficulty_instruction}
+2. Do NOT invent facts.
+3. Do NOT use outside knowledge.
+4. Focus on important concepts and key knowledge.
+5. Avoid questions about extremely minor details.
+6. All questions must be written in ENGLISH.
+7. All answers must be written in ENGLISH.
+8. Create EXACTLY {question_count} questions.
+9. Difficulty level: {difficulty}.
+10. {difficulty_instruction}
+
+QUESTION TYPE:
 
 {question_instruction}
 
-Return the questions in a clean format.
+IMPORTANT:
 
-For multiple choice, use exactly:
+Follow the requested format exactly.
 
-Question 1: ...
-A. ...
-B. ...
-C. ...
-D. ...
-Answer: B
+Do not add introductions.
 
-Question 2: ...
-A. ...
-B. ...
-C. ...
-D. ...
-Answer: A
+Do not add explanations before the test.
 
-Continue until Question {question_count}.
+Do not add explanations after the test.
 
 TEXTBOOK CONTENT:
 
@@ -227,3 +233,4 @@ TEXTBOOK CONTENT:
         "language": "english",
         "test": response.text
     }
+</html>
