@@ -1,4 +1,5 @@
 import os
+import json
 
 from fastapi import FastAPI, UploadFile, File, Form
 from fastapi.middleware.cors import CORSMiddleware
@@ -43,7 +44,7 @@ def home():
 
 
 # =========================
-# GENERATE TEST
+# UPLOAD PDF + GENERATE TEST
 # =========================
 
 @app.post("/upload-pdf")
@@ -54,42 +55,34 @@ async def upload_pdf(
     question_type: str = Form("multiple_choice"),
 ):
 
-    # -------------------------
-    # Limit number of questions
-    # -------------------------
+    # Limit questions
+    question_count = max(10, min(question_count, 40))
 
-    if question_count < 10:
-        question_count = 10
-
-    if question_count > 40:
-        question_count = 40
-
-
-    # -------------------------
     # Read PDF
-    # -------------------------
-
     pdf_data = await pdf.read()
 
-    document = fitz.open(
-        stream=pdf_data,
-        filetype="pdf"
-    )
+    try:
+        document = fitz.open(
+            stream=pdf_data,
+            filetype="pdf"
+        )
 
-    text = ""
+        text = ""
 
-    for page in document:
-        text += page.get_text()
+        for page in document:
+            text += page.get_text()
 
-    pages = len(document)
+        pages = len(document)
 
-    document.close()
+        document.close()
 
+    except Exception as e:
+        return {
+            "success": False,
+            "message": f"Could not read PDF: {str(e)}"
+        }
 
-    # -------------------------
-    # Check PDF text
-    # -------------------------
-
+    # Check text
     if not text.strip():
         return {
             "success": False,
@@ -97,111 +90,125 @@ async def upload_pdf(
         }
 
 
-    # -------------------------
-    # Question type
-    # -------------------------
+    # =========================
+    # QUESTION TYPE
+    # =========================
 
     if question_type == "multiple_choice":
 
-        question_instruction = f"""
-Create exactly {question_count} multiple-choice questions.
+        format_instruction = """
+Each question must have:
 
-Each question must contain:
-
-Question 1: ...
-A. ...
-B. ...
-C. ...
-D. ...
-Answer: A
-
-Use four answer choices for every question.
-Only one answer should be correct.
+{
+  "question": "Question text",
+  "options": {
+    "A": "Option A",
+    "B": "Option B",
+    "C": "Option C",
+    "D": "Option D"
+  },
+  "answer": "A"
+}
 """
 
     elif question_type == "true_false":
 
-        question_instruction = f"""
-Create exactly {question_count} True/False questions.
+        format_instruction = """
+Each question must have:
 
-Each question must contain:
-
-Question 1: ...
-A. True
-B. False
-Answer: A
-
-Only one answer should be correct.
+{
+  "question": "Question text",
+  "options": {
+    "A": "True",
+    "B": "False"
+  },
+  "answer": "A"
+}
 """
 
     else:
 
-        question_instruction = f"""
-Create exactly {question_count} short-answer questions.
+        format_instruction = """
+Each question must have:
 
-Each question must contain:
-
-Question 1: ...
-Answer: ...
-
-The answer should be concise and directly supported by the textbook.
+{
+  "question": "Question text",
+  "options": {},
+  "answer": "Short correct answer"
+}
 """
 
 
-    # -------------------------
-    # Difficulty
-    # -------------------------
+    # =========================
+    # DIFFICULTY
+    # =========================
 
     difficulty_instruction = {
         "easy":
-            "Make the questions easy and test basic understanding.",
+            "Test basic facts and understanding.",
 
         "medium":
-            "Make the questions moderately challenging and test understanding and application.",
+            "Test understanding and application.",
 
         "hard":
-            "Make the questions challenging and require deeper understanding, comparison, reasoning, or application of concepts."
+            "Require deeper reasoning, comparison, analysis, or application."
     }.get(
         difficulty,
-        "Make the questions moderately challenging."
+        "Test understanding and application."
     )
 
 
-    # -------------------------
-    # Prompt
-    # -------------------------
+    # =========================
+    # PROMPT
+    # =========================
 
     prompt = f"""
 You are an expert educational test creator.
 
-Your task is to create a test based ONLY on the textbook content provided below.
+Create EXACTLY {question_count} questions from the textbook content below.
 
 IMPORTANT RULES:
 
 1. Use ONLY information contained in the textbook.
-2. Do NOT invent facts.
-3. Do NOT use outside knowledge.
-4. Focus on important concepts and key knowledge.
-5. Avoid questions about extremely minor details.
-6. All questions must be written in ENGLISH.
-7. All answers must be written in ENGLISH.
-8. Create EXACTLY {question_count} questions.
-9. Difficulty level: {difficulty}.
-10. {difficulty_instruction}
+2. Do NOT use outside knowledge.
+3. Do NOT invent facts.
+4. Focus on important concepts.
+5. Avoid extremely minor details.
+6. All questions must be in ENGLISH.
+7. All answers must be in ENGLISH.
+8. Difficulty: {difficulty}.
+9. {difficulty_instruction}
 
-QUESTION TYPE:
+Question type: {question_type}
 
-{question_instruction}
+{format_instruction}
 
-IMPORTANT:
+Return ONLY valid JSON.
 
-Follow the requested format exactly.
+The JSON must have exactly this structure:
 
-Do not add introductions.
+{{
+  "questions": [
+    {{
+      "question": "Question text",
+      "options": {{
+        "A": "Option A",
+        "B": "Option B",
+        "C": "Option C",
+        "D": "Option D"
+      }},
+      "answer": "A"
+    }}
+  ]
+}}
 
-Do not add explanations before the test.
+There must be EXACTLY {question_count} objects inside the "questions" array.
 
-Do not add explanations after the test.
+Do not write Markdown.
+
+Do not write ```json.
+
+Do not add any explanation.
 
 TEXTBOOK CONTENT:
 
@@ -209,27 +216,82 @@ TEXTBOOK CONTENT:
 """
 
 
-    # -------------------------
-    # Gemini
-    # -------------------------
+    # =========================
+    # CALL GEMINI
+    # =========================
 
-    response = client.models.generate_content(
-        model="gemini-3.6-flash",
-        contents=prompt
-    )
+    try:
+
+        response = client.models.generate_content(
+            model="gemini-3.6-flash",
+            contents=prompt
+        )
+
+        ai_text = response.text.strip()
+
+    except Exception as e:
+
+        return {
+            "success": False,
+            "message": f"AI generation failed: {str(e)}"
+        }
 
 
-    # -------------------------
-    # Return result
-    # -------------------------
+    # =========================
+    # CLEAN AI RESPONSE
+    # =========================
+
+    # Remove possible markdown fences
+    if ai_text.startswith("```json"):
+        ai_text = ai_text[7:]
+
+    if ai_text.startswith("```"):
+        ai_text = ai_text[3:]
+
+    if ai_text.endswith("```"):
+        ai_text = ai_text[:-3]
+
+    ai_text = ai_text.strip()
+
+
+    # =========================
+    # PARSE JSON
+    # =========================
+
+    try:
+
+        data = json.loads(ai_text)
+
+        questions = data.get("questions", [])
+
+        if not questions:
+            return {
+                "success": False,
+                "message": "AI returned no questions.",
+                "raw_response": ai_text
+            }
+
+    except Exception as e:
+
+        return {
+            "success": False,
+            "message": "AI returned an invalid question format.",
+            "raw_response": ai_text,
+            "error": str(e)
+        }
+
+
+    # =========================
+    # RETURN
+    # =========================
 
     return {
         "success": True,
         "filename": pdf.filename,
         "pages": pages,
-        "num_questions": question_count,
+        "num_questions": len(questions),
         "difficulty": difficulty,
         "question_type": question_type,
         "language": "english",
-        "test": response.text
+        "questions": questions
     }
