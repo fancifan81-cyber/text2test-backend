@@ -69,24 +69,7 @@ def home():
 
 @app.get("/test-supabase")
 def test_supabase():
-
-    @app.get("/debug-role")
-def debug_role():
     try:
-        result = supabase.rpc("get_request_role").execute()
-
-        return {
-            "success": True,
-            "role": result.data
-        }
-
-    except Exception as e:
-        return {
-            "success": False,
-            "error": str(e)
-        }
-    try:
-
         result = (
             supabase
             .table("questions")
@@ -102,10 +85,32 @@ def debug_role():
         }
 
     except Exception as e:
-
         return {
             "success": False,
             "message": f"Supabase connection failed: {str(e)}"
+        }
+
+
+# =========================
+# DEBUG SUPABASE ROLE
+# =========================
+
+@app.get("/debug-role")
+def debug_role():
+    try:
+        result = supabase.rpc(
+            "get_request_role"
+        ).execute()
+
+        return {
+            "success": True,
+            "role": result.data
+        }
+
+    except Exception as e:
+        return {
+            "success": False,
+            "error": str(e)
         }
 
 
@@ -122,7 +127,7 @@ async def upload_pdf(
 ):
 
     # =========================
-    # LIMIT QUESTION COUNT
+    # LIMIT QUESTIONS
     # =========================
 
     question_count = max(
@@ -138,7 +143,6 @@ async def upload_pdf(
     pdf_data = await pdf.read()
 
     try:
-
         document = fitz.open(
             stream=pdf_data,
             filetype="pdf"
@@ -154,7 +158,6 @@ async def upload_pdf(
         document.close()
 
     except Exception as e:
-
         return {
             "success": False,
             "message": f"Could not read PDF: {str(e)}"
@@ -162,11 +165,10 @@ async def upload_pdf(
 
 
     # =========================
-    # CHECK PDF TEXT
+    # CHECK TEXT
     # =========================
 
     if not text.strip():
-
         return {
             "success": False,
             "message": "Could not extract text from this PDF."
@@ -227,16 +229,9 @@ Each question must have:
     # =========================
 
     difficulty_instruction = {
-
-        "easy":
-            "Test basic facts and understanding.",
-
-        "medium":
-            "Test understanding and application.",
-
-        "hard":
-            "Require deeper reasoning, comparison, analysis, or application."
-
+        "easy": "Test basic facts and understanding.",
+        "medium": "Test understanding and application.",
+        "hard": "Require deeper reasoning, comparison, analysis, or application."
     }.get(
         difficulty,
         "Test understanding and application."
@@ -306,7 +301,6 @@ TEXTBOOK CONTENT:
     # =========================
 
     try:
-
         response = client.models.generate_content(
             model="gemini-3.6-flash",
             contents=prompt
@@ -315,7 +309,6 @@ TEXTBOOK CONTENT:
         ai_text = response.text.strip()
 
     except Exception as e:
-
         return {
             "success": False,
             "message": f"AI generation failed: {str(e)}"
@@ -327,19 +320,13 @@ TEXTBOOK CONTENT:
     # =========================
 
     if ai_text.startswith("```json"):
-
         ai_text = ai_text[7:]
 
-
     if ai_text.startswith("```"):
-
         ai_text = ai_text[3:]
 
-
     if ai_text.endswith("```"):
-
         ai_text = ai_text[:-3]
-
 
     ai_text = ai_text.strip()
 
@@ -349,7 +336,6 @@ TEXTBOOK CONTENT:
     # =========================
 
     try:
-
         data = json.loads(ai_text)
 
         questions = data.get(
@@ -358,7 +344,6 @@ TEXTBOOK CONTENT:
         )
 
         if not questions:
-
             return {
                 "success": False,
                 "message": "AI returned no questions.",
@@ -366,7 +351,6 @@ TEXTBOOK CONTENT:
             }
 
     except Exception as e:
-
         return {
             "success": False,
             "message": "AI returned an invalid question format.",
@@ -380,35 +364,27 @@ TEXTBOOK CONTENT:
     # =========================
 
     try:
-
         rows = []
 
         for q in questions:
-
             rows.append({
                 "question": q.get(
                     "question",
                     ""
                 ),
-
                 "options": q.get(
                     "options",
                     {}
                 ),
-
                 "answer": q.get(
                     "answer",
                     ""
                 ),
-
                 "difficulty": difficulty,
-
                 "question_type": question_type
             })
 
-
         if rows:
-
             result = (
                 supabase
                 .table("questions")
@@ -421,9 +397,7 @@ TEXTBOOK CONTENT:
                 result
             )
 
-
     except Exception as e:
-
         return {
             "success": False,
             "message": (
@@ -434,24 +408,16 @@ TEXTBOOK CONTENT:
 
 
     # =========================
-    # RETURN RESULT
+    # RETURN
     # =========================
 
     return {
-
         "success": True,
-
         "filename": pdf.filename,
-
         "pages": pages,
-
         "num_questions": len(questions),
-
         "difficulty": difficulty,
-
         "question_type": question_type,
-
         "language": "english",
-
         "questions": questions
     }
