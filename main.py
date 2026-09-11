@@ -53,7 +53,27 @@ def home():
     return {
         "message": "Text2Test AI backend is running!"
     }
+# =========================
+# TEST SUPABASE
+# =========================
 
+@app.get("/test-supabase")
+def test_supabase():
+    try:
+        result = supabase.table("questions").select("*").limit(1).execute()
+
+        return {
+            "success": True,
+            "message": "Supabase connection is working!",
+            "data": result.data
+        }
+
+    except Exception as e:
+        return {
+            "success": False,
+            "message": f"Supabase connection failed: {str(e)}"
+        }
+        
 
 # =========================
 # UPLOAD PDF + GENERATE TEST
