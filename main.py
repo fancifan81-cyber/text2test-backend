@@ -312,11 +312,53 @@ TEXTBOOK CONTENT:
             "error": str(e)
         }
 
+# =========================
+# SAVE QUESTIONS TO SUPABASE
+# =========================
 
+try:
+
+    rows = []
+
+    for q in questions:
+
+        rows.append({
+            "question": q.get("question", ""),
+            "options": q.get("options", {}),
+            "answer": q.get("answer", ""),
+            "difficulty": difficulty,
+            "question_type": question_type
+        })
+
+    if rows:
+        supabase.table("questions").insert(rows).execute()
+
+except Exception as e:
+
+    return {
+        "success": False,
+        "message": f"Could not save questions to Supabase: {str(e)}"
+    }
+    
     # =========================
     # RETURN
     # =========================
+try:
 
+    data = json.loads(ai_text)
+
+    questions = data.get("questions", [])
+
+    if not questions:
+        return {
+            "success": False,
+            "message": "AI returned no questions.",
+            "raw_response": ai_text
+        }
+
+except Exception as e:
+    ...
+    
     return {
         "success": True,
         "filename": pdf.filename,
