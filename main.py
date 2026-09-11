@@ -3,12 +3,20 @@ import json
 
 from fastapi import FastAPI, UploadFile, File, Form
 from fastapi.middleware.cors import CORSMiddleware
+
 import fitz
+
 from google import genai
 from supabase import create_client, Client
 
 
+# =========================
+# APP
+# =========================
+
 app = FastAPI()
+
+
 # =========================
 # SUPABASE
 # =========================
@@ -53,14 +61,24 @@ def home():
     return {
         "message": "Text2Test AI backend is running!"
     }
+
+
 # =========================
 # TEST SUPABASE
 # =========================
 
 @app.get("/test-supabase")
 def test_supabase():
+
     try:
-        result = supabase.table("questions").select("*").limit(1).execute()
+
+        result = (
+            supabase
+            .table("questions")
+            .select("*")
+            .limit(1)
+            .execute()
+        )
 
         return {
             "success": True,
@@ -69,11 +87,12 @@ def test_supabase():
         }
 
     except Exception as e:
+
         return {
             "success": False,
             "message": f"Supabase connection failed: {str(e)}"
         }
-        
+
 
 # =========================
 # UPLOAD PDF + GENERATE TEST
@@ -87,13 +106,24 @@ async def upload_pdf(
     question_type: str = Form("multiple_choice"),
 ):
 
-    # Limit questions
-    question_count = max(10, min(question_count, 40))
+    # =========================
+    # LIMIT QUESTION COUNT
+    # =========================
 
-    # Read PDF
+    question_count = max(
+        10,
+        min(question_count, 40)
+    )
+
+
+    # =========================
+    # READ PDF
+    # =========================
+
     pdf_data = await pdf.read()
 
     try:
+
         document = fitz.open(
             stream=pdf_data,
             filetype="pdf"
@@ -109,13 +139,19 @@ async def upload_pdf(
         document.close()
 
     except Exception as e:
+
         return {
             "success": False,
             "message": f"Could not read PDF: {str(e)}"
         }
 
-    # Check text
+
+    # =========================
+    # CHECK PDF TEXT
+    # =========================
+
     if not text.strip():
+
         return {
             "success": False,
             "message": "Could not extract text from this PDF."
@@ -176,6 +212,7 @@ Each question must have:
     # =========================
 
     difficulty_instruction = {
+
         "easy":
             "Test basic facts and understanding.",
 
@@ -184,6 +221,7 @@ Each question must have:
 
         "hard":
             "Require deeper reasoning, comparison, analysis, or application."
+
     }.get(
         difficulty,
         "Test understanding and application."
@@ -273,15 +311,20 @@ TEXTBOOK CONTENT:
     # CLEAN AI RESPONSE
     # =========================
 
-    # Remove possible markdown fences
     if ai_text.startswith("```json"):
+
         ai_text = ai_text[7:]
 
+
     if ai_text.startswith("```"):
+
         ai_text = ai_text[3:]
 
+
     if ai_text.endswith("```"):
+
         ai_text = ai_text[:-3]
+
 
     ai_text = ai_text.strip()
 
@@ -294,9 +337,13 @@ TEXTBOOK CONTENT:
 
         data = json.loads(ai_text)
 
-        questions = data.get("questions", [])
+        questions = data.get(
+            "questions",
+            []
+        )
 
         if not questions:
+
             return {
                 "success": False,
                 "message": "AI returned no questions.",
@@ -312,6 +359,7 @@ TEXTBOOK CONTENT:
             "error": str(e)
         }
 
+
     # =========================
     # SAVE QUESTIONS TO SUPABASE
     # =========================
@@ -323,36 +371,72 @@ TEXTBOOK CONTENT:
         for q in questions:
 
             rows.append({
-                "question": q.get("question", ""),
-                "options": q.get("options", {}),
-                "answer": q.get("answer", ""),
+                "question": q.get(
+                    "question",
+                    ""
+                ),
+
+                "options": q.get(
+                    "options",
+                    {}
+                ),
+
+                "answer": q.get(
+                    "answer",
+                    ""
+                ),
+
                 "difficulty": difficulty,
+
                 "question_type": question_type
             })
 
+
         if rows:
-    result = supabase.table("questions").insert(rows).execute()
-    print("SUPABASE INSERT RESULT:", result)
+
+            result = (
+                supabase
+                .table("questions")
+                .insert(rows)
+                .execute()
+            )
+
+            print(
+                "SUPABASE INSERT RESULT:",
+                result
+            )
+
 
     except Exception as e:
 
         return {
             "success": False,
-            "message": f"Could not save questions to Supabase: {str(e)}"
+            "message": (
+                "Could not save questions "
+                f"to Supabase: {str(e)}"
+            )
         }
 
 
     # =========================
-    # RETURN
+    # RETURN RESULT
     # =========================
 
     return {
+
         "success": True,
+
         "filename": pdf.filename,
+
         "pages": pages,
+
         "num_questions": len(questions),
+
         "difficulty": difficulty,
+
         "question_type": question_type,
+
         "language": "english",
+
         "questions": questions
     }
