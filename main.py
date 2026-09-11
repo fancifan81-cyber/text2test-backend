@@ -331,7 +331,8 @@ TEXTBOOK CONTENT:
             })
 
         if rows:
-            supabase.table("questions").insert(rows).execute()
+    result = supabase.table("questions").insert(rows).execute()
+    print("SUPABASE INSERT RESULT:", result)
 
     except Exception as e:
 
