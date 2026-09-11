@@ -70,6 +70,21 @@ def home():
 @app.get("/test-supabase")
 def test_supabase():
 
+    @app.get("/debug-role")
+def debug_role():
+    try:
+        result = supabase.rpc("get_request_role").execute()
+
+        return {
+            "success": True,
+            "role": result.data
+        }
+
+    except Exception as e:
+        return {
+            "success": False,
+            "error": str(e)
+        }
     try:
 
         result = (
