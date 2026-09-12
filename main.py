@@ -1,5 +1,6 @@
 import os
 import json
+import time
 from typing import Optional, List, Dict, Any
 
 from fastapi import FastAPI, UploadFile, File, Form
@@ -42,13 +43,19 @@ GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY")
 
 
 if not SUPABASE_URL:
-    raise RuntimeError("SUPABASE_URL is not set in environment variables")
+    raise RuntimeError(
+        "SUPABASE_URL is not set in environment variables"
+    )
 
 if not SUPABASE_KEY:
-    raise RuntimeError("SUPABASE_KEY is not set in environment variables")
+    raise RuntimeError(
+        "SUPABASE_KEY is not set in environment variables"
+    )
 
 if not GEMINI_API_KEY:
-    raise RuntimeError("GEMINI_API_KEY is not set in environment variables")
+    raise RuntimeError(
+        "GEMINI_API_KEY is not set in environment variables"
+    )
 
 
 SUPABASE_URL = SUPABASE_URL.strip().strip('"').strip("'")
@@ -57,7 +64,9 @@ GEMINI_API_KEY = GEMINI_API_KEY.strip().strip('"').strip("'")
 
 
 if not SUPABASE_URL.startswith("https://"):
-    raise RuntimeError("SUPABASE_URL must start with https://")
+    raise RuntimeError(
+        "SUPABASE_URL must start with https://"
+    )
 
 
 # =========================================================
@@ -118,7 +127,7 @@ def test_supabase():
 
 
 # =========================================================
-# DEBUG SUPABASE ROLE
+# DEBUG ROLE
 # =========================================================
 
 @app.get("/debug-role")
@@ -158,7 +167,7 @@ async def upload_pdf(
 ):
 
     # -----------------------------------------------------
-    # LIMIT QUESTION COUNT
+    # QUESTION COUNT
     # -----------------------------------------------------
 
     question_count = max(
@@ -168,7 +177,7 @@ async def upload_pdf(
 
 
     # -----------------------------------------------------
-    # VALIDATE DIFFICULTY
+    # DIFFICULTY
     # -----------------------------------------------------
 
     if difficulty not in [
@@ -176,11 +185,12 @@ async def upload_pdf(
         "medium",
         "hard"
     ]:
+
         difficulty = "medium"
 
 
     # -----------------------------------------------------
-    # VALIDATE QUESTION TYPE
+    # QUESTION TYPE
     # -----------------------------------------------------
 
     if question_type not in [
@@ -188,12 +198,13 @@ async def upload_pdf(
         "true_false",
         "short_answer"
     ]:
+
         question_type = "multiple_choice"
 
 
-    # -----------------------------------------------------
+    # =====================================================
     # READ PDF
-    # -----------------------------------------------------
+    # =====================================================
 
     try:
 
@@ -207,12 +218,14 @@ async def upload_pdf(
         text = ""
 
         for page in document:
+
             text += page.get_text()
             text += "\n"
 
         pages = len(document)
 
         document.close()
+
 
     except Exception as e:
 
@@ -222,9 +235,9 @@ async def upload_pdf(
         }
 
 
-    # -----------------------------------------------------
+    # =====================================================
     # CHECK PDF TEXT
-    # -----------------------------------------------------
+    # =====================================================
 
     if not text.strip():
 
@@ -234,9 +247,9 @@ async def upload_pdf(
         }
 
 
-    # -----------------------------------------------------
+    # =====================================================
     # QUESTION FORMAT
-    # -----------------------------------------------------
+    # =====================================================
 
     if question_type == "multiple_choice":
 
@@ -255,6 +268,7 @@ Each question must have exactly this structure:
 }
 """
 
+
     elif question_type == "true_false":
 
         format_instruction = """
@@ -270,6 +284,7 @@ Each question must have exactly this structure:
 }
 """
 
+
     else:
 
         format_instruction = """
@@ -283,9 +298,9 @@ Each question must have exactly this structure:
 """
 
 
-    # -----------------------------------------------------
-    # DIFFICULTY
-    # -----------------------------------------------------
+    # =====================================================
+    # DIFFICULTY INSTRUCTION
+    # =====================================================
 
     difficulty_instruction = {
 
@@ -304,11 +319,12 @@ Each question must have exactly this structure:
     )
 
 
-    # -----------------------------------------------------
+    # =====================================================
     # GEMINI PROMPT
-    # -----------------------------------------------------
+    # =====================================================
 
     prompt = f"""
+
 You are an expert educational test creator.
 
 Create EXACTLY {question_count} questions
@@ -352,57 +368,135 @@ There must be EXACTLY {question_count}
 objects inside the "questions" array.
 
 Do not write Markdown.
-
 Do not write ```json.
-
 Do not add any explanation.
 
 TEXTBOOK CONTENT:
 
 {text[:30000]}
+
 """
 
 
-    # -----------------------------------------------------
-    # CALL GEMINI
-    # -----------------------------------------------------
+    # =====================================================
+    # CALL GEMINI WITH RETRY
+    # =====================================================
 
     try:
 
-        response = client.models.generate_content(
-            model="gemini-3.6-flash",
-            contents=prompt
-        )
+        response = None
+        last_error = None
+
+        # Try up to 3 times
+        for attempt in range(3):
+
+            try:
+
+                print(
+                    f"Gemini attempt {attempt + 1}/3"
+                )
+
+                response = client.models.generate_content(
+
+                    model="gemini-3.6-flash",
+
+                    contents=prompt
+
+                )
+
+
+                # Check response
+
+                if response and response.text:
+
+                    print(
+                        f"Gemini attempt {attempt + 1} succeeded"
+                    )
+
+                    break
+
+
+                last_error = Exception(
+                    "Gemini returned an empty response."
+                )
+
+
+            except Exception as e:
+
+                last_error = e
+
+                print(
+                    f"Gemini attempt {attempt + 1} failed: "
+                    f"{repr(e)}"
+                )
+
+
+                # Wait before trying again
+
+                if attempt < 2:
+
+                    wait_time = 5 * (attempt + 1)
+
+                    print(
+                        f"Waiting {wait_time} seconds before retry..."
+                    )
+
+                    time.sleep(wait_time)
+
+
+        # -------------------------------------------------
+        # NO SUCCESS
+        # -------------------------------------------------
+
+        if response is None or not response.text:
+
+            raise Exception(
+                "Gemini is temporarily unavailable. "
+                "Please try again in a few minutes. "
+                f"Last error: {last_error}"
+            )
+
 
         ai_text = response.text.strip()
+
 
     except Exception as e:
 
         return {
+
             "success": False,
-            "message": f"AI generation failed: {str(e)}"
+
+            "message":
+                f"AI generation failed: {str(e)}"
+
         }
 
 
-    # -----------------------------------------------------
+    # =====================================================
     # CLEAN GEMINI RESPONSE
-    # -----------------------------------------------------
+    # =====================================================
 
     if ai_text.startswith("```json"):
+
         ai_text = ai_text[7:]
 
+
     elif ai_text.startswith("```"):
+
         ai_text = ai_text[3:]
 
+
     if ai_text.endswith("```"):
+
         ai_text = ai_text[:-3]
+
 
     ai_text = ai_text.strip()
 
 
-    # -----------------------------------------------------
+    # =====================================================
     # PARSE JSON
-    # -----------------------------------------------------
+    # =====================================================
 
     try:
 
@@ -413,110 +507,166 @@ TEXTBOOK CONTENT:
             []
         )
 
-        if not isinstance(questions, list):
+
+        if not isinstance(
+            questions,
+            list
+        ):
 
             return {
+
                 "success": False,
-                "message": "AI returned an invalid questions format.",
-                "raw_response": ai_text
+
+                "message":
+                    "AI returned an invalid questions format.",
+
+                "raw_response":
+                    ai_text
+
             }
+
 
         if not questions:
 
             return {
+
                 "success": False,
-                "message": "AI returned no questions.",
-                "raw_response": ai_text
+
+                "message":
+                    "AI returned no questions.",
+
+                "raw_response":
+                    ai_text
+
             }
+
 
     except Exception as e:
 
         return {
+
             "success": False,
-            "message": "AI returned an invalid question format.",
-            "raw_response": ai_text,
-            "error": str(e)
+
+            "message":
+                "AI returned an invalid question format.",
+
+            "raw_response":
+                ai_text,
+
+            "error":
+                str(e)
+
         }
 
 
-    # -----------------------------------------------------
-    # LIMIT AGAIN
-    # -----------------------------------------------------
+    # =====================================================
+    # LIMIT QUESTION COUNT
+    # =====================================================
 
     questions = questions[:question_count]
 
 
-    # -----------------------------------------------------
-    # NORMALIZE QUESTIONS
-    # -----------------------------------------------------
+    # =====================================================
+    # CLEAN QUESTIONS
+    # =====================================================
 
     cleaned_questions = []
 
+
     for q in questions:
 
-        if not isinstance(q, dict):
+        if not isinstance(
+            q,
+            dict
+        ):
+
             continue
 
+
         question_text = str(
-            q.get("question", "")
+            q.get(
+                "question",
+                ""
+            )
         ).strip()
 
+
         answer = str(
-            q.get("answer", "")
+            q.get(
+                "answer",
+                ""
+            )
         ).strip()
+
 
         options = q.get(
             "options",
             {}
         )
 
-        if not isinstance(options, dict):
+
+        if not isinstance(
+            options,
+            dict
+        ):
+
             options = {}
 
+
         if not question_text:
+
             continue
 
+
         cleaned_questions.append({
-            "question": question_text,
-            "options": options,
-            "answer": answer,
-            "difficulty": difficulty,
-            "question_type": question_type
+
+            "question":
+                question_text,
+
+            "options":
+                options,
+
+            "answer":
+                answer,
+
+            "difficulty":
+                difficulty,
+
+            "question_type":
+                question_type
+
         })
 
+
+    # =====================================================
+    # CHECK VALID QUESTIONS
+    # =====================================================
 
     if not cleaned_questions:
 
         return {
+
             "success": False,
-            "message": "No valid questions were generated."
+
+            "message":
+                "No valid questions were generated."
+
         }
 
 
-    # -----------------------------------------------------
-    # IMPORTANT:
-    # DO NOT SAVE TO SUPABASE HERE.
-    #
-    # The frontend will first show the generated test.
-    # The user then chooses:
-    # - title
-    # - subject
-    # - grade
-    # - topic
-    # - exam type
-    # - year
-    # - description
-    #
-    # Then /save-exam saves everything.
-    # -----------------------------------------------------
+    # =====================================================
+    # RETURN QUESTIONS
+    # =====================================================
 
     return {
 
         "success": True,
 
-        "filename": pdf.filename,
+        "filename":
+            pdf.filename,
 
-        "pages": pages,
+        "pages":
+            pages,
 
         "num_questions":
             len(cleaned_questions),
@@ -532,6 +682,7 @@ TEXTBOOK CONTENT:
 
         "questions":
             cleaned_questions
+
     }
 
 
@@ -571,46 +722,60 @@ class SaveExamRequest(BaseModel):
 # =========================================================
 
 @app.post("/save-exam")
-def save_exam(data: SaveExamRequest):
+def save_exam(
+    data: SaveExamRequest
+):
 
     # -----------------------------------------------------
-    # VALIDATE TITLE
+    # CHECK TITLE
     # -----------------------------------------------------
 
     if not data.title.strip():
 
         return {
+
             "success": False,
-            "message": "Exam title is required."
+
+            "message":
+                "Exam title is required."
+
         }
 
 
     # -----------------------------------------------------
-    # VALIDATE SUBJECT
+    # CHECK SUBJECT
     # -----------------------------------------------------
 
     if data.subject_id not in range(1, 9):
 
         return {
+
             "success": False,
-            "message": "Invalid subject_id. Use 1 to 8."
+
+            "message":
+                "Invalid subject_id. Use 1 to 8."
+
         }
 
 
     # -----------------------------------------------------
-    # VALIDATE QUESTIONS
+    # CHECK QUESTIONS
     # -----------------------------------------------------
 
     if not data.questions:
 
         return {
+
             "success": False,
-            "message": "There are no questions to save."
+
+            "message":
+                "There are no questions to save."
+
         }
 
 
     # -----------------------------------------------------
-    # VALIDATE DIFFICULTY
+    # DIFFICULTY
     # -----------------------------------------------------
 
     if data.difficulty not in [
@@ -623,7 +788,7 @@ def save_exam(data: SaveExamRequest):
 
 
     # -----------------------------------------------------
-    # VALIDATE QUESTION TYPE
+    # QUESTION TYPE
     # -----------------------------------------------------
 
     if data.question_type not in [
@@ -636,7 +801,7 @@ def save_exam(data: SaveExamRequest):
 
 
     # =====================================================
-    # STEP 1 — CREATE EXAM
+    # CREATE EXAM ROW
     # =====================================================
 
     exam_row = {
@@ -667,33 +832,48 @@ def save_exam(data: SaveExamRequest):
 
         "answer_url":
             data.answer_url.strip()
+
     }
 
+
+    # =====================================================
+    # INSERT EXAM
+    # =====================================================
 
     try:
 
         exam_result = (
+
             supabase
             .table("exams")
             .insert(exam_row)
             .select("id")
             .single()
             .execute()
+
         )
+
 
         if not exam_result.data:
 
             return {
+
                 "success": False,
-                "message": "Supabase did not return the new exam ID."
+
+                "message":
+                    "Supabase did not return the new exam ID."
+
             }
 
+
         exam_id = exam_result.data["id"]
+
 
         print(
             "CREATED EXAM:",
             exam_id
         )
+
 
     except Exception as e:
 
@@ -702,17 +882,19 @@ def save_exam(data: SaveExamRequest):
             repr(e)
         )
 
+
         return {
 
             "success": False,
 
             "message":
                 f"Could not save exam to Supabase: {str(e)}"
+
         }
 
 
     # =====================================================
-    # STEP 2 — PREPARE QUESTIONS
+    # PREPARE QUESTION ROWS
     # =====================================================
 
     question_rows = []
@@ -720,7 +902,11 @@ def save_exam(data: SaveExamRequest):
 
     for q in data.questions:
 
-        if not isinstance(q, dict):
+        if not isinstance(
+            q,
+            dict
+        ):
+
             continue
 
 
@@ -729,10 +915,12 @@ def save_exam(data: SaveExamRequest):
             ""
         )
 
+
         answer = q.get(
             "answer",
             ""
         )
+
 
         options = q.get(
             "options",
@@ -741,12 +929,20 @@ def save_exam(data: SaveExamRequest):
 
 
         if question_text is None:
+
             question_text = ""
 
+
         if answer is None:
+
             answer = ""
 
-        if not isinstance(options, dict):
+
+        if not isinstance(
+            options,
+            dict
+        ):
+
             options = {}
 
 
@@ -754,12 +950,14 @@ def save_exam(data: SaveExamRequest):
             question_text
         ).strip()
 
+
         answer = str(
             answer
         ).strip()
 
 
         if not question_text:
+
             continue
 
 
@@ -782,12 +980,13 @@ def save_exam(data: SaveExamRequest):
 
             "question_type":
                 data.question_type
+
         })
 
 
-    # -----------------------------------------------------
-    # CHECK QUESTIONS
-    # -----------------------------------------------------
+    # =====================================================
+    # CHECK QUESTION ROWS
+    # =====================================================
 
     if not question_rows:
 
@@ -800,32 +999,42 @@ def save_exam(data: SaveExamRequest):
 
             "exam_id":
                 exam_id
+
         }
 
 
     # =====================================================
-    # STEP 3 — SAVE QUESTIONS
+    # INSERT QUESTIONS
     # =====================================================
 
     try:
 
         question_result = (
+
             supabase
             .table("questions")
             .insert(question_rows)
             .execute()
+
         )
 
+
         saved_count = (
+
             len(question_result.data)
+
             if question_result.data
+
             else 0
+
         )
+
 
         print(
             "SAVED QUESTIONS:",
             saved_count
         )
+
 
     except Exception as e:
 
@@ -834,16 +1043,18 @@ def save_exam(data: SaveExamRequest):
             repr(e)
         )
 
+
         return {
 
             "success": False,
 
             "message":
-                "Exam was created, but questions could not be saved: "
-                f"{str(e)}",
+                "Exam was created, but questions "
+                "could not be saved: " + str(e),
 
             "exam_id":
                 exam_id
+
         }
 
 
@@ -863,6 +1074,7 @@ def save_exam(data: SaveExamRequest):
 
         "num_questions":
             len(question_rows)
+
     }
 
 
@@ -876,11 +1088,14 @@ def get_questions():
     try:
 
         result = (
+
             supabase
             .table("questions")
             .select("*")
             .execute()
+
         )
+
 
         return {
 
@@ -888,7 +1103,9 @@ def get_questions():
 
             "questions":
                 result.data
+
         }
+
 
     except Exception as e:
 
@@ -898,6 +1115,7 @@ def get_questions():
 
             "error":
                 str(e)
+
         }
 
 
@@ -911,6 +1129,7 @@ def get_exams():
     try:
 
         result = (
+
             supabase
             .table("exams")
             .select("*")
@@ -919,7 +1138,9 @@ def get_exams():
                 desc=True
             )
             .execute()
+
         )
+
 
         return {
 
@@ -927,7 +1148,9 @@ def get_exams():
 
             "exams":
                 result.data
+
         }
+
 
     except Exception as e:
 
@@ -937,6 +1160,7 @@ def get_exams():
 
             "error":
                 str(e)
+
         }
 
 
@@ -950,12 +1174,15 @@ def check_supabase():
     try:
 
         result = (
+
             supabase
             .table("questions")
             .select("*")
             .limit(1)
             .execute()
+
         )
+
 
         return {
 
@@ -963,7 +1190,9 @@ def check_supabase():
 
             "data":
                 result.data
+
         }
+
 
     except Exception as e:
 
@@ -973,4 +1202,5 @@ def check_supabase():
 
             "error":
                 str(e)
+
         }
