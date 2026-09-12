@@ -1,5 +1,6 @@
 import os
 import json
+from typing import Optional, List, Dict, Any
 
 from fastapi import FastAPI, UploadFile, File, Form
 from fastapi.middleware.cors import CORSMiddleware
@@ -11,16 +12,16 @@ from google import genai
 from supabase import create_client, Client
 
 
-# =========================
+# =========================================================
 # APP
-# =========================
+# =========================================================
 
 app = FastAPI()
 
 
-# =========================
+# =========================================================
 # CORS
-# =========================
+# =========================================================
 
 app.add_middleware(
     CORSMiddleware,
@@ -31,69 +32,63 @@ app.add_middleware(
 )
 
 
-# =========================
-# SUPABASE
-# =========================
+# =========================================================
+# ENVIRONMENT VARIABLES
+# =========================================================
 
 SUPABASE_URL = os.environ.get("SUPABASE_URL")
 SUPABASE_KEY = os.environ.get("SUPABASE_KEY")
+GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY")
+
 
 if not SUPABASE_URL:
-    raise RuntimeError(
-        "SUPABASE_URL is not set in environment variables"
-    )
+    raise RuntimeError("SUPABASE_URL is not set in environment variables")
 
 if not SUPABASE_KEY:
-    raise RuntimeError(
-        "SUPABASE_KEY is not set in environment variables"
-    )
+    raise RuntimeError("SUPABASE_KEY is not set in environment variables")
+
+if not GEMINI_API_KEY:
+    raise RuntimeError("GEMINI_API_KEY is not set in environment variables")
+
 
 SUPABASE_URL = SUPABASE_URL.strip().strip('"').strip("'")
 SUPABASE_KEY = SUPABASE_KEY.strip().strip('"').strip("'")
+GEMINI_API_KEY = GEMINI_API_KEY.strip().strip('"').strip("'")
+
 
 if not SUPABASE_URL.startswith("https://"):
-    raise RuntimeError(
-        "SUPABASE_URL must start with https://"
-    )
+    raise RuntimeError("SUPABASE_URL must start with https://")
+
+
+# =========================================================
+# CLIENTS
+# =========================================================
 
 supabase: Client = create_client(
     SUPABASE_URL,
     SUPABASE_KEY
 )
 
-
-# =========================
-# GEMINI
-# =========================
-
-GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY")
-
-if not GEMINI_API_KEY:
-    raise RuntimeError(
-        "GEMINI_API_KEY is not set in environment variables"
-    )
-
-GEMINI_API_KEY = GEMINI_API_KEY.strip().strip('"').strip("'")
-
 client = genai.Client(
     api_key=GEMINI_API_KEY
 )
 
 
-# =========================
+# =========================================================
 # HOME
-# =========================
+# =========================================================
 
 @app.get("/")
 def home():
     return {
+        "success": True,
         "message": "Text2Test AI backend is running!"
     }
 
 
-# =========================
+# =========================================================
 # TEST SUPABASE
-# =========================
+# =========================================================
 
 @app.get("/test-supabase")
 def test_supabase():
@@ -122,9 +117,9 @@ def test_supabase():
         }
 
 
-# =========================
+# =========================================================
 # DEBUG SUPABASE ROLE
-# =========================
+# =========================================================
 
 @app.get("/debug-role")
 def debug_role():
@@ -162,9 +157,9 @@ async def upload_pdf(
     question_type: str = Form("multiple_choice"),
 ):
 
-    # =========================
-    # LIMIT QUESTIONS
-    # =========================
+    # -----------------------------------------------------
+    # LIMIT QUESTION COUNT
+    # -----------------------------------------------------
 
     question_count = max(
         10,
@@ -172,9 +167,9 @@ async def upload_pdf(
     )
 
 
-    # =========================
+    # -----------------------------------------------------
     # VALIDATE DIFFICULTY
-    # =========================
+    # -----------------------------------------------------
 
     if difficulty not in [
         "easy",
@@ -184,9 +179,9 @@ async def upload_pdf(
         difficulty = "medium"
 
 
-    # =========================
+    # -----------------------------------------------------
     # VALIDATE QUESTION TYPE
-    # =========================
+    # -----------------------------------------------------
 
     if question_type not in [
         "multiple_choice",
@@ -196,13 +191,13 @@ async def upload_pdf(
         question_type = "multiple_choice"
 
 
-    # =========================
+    # -----------------------------------------------------
     # READ PDF
-    # =========================
-
-    pdf_data = await pdf.read()
+    # -----------------------------------------------------
 
     try:
+
+        pdf_data = await pdf.read()
 
         document = fitz.open(
             stream=pdf_data,
@@ -227,9 +222,9 @@ async def upload_pdf(
         }
 
 
-    # =========================
-    # CHECK TEXT
-    # =========================
+    # -----------------------------------------------------
+    # CHECK PDF TEXT
+    # -----------------------------------------------------
 
     if not text.strip():
 
@@ -239,14 +234,14 @@ async def upload_pdf(
         }
 
 
-    # =========================
+    # -----------------------------------------------------
     # QUESTION FORMAT
-    # =========================
+    # -----------------------------------------------------
 
     if question_type == "multiple_choice":
 
         format_instruction = """
-Each question must have:
+Each question must have exactly this structure:
 
 {
   "question": "Question text",
@@ -263,7 +258,7 @@ Each question must have:
     elif question_type == "true_false":
 
         format_instruction = """
-Each question must have:
+Each question must have exactly this structure:
 
 {
   "question": "Question text",
@@ -278,7 +273,7 @@ Each question must have:
     else:
 
         format_instruction = """
-Each question must have:
+Each question must have exactly this structure:
 
 {
   "question": "Question text",
@@ -288,9 +283,9 @@ Each question must have:
 """
 
 
-    # =========================
+    # -----------------------------------------------------
     # DIFFICULTY
-    # =========================
+    # -----------------------------------------------------
 
     difficulty_instruction = {
 
@@ -309,9 +304,9 @@ Each question must have:
     )
 
 
-    # =========================
+    # -----------------------------------------------------
     # GEMINI PROMPT
-    # =========================
+    # -----------------------------------------------------
 
     prompt = f"""
 You are an expert educational test creator.
@@ -328,10 +323,9 @@ IMPORTANT RULES:
 5. Avoid extremely minor details.
 6. All questions must be in ENGLISH.
 7. All answers must be in ENGLISH.
-8. Difficulty: {difficulty}.
+8. Difficulty level: {difficulty}.
 9. {difficulty_instruction}
-
-Question type: {question_type}
+10. Question type: {question_type}.
 
 {format_instruction}
 
@@ -369,9 +363,9 @@ TEXTBOOK CONTENT:
 """
 
 
-    # =========================
+    # -----------------------------------------------------
     # CALL GEMINI
-    # =========================
+    # -----------------------------------------------------
 
     try:
 
@@ -390,28 +384,25 @@ TEXTBOOK CONTENT:
         }
 
 
-    # =========================
-    # CLEAN AI RESPONSE
-    # =========================
+    # -----------------------------------------------------
+    # CLEAN GEMINI RESPONSE
+    # -----------------------------------------------------
 
     if ai_text.startswith("```json"):
-
         ai_text = ai_text[7:]
 
     elif ai_text.startswith("```"):
-
         ai_text = ai_text[3:]
 
     if ai_text.endswith("```"):
-
         ai_text = ai_text[:-3]
 
     ai_text = ai_text.strip()
 
 
-    # =========================
+    # -----------------------------------------------------
     # PARSE JSON
-    # =========================
+    # -----------------------------------------------------
 
     try:
 
@@ -421,6 +412,14 @@ TEXTBOOK CONTENT:
             "questions",
             []
         )
+
+        if not isinstance(questions, list):
+
+            return {
+                "success": False,
+                "message": "AI returned an invalid questions format.",
+                "raw_response": ai_text
+            }
 
         if not questions:
 
@@ -440,29 +439,76 @@ TEXTBOOK CONTENT:
         }
 
 
-    # =========================
+    # -----------------------------------------------------
     # LIMIT AGAIN
-    # =========================
+    # -----------------------------------------------------
 
     questions = questions[:question_count]
 
 
-    # =========================
-    # RETURN QUESTIONS
-    # =========================
-    #
+    # -----------------------------------------------------
+    # NORMALIZE QUESTIONS
+    # -----------------------------------------------------
+
+    cleaned_questions = []
+
+    for q in questions:
+
+        if not isinstance(q, dict):
+            continue
+
+        question_text = str(
+            q.get("question", "")
+        ).strip()
+
+        answer = str(
+            q.get("answer", "")
+        ).strip()
+
+        options = q.get(
+            "options",
+            {}
+        )
+
+        if not isinstance(options, dict):
+            options = {}
+
+        if not question_text:
+            continue
+
+        cleaned_questions.append({
+            "question": question_text,
+            "options": options,
+            "answer": answer,
+            "difficulty": difficulty,
+            "question_type": question_type
+        })
+
+
+    if not cleaned_questions:
+
+        return {
+            "success": False,
+            "message": "No valid questions were generated."
+        }
+
+
+    # -----------------------------------------------------
     # IMPORTANT:
-    # We DO NOT save questions here.
+    # DO NOT SAVE TO SUPABASE HERE.
     #
-    # The user will first choose:
+    # The frontend will first show the generated test.
+    # The user then chooses:
     # - title
     # - subject
     # - grade
     # - topic
     # - exam type
+    # - year
+    # - description
     #
-    # Then /save-exam will save everything.
-    # =========================
+    # Then /save-exam saves everything.
+    # -----------------------------------------------------
 
     return {
 
@@ -472,20 +518,25 @@ TEXTBOOK CONTENT:
 
         "pages": pages,
 
-        "num_questions": len(questions),
+        "num_questions":
+            len(cleaned_questions),
 
-        "difficulty": difficulty,
+        "difficulty":
+            difficulty,
 
-        "question_type": question_type,
+        "question_type":
+            question_type,
 
-        "language": "english",
+        "language":
+            "english",
 
-        "questions": questions
+        "questions":
+            cleaned_questions
     }
 
 
 # =========================================================
-# SAVE EXAM
+# SAVE EXAM REQUEST
 # =========================================================
 
 class SaveExamRequest(BaseModel):
@@ -500,7 +551,7 @@ class SaveExamRequest(BaseModel):
 
     exam_type: str = ""
 
-    year: int | None = None
+    year: Optional[int] = None
 
     description: str = ""
 
@@ -512,15 +563,19 @@ class SaveExamRequest(BaseModel):
 
     question_type: str = "multiple_choice"
 
-    questions: list
+    questions: List[Dict[str, Any]]
 
+
+# =========================================================
+# SAVE EXAM
+# =========================================================
 
 @app.post("/save-exam")
 def save_exam(data: SaveExamRequest):
 
-    # =========================
-    # VALIDATE
-    # =========================
+    # -----------------------------------------------------
+    # VALIDATE TITLE
+    # -----------------------------------------------------
 
     if not data.title.strip():
 
@@ -530,6 +585,10 @@ def save_exam(data: SaveExamRequest):
         }
 
 
+    # -----------------------------------------------------
+    # VALIDATE SUBJECT
+    # -----------------------------------------------------
+
     if data.subject_id not in range(1, 9):
 
         return {
@@ -537,6 +596,10 @@ def save_exam(data: SaveExamRequest):
             "message": "Invalid subject_id. Use 1 to 8."
         }
 
+
+    # -----------------------------------------------------
+    # VALIDATE QUESTIONS
+    # -----------------------------------------------------
 
     if not data.questions:
 
@@ -546,29 +609,64 @@ def save_exam(data: SaveExamRequest):
         }
 
 
-    # =========================
-    # CREATE EXAM
-    # =========================
+    # -----------------------------------------------------
+    # VALIDATE DIFFICULTY
+    # -----------------------------------------------------
+
+    if data.difficulty not in [
+        "easy",
+        "medium",
+        "hard"
+    ]:
+
+        data.difficulty = "medium"
+
+
+    # -----------------------------------------------------
+    # VALIDATE QUESTION TYPE
+    # -----------------------------------------------------
+
+    if data.question_type not in [
+        "multiple_choice",
+        "true_false",
+        "short_answer"
+    ]:
+
+        data.question_type = "multiple_choice"
+
+
+    # =====================================================
+    # STEP 1 — CREATE EXAM
+    # =====================================================
 
     exam_row = {
 
-        "title": data.title.strip(),
+        "title":
+            data.title.strip(),
 
-        "subject_id": data.subject_id,
+        "subject_id":
+            data.subject_id,
 
-        "grade": data.grade,
+        "grade":
+            data.grade.strip(),
 
-        "topic": data.topic,
+        "topic":
+            data.topic.strip(),
 
-        "exam_type": data.exam_type,
+        "exam_type":
+            data.exam_type.strip(),
 
-        "year": data.year,
+        "year":
+            data.year,
 
-        "description": data.description,
+        "description":
+            data.description.strip(),
 
-        "file_url": data.file_url,
+        "file_url":
+            data.file_url.strip(),
 
-        "answer_url": data.answer_url
+        "answer_url":
+            data.answer_url.strip()
     }
 
 
@@ -582,6 +680,13 @@ def save_exam(data: SaveExamRequest):
             .single()
             .execute()
         )
+
+        if not exam_result.data:
+
+            return {
+                "success": False,
+                "message": "Supabase did not return the new exam ID."
+            }
 
         exam_id = exam_result.data["id"]
 
@@ -606,22 +711,17 @@ def save_exam(data: SaveExamRequest):
         }
 
 
-    # =========================
-    # PREPARE QUESTIONS
-    # =========================
+    # =====================================================
+    # STEP 2 — PREPARE QUESTIONS
+    # =====================================================
 
     question_rows = []
 
+
     for q in data.questions:
 
-        options = q.get(
-            "options",
-            {}
-        )
-
-        if not isinstance(options, dict):
-
-            options = {}
+        if not isinstance(q, dict):
+            continue
 
 
         question_text = q.get(
@@ -629,33 +729,53 @@ def save_exam(data: SaveExamRequest):
             ""
         )
 
-        if question_text is None:
-
-            question_text = ""
-
-
         answer = q.get(
             "answer",
             ""
         )
 
-        if answer is None:
+        options = q.get(
+            "options",
+            {}
+        )
 
+
+        if question_text is None:
+            question_text = ""
+
+        if answer is None:
             answer = ""
+
+        if not isinstance(options, dict):
+            options = {}
+
+
+        question_text = str(
+            question_text
+        ).strip()
+
+        answer = str(
+            answer
+        ).strip()
+
+
+        if not question_text:
+            continue
 
 
         question_rows.append({
 
-            "exam_id": exam_id,
+            "exam_id":
+                exam_id,
 
             "question":
-                str(question_text),
+                question_text,
 
             "options":
                 options,
 
             "answer":
-                str(answer),
+                answer,
 
             "difficulty":
                 data.difficulty,
@@ -665,19 +785,27 @@ def save_exam(data: SaveExamRequest):
         })
 
 
+    # -----------------------------------------------------
+    # CHECK QUESTIONS
+    # -----------------------------------------------------
+
     if not question_rows:
 
         return {
 
             "success": False,
 
-            "message": "There are no questions to save."
+            "message":
+                "There are no valid questions to save.",
+
+            "exam_id":
+                exam_id
         }
 
 
-    # =========================
-    # SAVE QUESTIONS
-    # =========================
+    # =====================================================
+    # STEP 3 — SAVE QUESTIONS
+    # =====================================================
 
     try:
 
@@ -688,11 +816,15 @@ def save_exam(data: SaveExamRequest):
             .execute()
         )
 
-        print(
-            "SAVED QUESTIONS:",
+        saved_count = (
             len(question_result.data)
             if question_result.data
             else 0
+        )
+
+        print(
+            "SAVED QUESTIONS:",
+            saved_count
         )
 
     except Exception as e:
@@ -715,21 +847,97 @@ def save_exam(data: SaveExamRequest):
         }
 
 
-    # =========================
+    # =====================================================
     # SUCCESS
-    # =========================
+    # =====================================================
 
     return {
 
         "success": True,
 
-        "message": "Exam and questions saved successfully.",
+        "message":
+            "Exam and questions saved successfully.",
 
-        "exam_id": exam_id,
+        "exam_id":
+            exam_id,
 
         "num_questions":
             len(question_rows)
     }
+
+
+# =========================================================
+# GET QUESTIONS
+# =========================================================
+
+@app.get("/questions")
+def get_questions():
+
+    try:
+
+        result = (
+            supabase
+            .table("questions")
+            .select("*")
+            .execute()
+        )
+
+        return {
+
+            "success": True,
+
+            "questions":
+                result.data
+        }
+
+    except Exception as e:
+
+        return {
+
+            "success": False,
+
+            "error":
+                str(e)
+        }
+
+
+# =========================================================
+# GET EXAMS
+# =========================================================
+
+@app.get("/exams")
+def get_exams():
+
+    try:
+
+        result = (
+            supabase
+            .table("exams")
+            .select("*")
+            .order(
+                "created_at",
+                desc=True
+            )
+            .execute()
+        )
+
+        return {
+
+            "success": True,
+
+            "exams":
+                result.data
+        }
+
+    except Exception as e:
+
+        return {
+
+            "success": False,
+
+            "error":
+                str(e)
+        }
 
 
 # =========================================================
@@ -753,7 +961,8 @@ def check_supabase():
 
             "success": True,
 
-            "data": result.data
+            "data":
+                result.data
         }
 
     except Exception as e:
@@ -762,72 +971,6 @@ def check_supabase():
 
             "success": False,
 
-            "error": str(e)
-        }
-
-
-# =========================================================
-# GET QUESTIONS
-# =========================================================
-
-@app.get("/questions")
-def get_questions():
-
-    try:
-
-        result = (
-            supabase
-            .table("questions")
-            .select("*")
-            .execute()
-        )
-
-        return {
-
-            "success": True,
-
-            "questions": result.data
-        }
-
-    except Exception as e:
-
-        return {
-
-            "success": False,
-
-            "error": str(e)
-        }
-
-
-# =========================================================
-# GET EXAMS
-# =========================================================
-
-@app.get("/exams")
-def get_exams():
-
-    try:
-
-        result = (
-            supabase
-            .table("exams")
-            .select("*")
-            .order("created_at", desc=True)
-            .execute()
-        )
-
-        return {
-
-            "success": True,
-
-            "exams": result.data
-        }
-
-    except Exception as e:
-
-        return {
-
-            "success": False,
-
-            "error": str(e)
+            "error":
+                str(e)
         }
