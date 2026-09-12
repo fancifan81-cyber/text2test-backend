@@ -1,0 +1,1449 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Text2Test AI</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f4f7fb;
+            color: #222;
+        }
+
+        .container {
+            width: min(1000px, 92%);
+            margin: 40px auto;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 8px;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 16px;
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 18px rgba(0,0,0,0.08);
+        }
+
+        .upload-box {
+            border: 2px dashed #999;
+            border-radius: 14px;
+            padding: 40px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .upload-box:hover {
+            background: #f5f8ff;
+        }
+
+        .upload-box strong {
+            display: block;
+            font-size: 20px;
+            margin-bottom: 8px;
+        }
+
+        #pdfFile {
+            display: none;
+        }
+
+        .file-name {
+            margin-top: 12px;
+            color: #555;
+            text-align: center;
+        }
+
+        .settings {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .field {
+            display: flex;
+            flex-direction: column;
+            gap: 7px;
+        }
+
+        label {
+            font-weight: bold;
+        }
+
+        input,
+        select,
+        textarea {
+            width: 100%;
+            padding: 11px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            font-size: 15px;
+        }
+
+        textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        button {
+            border: none;
+            border-radius: 9px;
+            padding: 12px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .primary-btn {
+            width: 100%;
+            margin-top: 20px;
+            background: #2563eb;
+            color: white;
+        }
+
+        .primary-btn:hover {
+            background: #1d4ed8;
+        }
+
+        .secondary-btn {
+            background: #e5e7eb;
+            color: #222;
+        }
+
+        .save-btn {
+            width: 100%;
+            background: #16a34a;
+            color: white;
+            margin-top: 20px;
+        }
+
+        .save-btn:hover {
+            background: #15803d;
+        }
+
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        #status,
+        #saveStatus {
+            margin-top: 15px;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .question-card {
+            border: 1px solid #ddd;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 18px;
+        }
+
+        .question-number {
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .option {
+            margin: 9px 0;
+            padding: 10px;
+            background: #f7f7f7;
+            border-radius: 7px;
+        }
+
+        .option label {
+            font-weight: normal;
+            cursor: pointer;
+        }
+
+        .result-box {
+            text-align: center;
+            padding: 25px;
+            background: #eef6ff;
+            border-radius: 12px;
+        }
+
+        .metadata-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+
+        .metadata-full {
+            grid-column: 1 / -1;
+        }
+
+        .score {
+            font-size: 30px;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        @media (max-width: 700px) {
+            .settings,
+            .metadata-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .metadata-full {
+                grid-column: auto;
+            }
+
+            .top-bar {
+                flex-direction: column;
+                align-items: stretch;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>Text2Test AI</h1>
+
+    <div class="subtitle">
+        Upload your textbook PDF to create an intelligent test.
+    </div>
+
+
+    <!-- ================================================= -->
+    <!-- GENERATE TEST -->
+    <!-- ================================================= -->
+
+    <div class="card">
+
+        <div
+            class="upload-box"
+            id="uploadBox"
+        >
+            <strong>Choose your PDF</strong>
+            <span>Click here to select a file</span>
+
+            <input
+                type="file"
+                id="pdfFile"
+                accept=".pdf"
+            >
+        </div>
+
+        <div
+            class="file-name"
+            id="fileName"
+        >
+            No file selected
+        </div>
+
+
+        <div class="settings">
+
+            <div class="field">
+
+                <label for="questionCount">
+                    Number of questions
+                </label>
+
+                <input
+                    type="number"
+                    id="questionCount"
+                    min="10"
+                    max="40"
+                    value="20"
+                >
+
+            </div>
+
+
+            <div class="field">
+
+                <label for="difficulty">
+                    Difficulty
+                </label>
+
+                <select id="difficulty">
+
+                    <option value="easy">
+                        Easy
+                    </option>
+
+                    <option
+                        value="medium"
+                        selected
+                    >
+                        Medium
+                    </option>
+
+                    <option value="hard">
+                        Hard
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <div class="field">
+
+                <label for="questionType">
+                    Question type
+                </label>
+
+                <select id="questionType">
+
+                    <option value="multiple_choice">
+                        Multiple Choice
+                    </option>
+
+                    <option value="true_false">
+                        True / False
+                    </option>
+
+                    <option value="short_answer">
+                        Short Answer
+                    </option>
+
+                </select>
+
+            </div>
+
+        </div>
+
+
+        <button
+            class="primary-btn"
+            id="generateBtn"
+        >
+            Generate Test
+        </button>
+
+
+        <div id="status"></div>
+
+    </div>
+
+
+    <!-- ================================================= -->
+    <!-- SAVE EXAM INFORMATION -->
+    <!-- ================================================= -->
+
+    <div
+        class="card hidden"
+        id="saveExamSection"
+    >
+
+        <h2>
+            Save this test to Question Bank
+        </h2>
+
+        <p>
+            Classify the generated test before saving it.
+        </p>
+
+
+        <div class="metadata-grid">
+
+            <div class="field metadata-full">
+
+                <label for="examTitle">
+                    Exam title *
+                </label>
+
+                <input
+                    id="examTitle"
+                    type="text"
+                    placeholder="Example: Biology Chapter 1 Test"
+                >
+
+            </div>
+
+
+            <div class="field">
+
+                <label for="subject">
+                    Subject *
+                </label>
+
+                <select id="subject">
+
+                    <option value="">
+                        Select subject
+                    </option>
+
+                    <option value="1">
+                        Toán
+                    </option>
+
+                    <option value="2">
+                        Sinh học
+                    </option>
+
+                    <option value="3">
+                        Ngữ văn
+                    </option>
+
+                    <option value="4">
+                        Tiếng Anh
+                    </option>
+
+                    <option value="5">
+                        Vật lý
+                    </option>
+
+                    <option value="6">
+                        Hóa học
+                    </option>
+
+                    <option value="7">
+                        Lịch sử
+                    </option>
+
+                    <option value="8">
+                        Địa lý
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <div class="field">
+
+                <label for="grade">
+                    Grade
+                </label>
+
+                <select id="grade">
+
+                    <option value="">
+                        Select grade
+                    </option>
+
+                    <option value="10">
+                        Grade 10
+                    </option>
+
+                    <option value="11">
+                        Grade 11
+                    </option>
+
+                    <option value="12">
+                        Grade 12
+                    </option>
+
+                    <option value="Other">
+                        Other
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <div class="field">
+
+                <label for="topic">
+                    Topic
+                </label>
+
+                <input
+                    id="topic"
+                    type="text"
+                    placeholder="Example: Cell Biology"
+                >
+
+            </div>
+
+
+            <div class="field">
+
+                <label for="examType">
+                    Exam type
+                </label>
+
+                <select id="examType">
+
+                    <option value="">
+                        Select type
+                    </option>
+
+                    <option value="Practice">
+                        Practice
+                    </option>
+
+                    <option value="Chapter Test">
+                        Chapter Test
+                    </option>
+
+                    <option value="Midterm">
+                        Midterm
+                    </option>
+
+                    <option value="Final">
+                        Final
+                    </option>
+
+                    <option value="Quiz">
+                        Quiz
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <div class="field">
+
+                <label for="year">
+                    Year
+                </label>
+
+                <input
+                    id="year"
+                    type="number"
+                    min="2000"
+                    max="2100"
+                    placeholder="2026"
+                >
+
+            </div>
+
+
+            <div class="field metadata-full">
+
+                <label for="description">
+                    Description
+                </label>
+
+                <textarea
+                    id="description"
+                    placeholder="Describe this test..."
+                ></textarea>
+
+            </div>
+
+        </div>
+
+
+        <button
+            class="save-btn"
+            id="saveExamBtn"
+        >
+            Save to Question Bank
+        </button>
+
+
+        <div id="saveStatus"></div>
+
+    </div>
+
+
+    <!-- ================================================= -->
+    <!-- TEST -->
+    <!-- ================================================= -->
+
+    <div
+        class="card hidden"
+        id="testArea"
+    >
+
+        <div class="top-bar">
+
+            <h2>
+                Your Test
+            </h2>
+
+            <span id="questionCounter"></span>
+
+        </div>
+
+
+        <div id="questionsContainer"></div>
+
+
+        <button
+            class="primary-btn"
+            id="finishBtn"
+        >
+            Finish Test
+        </button>
+
+    </div>
+
+
+    <!-- ================================================= -->
+    <!-- RESULT -->
+    <!-- ================================================= -->
+
+    <div
+        class="card hidden"
+        id="result"
+    >
+
+        <div class="result-box">
+
+            <h2>
+                Test Result
+            </h2>
+
+            <div
+                class="score"
+                id="score"
+            >
+                0 / 0
+            </div>
+
+            <p id="scoreText"></p>
+
+            <button
+                class="secondary-btn"
+                id="newTestBtn"
+            >
+                Generate Another Test
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<script>
+
+    // =====================================================
+    // BACKEND
+    // =====================================================
+
+    const BACKEND_URL =
+        "https://text2test-backend.onrender.com";
+
+
+    // =====================================================
+    // ELEMENTS
+    // =====================================================
+
+    const pdfFile =
+        document.getElementById("pdfFile");
+
+    const uploadBox =
+        document.getElementById("uploadBox");
+
+    const fileName =
+        document.getElementById("fileName");
+
+    const questionCount =
+        document.getElementById("questionCount");
+
+    const difficulty =
+        document.getElementById("difficulty");
+
+    const questionType =
+        document.getElementById("questionType");
+
+    const generateBtn =
+        document.getElementById("generateBtn");
+
+    const status =
+        document.getElementById("status");
+
+    const saveExamSection =
+        document.getElementById("saveExamSection");
+
+    const saveExamBtn =
+        document.getElementById("saveExamBtn");
+
+    const saveStatus =
+        document.getElementById("saveStatus");
+
+    const examTitle =
+        document.getElementById("examTitle");
+
+    const subject =
+        document.getElementById("subject");
+
+    const grade =
+        document.getElementById("grade");
+
+    const topic =
+        document.getElementById("topic");
+
+    const examType =
+        document.getElementById("examType");
+
+    const year =
+        document.getElementById("year");
+
+    const description =
+        document.getElementById("description");
+
+    const testArea =
+        document.getElementById("testArea");
+
+    const questionsContainer =
+        document.getElementById("questionsContainer");
+
+    const questionCounter =
+        document.getElementById("questionCounter");
+
+    const finishBtn =
+        document.getElementById("finishBtn");
+
+    const result =
+        document.getElementById("result");
+
+    const score =
+        document.getElementById("score");
+
+    const scoreText =
+        document.getElementById("scoreText");
+
+    const newTestBtn =
+        document.getElementById("newTestBtn");
+
+
+    // =====================================================
+    // DATA
+    // =====================================================
+
+    let generatedQuestions = [];
+
+    let currentFilename = "";
+
+    let currentDifficulty = "medium";
+
+    let currentQuestionType = "multiple_choice";
+
+
+    // =====================================================
+    // OPEN FILE PICKER
+    // =====================================================
+
+    uploadBox.addEventListener(
+        "click",
+        () => {
+            pdfFile.click();
+        }
+    );
+
+
+    // =====================================================
+    // FILE SELECTED
+    // =====================================================
+
+    pdfFile.addEventListener(
+        "change",
+        () => {
+
+            if (!pdfFile.files.length) {
+
+                fileName.textContent =
+                    "No file selected";
+
+                return;
+            }
+
+            fileName.textContent =
+                pdfFile.files[0].name;
+        }
+    );
+
+
+    // =====================================================
+    // GENERATE TEST
+    // =====================================================
+
+    generateBtn.addEventListener(
+        "click",
+        async () => {
+
+            if (!pdfFile.files.length) {
+
+                status.textContent =
+                    "Please choose a PDF first.";
+
+                return;
+            }
+
+
+            let count =
+                parseInt(
+                    questionCount.value
+                );
+
+
+            if (
+                isNaN(count) ||
+                count < 10 ||
+                count > 40
+            ) {
+
+                status.textContent =
+                    "Question count must be between 10 and 40.";
+
+                return;
+            }
+
+
+            generateBtn.disabled = true;
+
+            status.textContent =
+                "Reading PDF and generating questions...";
+
+            testArea.classList.add("hidden");
+
+            saveExamSection.classList.add("hidden");
+
+            result.classList.add("hidden");
+
+
+            const formData =
+                new FormData();
+
+
+            formData.append(
+                "pdf",
+                pdfFile.files[0]
+            );
+
+            formData.append(
+                "question_count",
+                count
+            );
+
+            formData.append(
+                "difficulty",
+                difficulty.value
+            );
+
+            formData.append(
+                "question_type",
+                questionType.value
+            );
+
+
+            try {
+
+                const response =
+                    await fetch(
+                        BACKEND_URL + "/upload-pdf",
+                        {
+                            method: "POST",
+                            body: formData
+                        }
+                    );
+
+
+                const data =
+                    await response.json();
+
+
+                if (!response.ok) {
+
+                    throw new Error(
+                        data.message ||
+                        "Server error."
+                    );
+                }
+
+
+                if (!data.success) {
+
+                    throw new Error(
+                        data.message ||
+                        "Could not generate questions."
+                    );
+                }
+
+
+                generatedQuestions =
+                    data.questions || [];
+
+
+                currentFilename =
+                    data.filename || "";
+
+
+                currentDifficulty =
+                    data.difficulty ||
+                    difficulty.value;
+
+
+                currentQuestionType =
+                    data.question_type ||
+                    questionType.value;
+
+
+                if (!generatedQuestions.length) {
+
+                    throw new Error(
+                        "No questions were generated."
+                    );
+                }
+
+
+                renderQuestions();
+
+
+                testArea.classList.remove(
+                    "hidden"
+                );
+
+                saveExamSection.classList.remove(
+                    "hidden"
+                );
+
+
+                status.textContent =
+                    `Successfully generated ${generatedQuestions.length} questions.`;
+
+                saveStatus.textContent =
+                    "";
+
+
+                window.scrollTo({
+                    top:
+                        saveExamSection.offsetTop -
+                        20,
+                    behavior: "smooth"
+                });
+
+            }
+
+            catch (error) {
+
+                console.error(error);
+
+                status.textContent =
+                    "Error: " +
+                    error.message;
+
+            }
+
+            finally {
+
+                generateBtn.disabled =
+                    false;
+            }
+
+        }
+    );
+
+
+    // =====================================================
+    // RENDER QUESTIONS
+    // =====================================================
+
+    function renderQuestions() {
+
+        questionsContainer.innerHTML = "";
+
+
+        questionCounter.textContent =
+            `${generatedQuestions.length} questions`;
+
+
+        generatedQuestions.forEach(
+            (q, index) => {
+
+                const card =
+                    document.createElement(
+                        "div"
+                    );
+
+                card.className =
+                    "question-card";
+
+
+                const number =
+                    document.createElement(
+                        "div"
+                    );
+
+                number.className =
+                    "question-number";
+
+
+                number.textContent =
+                    `Question ${index + 1}`;
+
+
+                card.appendChild(number);
+
+
+                const question =
+                    document.createElement(
+                        "div"
+                    );
+
+
+                question.style.marginBottom =
+                    "15px";
+
+
+                question.textContent =
+                    q.question;
+
+
+                card.appendChild(question);
+
+
+                const options =
+                    q.options || {};
+
+
+                Object.keys(options).forEach(
+                    key => {
+
+                        const option =
+                            document.createElement(
+                                "div"
+                            );
+
+                        option.className =
+                            "option";
+
+
+                        const label =
+                            document.createElement(
+                                "label"
+                            );
+
+
+                        const radio =
+                            document.createElement(
+                                "input"
+                            );
+
+
+                        radio.type =
+                            "radio";
+
+                        radio.name =
+                            `question_${index}`;
+
+                        radio.value =
+                            key;
+
+
+                        label.appendChild(
+                            radio
+                        );
+
+
+                        label.appendChild(
+                            document.createTextNode(
+                                ` ${key}. ${options[key]}`
+                            )
+                        );
+
+
+                        option.appendChild(
+                            label
+                        );
+
+
+                        card.appendChild(
+                            option
+                        );
+                    }
+                );
+
+
+                if (
+                    currentQuestionType ===
+                    "short_answer"
+                ) {
+
+                    const input =
+                        document.createElement(
+                            "input"
+                        );
+
+                    input.type =
+                        "text";
+
+                    input.name =
+                        `question_${index}`;
+
+                    input.placeholder =
+                        "Type your answer here";
+
+
+                    card.appendChild(
+                        input
+                    );
+                }
+
+
+                questionsContainer.appendChild(
+                    card
+                );
+            }
+        );
+    }
+
+
+    // =====================================================
+    // FINISH TEST
+    // =====================================================
+
+    finishBtn.addEventListener(
+        "click",
+        () => {
+
+            let correct = 0;
+
+
+            generatedQuestions.forEach(
+                (q, index) => {
+
+                    const answer =
+                        q.answer;
+
+
+                    if (
+                        currentQuestionType ===
+                        "short_answer"
+                    ) {
+
+                        const input =
+                            document.querySelector(
+                                `input[name="question_${index}"]`
+                            );
+
+
+                        if (
+                            input &&
+                            input.value.trim().toLowerCase() ===
+                            String(answer).trim().toLowerCase()
+                        ) {
+
+                            correct++;
+                        }
+
+                    }
+
+                    else {
+
+                        const selected =
+                            document.querySelector(
+                                `input[name="question_${index}"]:checked`
+                            );
+
+
+                        if (
+                            selected &&
+                            selected.value ===
+                            answer
+                        ) {
+
+                            correct++;
+                        }
+                    }
+
+                }
+            );
+
+
+            const total =
+                generatedQuestions.length;
+
+
+            const percentage =
+                total > 0
+                    ? Math.round(
+                        correct / total * 100
+                    )
+                    : 0;
+
+
+            score.textContent =
+                `${correct} / ${total}`;
+
+
+            scoreText.textContent =
+                `Your score is ${percentage}%.`;
+
+
+            result.classList.remove(
+                "hidden"
+            );
+
+
+            window.scrollTo({
+                top:
+                    result.offsetTop -
+                    20,
+                behavior: "smooth"
+            });
+        }
+    );
+
+
+    // =====================================================
+    // SAVE EXAM
+    // =====================================================
+
+    saveExamBtn.addEventListener(
+        "click",
+        async () => {
+
+            if (!generatedQuestions.length) {
+
+                saveStatus.textContent =
+                    "There are no questions to save.";
+
+                return;
+            }
+
+
+            if (!examTitle.value.trim()) {
+
+                saveStatus.textContent =
+                    "Please enter an exam title.";
+
+                examTitle.focus();
+
+                return;
+            }
+
+
+            if (!subject.value) {
+
+                saveStatus.textContent =
+                    "Please select a subject.";
+
+                subject.focus();
+
+                return;
+            }
+
+
+            saveExamBtn.disabled =
+                true;
+
+
+            saveStatus.textContent =
+                "Saving exam to Question Bank...";
+
+
+            const payload = {
+
+                title:
+                    examTitle.value.trim(),
+
+                subject_id:
+                    parseInt(subject.value),
+
+                grade:
+                    grade.value,
+
+                topic:
+                    topic.value.trim(),
+
+                exam_type:
+                    examType.value,
+
+                year:
+                    year.value
+                        ? parseInt(year.value)
+                        : null,
+
+                description:
+                    description.value.trim(),
+
+                file_url:
+                    "",
+
+                answer_url:
+                    "",
+
+                difficulty:
+                    currentDifficulty,
+
+                question_type:
+                    currentQuestionType,
+
+                questions:
+                    generatedQuestions
+            };
+
+
+            try {
+
+                const response =
+                    await fetch(
+                        BACKEND_URL + "/save-exam",
+                        {
+                            method: "POST",
+
+                            headers: {
+                                "Content-Type":
+                                    "application/json"
+                            },
+
+                            body:
+                                JSON.stringify(
+                                    payload
+                                )
+                        }
+                    );
+
+
+                const data =
+                    await response.json();
+
+
+                if (!response.ok) {
+
+                    throw new Error(
+                        data.message ||
+                        "Server error."
+                    );
+                }
+
+
+                if (!data.success) {
+
+                    throw new Error(
+                        data.message ||
+                        "Could not save exam."
+                    );
+                }
+
+
+                saveStatus.textContent =
+                    `Successfully saved! Exam ID: ${data.exam_id}`;
+
+
+                saveExamBtn.textContent =
+                    "Saved ✓";
+
+
+                saveExamBtn.disabled =
+                    true;
+
+            }
+
+            catch (error) {
+
+                console.error(error);
+
+                saveStatus.textContent =
+                    "Error: " +
+                    error.message;
+
+                saveExamBtn.disabled =
+                    false;
+            }
+
+        }
+    );
+
+
+    // =====================================================
+    // NEW TEST
+    // =====================================================
+
+    newTestBtn.addEventListener(
+        "click",
+        () => {
+
+            generatedQuestions = [];
+
+            currentFilename = "";
+
+            questionsContainer.innerHTML = "";
+
+            pdfFile.value = "";
+
+            fileName.textContent =
+                "No file selected";
+
+
+            examTitle.value = "";
+
+            subject.value = "";
+
+            grade.value = "";
+
+            topic.value = "";
+
+            examType.value = "";
+
+            year.value = "";
+
+            description.value = "";
+
+
+            status.textContent =
+                "";
+
+            saveStatus.textContent =
+                "";
+
+
+            saveExamBtn.textContent =
+                "Save to Question Bank";
+
+            saveExamBtn.disabled =
+                false;
+
+
+            testArea.classList.add(
+                "hidden"
+            );
+
+            saveExamSection.classList.add(
+                "hidden"
+            );
+
+            result.classList.add(
+                "hidden"
+            );
+
+
+            window.scrollTo({
+                top: 0,
+                behavior: "smooth"
+            });
+
+        }
+    );
+
+</script>
+
+</body>
+</html>
