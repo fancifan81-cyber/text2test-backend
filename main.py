@@ -24,6 +24,22 @@ app = FastAPI()
 SUPABASE_URL = os.environ.get("SUPABASE_URL")
 SUPABASE_KEY = os.environ.get("SUPABASE_KEY")
 
+if not SUPABASE_URL:
+    raise RuntimeError("SUPABASE_URL is not set in environment variables")
+
+if not SUPABASE_KEY:
+    raise RuntimeError("SUPABASE_KEY is not set in environment variables")
+
+# Remove accidental spaces or quotes
+SUPABASE_URL = SUPABASE_URL.strip().strip('"').strip("'")
+SUPABASE_KEY = SUPABASE_KEY.strip().strip('"').strip("'")
+
+# Make sure the URL points to the Supabase project
+if not SUPABASE_URL.startswith("https://"):
+    raise RuntimeError(
+        "SUPABASE_URL must start with https://"
+    )
+
 supabase: Client = create_client(
     SUPABASE_URL,
     SUPABASE_KEY
@@ -47,8 +63,17 @@ app.add_middleware(
 # GEMINI
 # =========================
 
+GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY")
+
+if not GEMINI_API_KEY:
+    raise RuntimeError(
+        "GEMINI_API_KEY is not set in environment variables"
+    )
+
+GEMINI_API_KEY = GEMINI_API_KEY.strip().strip('"').strip("'")
+
 client = genai.Client(
-    api_key=os.environ.get("GEMINI_API_KEY")
+    api_key=GEMINI_API_KEY
 )
 
 
@@ -98,9 +123,11 @@ def test_supabase():
 @app.get("/debug-role")
 def debug_role():
     try:
-        result = supabase.rpc(
-            "get_request_role"
-        ).execute()
+        result = (
+            supabase
+            .rpc("get_request_role")
+            .execute()
+        )
 
         return {
             "success": True,
@@ -135,6 +162,24 @@ async def upload_pdf(
         min(question_count, 40)
     )
 
+    # =========================
+    # VALIDATE DIFFICULTY
+    # =========================
+
+    if difficulty not in ["easy", "medium", "hard"]:
+        difficulty = "medium"
+
+    # =========================
+    # VALIDATE QUESTION TYPE
+    # =========================
+
+    if question_type not in [
+        "multiple_choice",
+        "true_false",
+        "short_answer"
+    ]:
+        question_type = "multiple_choice"
+
 
     # =========================
     # READ PDF
@@ -152,6 +197,7 @@ async def upload_pdf(
 
         for page in document:
             text += page.get_text()
+            text += "\n"
 
         pages = len(document)
 
@@ -322,7 +368,7 @@ TEXTBOOK CONTENT:
     if ai_text.startswith("```json"):
         ai_text = ai_text[7:]
 
-    if ai_text.startswith("```"):
+    elif ai_text.startswith("```"):
         ai_text = ai_text[3:]
 
     if ai_text.endswith("```"):
@@ -360,6 +406,13 @@ TEXTBOOK CONTENT:
 
 
     # =========================
+    # LIMIT QUESTIONS AGAIN
+    # =========================
+
+    questions = questions[:question_count]
+
+
+    # =========================
     # SAVE QUESTIONS TO SUPABASE
     # =========================
 
@@ -367,37 +420,74 @@ TEXTBOOK CONTENT:
         rows = []
 
         for q in questions:
+
+            options = q.get("options", {})
+
+            if not isinstance(options, dict):
+                options = {}
+
+            answer = q.get(
+                "answer",
+                ""
+            )
+
+            if answer is None:
+                answer = ""
+
+            question_text = q.get(
+                "question",
+                ""
+            )
+
+            if question_text is None:
+                question_text = ""
+
             rows.append({
-                "question": q.get(
-                    "question",
-                    ""
-                ),
-                "options": q.get(
-                    "options",
-                    {}
-                ),
-                "answer": q.get(
-                    "answer",
-                    ""
-                ),
+                "question": str(question_text),
+                "options": options,
+                "answer": str(answer),
                 "difficulty": difficulty,
                 "question_type": question_type
             })
 
-        if rows:
-            result = (
-                supabase
-                .table("questions")
-                .insert(rows)
-                .execute()
+
+        if not rows:
+            return {
+                "success": False,
+                "message": "There are no questions to save."
+            }
+
+
+        # INSERT INTO SUPABASE
+        result = (
+            supabase
+            .table("questions")
+            .insert(rows)
+            .execute()
+        )
+
+
+        print(
+            "SUPABASE INSERT RESULT:",
+            result
+        )
+
+
+        # Check response
+        if hasattr(result, "data"):
+            print(
+                "SUPABASE SAVED ROWS:",
+                len(result.data)
             )
 
-            print(
-                "SUPABASE INSERT RESULT:",
-                result
-            )
 
     except Exception as e:
+
+        print(
+            "SUPABASE INSERT ERROR:",
+            repr(e)
+        )
+
         return {
             "success": False,
             "message": (
