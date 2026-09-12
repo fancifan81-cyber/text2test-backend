@@ -518,3 +518,16 @@ TEXTBOOK CONTENT:
         "language": "english",
         "questions": questions
     }
+@app.get("/check-supabase")
+def check_supabase():
+    try:
+        result = supabase.table("questions").select("*").limit(1).execute()
+        return {
+            "success": True,
+            "data": result.data
+        }
+    except Exception as e:
+        return {
+            "success": False,
+            "error": str(e)
+        }
