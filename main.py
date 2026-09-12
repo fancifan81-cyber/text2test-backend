@@ -531,3 +531,18 @@ def check_supabase():
             "success": False,
             "error": str(e)
         }
+@app.get("/questions")
+def get_questions():
+    try:
+        result = supabase.table("questions").select("*").execute()
+
+        return {
+            "success": True,
+            "questions": result.data
+        }
+
+    except Exception as e:
+        return {
+            "success": False,
+            "error": str(e)
+        }
