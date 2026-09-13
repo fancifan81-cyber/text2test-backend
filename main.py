@@ -12,9 +12,7 @@ import fitz
 from google import genai
 from supabase import create_client, Client
 
-=========================================================
 APP
-=========================================================
 
 app = FastAPI(
 title="Text2Test AI",
@@ -22,9 +20,9 @@ description="AI-powered test generator and shared test library",
 version="1.0.0"
 )
 
-=========================================================
+
 CORS
-=========================================================
+
 
 app.add_middleware(
 CORSMiddleware,
@@ -34,9 +32,7 @@ allow_methods=[""],
 allow_headers=["*"],
 )
 
-=========================================================
 ENVIRONMENT VARIABLES
-=========================================================
 
 SUPABASE_URL = os.environ.get("SUPABASE_URL")
 SUPABASE_KEY = os.environ.get("SUPABASE_KEY")
@@ -58,9 +54,7 @@ GEMINI_API_KEY = GEMINI_API_KEY.strip().strip('"').strip("'")
 if not SUPABASE_URL.startswith("https://"):
 raise RuntimeError("SUPABASE_URL must start with https://")
 
-=========================================================
 CLIENTS
-=========================================================
 
 supabase: Client = create_client(
 SUPABASE_URL,
@@ -71,9 +65,7 @@ client = genai.Client(
 api_key=GEMINI_API_KEY
 )
 
-=========================================================
 HOME
-=========================================================
 
 @app.get("/")
 def home():
@@ -82,9 +74,7 @@ return {
 "message": "Text2Test AI backend is running!"
 }
 
-=========================================================
 TEST SUPABASE
-=========================================================
 
 @app.get("/test-supabase")
 def test_supabase():
@@ -108,9 +98,9 @@ except Exception as e:
         "success": False,
         "message": f"Supabase connection failed: {str(e)}"
     }
-=========================================================
+
 DEBUG ROLE
-=========================================================
+
 
 @app.get("/debug-role")
 def debug_role():
@@ -131,9 +121,8 @@ except Exception as e:
         "success": False,
         "error": str(e)
     }
-=========================================================
+
 UPLOAD PDF + GENERATE TEST
-=========================================================
 
 @app.post("/upload-pdf")
 async def upload_pdf(
@@ -177,9 +166,8 @@ if question_type not in [
     question_type = "multiple_choice"
 
 
-# =====================================================
 # READ PDF
-# =====================================================
+
 
 try:
 
@@ -213,9 +201,9 @@ except Exception as e:
     }
 
 
-# =====================================================
+
 # CHECK PDF TEXT
-# =====================================================
+
 
 if not text.strip():
 
@@ -228,9 +216,7 @@ if not text.strip():
     }
 
 
-# =====================================================
 # QUESTION FORMAT
-# =====================================================
 
 if question_type == "multiple_choice":
 
@@ -279,9 +265,7 @@ Each question must have exactly this structure:
 }
 """
 
-# =====================================================
 # DIFFICULTY
-# =====================================================
 
 difficulty_instruction = {
     "easy": "Test basic facts and understanding.",
@@ -296,9 +280,8 @@ difficulty_instruction = {
 )
 
 
-# =====================================================
 # GEMINI PROMPT
-# =====================================================
+
 
 prompt = f"""
 
@@ -357,9 +340,9 @@ TEXTBOOK CONTENT:
 {text[:30000]}
 """
 
-# =====================================================
+
 # CALL GEMINI
-# =====================================================
+
 
 try:
 
@@ -431,9 +414,8 @@ except Exception as e:
     }
 
 
-# =====================================================
+
 # CLEAN GEMINI RESPONSE
-# =====================================================
 
 if ai_text.startswith("```json"):
 
@@ -453,9 +435,8 @@ if ai_text.endswith("```"):
 ai_text = ai_text.strip()
 
 
-# =====================================================
+
 # PARSE JSON
-# =====================================================
 
 try:
 
@@ -495,9 +476,7 @@ except Exception as e:
     }
 
 
-# =====================================================
 # CLEAN QUESTIONS
-# =====================================================
 
 questions = questions[:question_count]
 
@@ -541,9 +520,7 @@ for q in questions:
     })
 
 
-# =====================================================
 # CHECK GENERATED QUESTIONS
-# =====================================================
 
 if not cleaned_questions:
 
@@ -553,9 +530,7 @@ if not cleaned_questions:
     }
 
 
-# =====================================================
 # RETURN TEST
-# =====================================================
 
 return {
     "success": True,
@@ -567,9 +542,7 @@ return {
     "language": "english",
     "questions": cleaned_questions
 }
-=========================================================
 SAVE EXAM MODEL
-=========================================================
 
 class SaveExamRequest(BaseModel):
 
@@ -596,9 +569,7 @@ difficulty: str = "medium"
 question_type: str = "multiple_choice"
 
 questions: List[Dict[str, Any]]
-=========================================================
 SAVE EXAM + QUESTIONS
-=========================================================
 
 @app.post("/save-exam")
 def save_exam(
@@ -667,9 +638,7 @@ if data.question_type not in [
     data.question_type = "multiple_choice"
 
 
-# =====================================================
 # CHECK SUBJECT
-# =====================================================
 
 try:
 
@@ -700,9 +669,7 @@ except Exception as e:
     }
 
 
-# =====================================================
 # CREATE EXAM
-# =====================================================
 
 exam_row = {
 
@@ -776,10 +743,7 @@ except Exception as e:
     }
 
 
-# =====================================================
 # PREPARE QUESTIONS
-# =====================================================
-
 question_rows = []
 
 
@@ -858,9 +822,7 @@ for q in data.questions:
     })
 
 
-# =====================================================
 # CHECK QUESTIONS
-# =====================================================
 
 if not question_rows:
 
@@ -871,10 +833,7 @@ if not question_rows:
     }
 
 
-# =====================================================
 # INSERT QUESTIONS
-# =====================================================
-
 try:
 
     question_result = (
@@ -913,9 +872,7 @@ except Exception as e:
     }
 
 
-# =====================================================
-# SUCCESS
-# =====================================================
+SUCCESS
 
 return {
 
@@ -930,9 +887,7 @@ return {
     "num_questions":
         len(question_rows)
 }
-=========================================================
 GET SUBJECTS
-=========================================================
 
 @app.get("/subjects")
 def get_subjects():
@@ -961,7 +916,6 @@ except Exception as e:
         "success": False,
         "error": str(e)
     }
-=========================================================
 GET QUESTIONS
 
 
@@ -972,7 +926,6 @@ OR
 
 
 /questions?exam_id=1
-=========================================================
 
 @app.get("/questions")
 def get_questions(
@@ -1011,7 +964,6 @@ except Exception as e:
         "success": False,
         "error": str(e)
     }
-=========================================================
 GET EXAMS
 
 
@@ -1025,7 +977,6 @@ GET EXAMS
 
 
 /exams?search=biology
-=========================================================
 
 @app.get("/exams")
 def get_exams(
@@ -1121,12 +1072,10 @@ except Exception as e:
         "error":
             str(e)
     }
-=========================================================
 GET ONE EXAM + QUESTIONS
 
 
 /exams/1
-=========================================================
 
 @app.get("/exams/{exam_id}")
 def get_exam(
@@ -1210,10 +1159,7 @@ except Exception as e:
         "error":
             str(e)
     }
-=========================================================
 CHECK SUPABASE
-=========================================================
-
 @app.get("/check-supabase")
 def check_supabase():
 
