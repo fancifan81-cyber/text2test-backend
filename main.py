@@ -760,7 +760,7 @@ def get_exams(
         query = (
             supabase
             .table("exams")
-            .select("*, subjects(id, name)")
+            .select("*, subjects(id, Name)")
             .order(
                 "created_at",
                 desc=True
