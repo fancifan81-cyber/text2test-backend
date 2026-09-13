@@ -831,7 +831,7 @@ def get_exam(exam_id: int):
         exam_result = (
             supabase
             .table("exams")
-            .select("*, subjects(id, name)")
+            .select("*, subjects(id, Name)")
             .eq(
                 "id",
                 exam_id
