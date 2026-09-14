@@ -8,25 +8,21 @@ from fastapi.middleware.cors import CORSMiddleware
 import fitz
 
 from google import genai
-from supabase import create_client, Client
+from supabase import create_client
 
 # =========================================================
 
-# CONFIGURATION
+# ENVIRONMENT VARIABLES
 
 # =========================================================
 
-GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY")
-GEMINI_MODEL = os.environ.get(
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
+SUPABASE_URL = os.getenv("SUPABASE_URL")
+SUPABASE_KEY = os.getenv("SUPABASE_KEY")
+
+GEMINI_MODEL = os.getenv(
 "GEMINI_MODEL",
 "gemini-3.6-flash"
-)
-
-SUPABASE_URL = os.environ.get("SUPABASE_URL")
-
-SUPABASE_KEY = (
-os.environ.get("SUPABASE_SERVICE_ROLE_KEY")
-or os.environ.get("SUPABASE_KEY")
 )
 
 # =========================================================
@@ -35,10 +31,7 @@ or os.environ.get("SUPABASE_KEY")
 
 # =========================================================
 
-app = FastAPI(
-title="Text2Test AI API",
-version="1.0.0"
-)
+app = FastAPI()
 
 # =========================================================
 
@@ -61,7 +54,7 @@ allow_headers=["*"],
 # =========================================================
 
 gemini_client = None
-supabase: Client | None = None
+supabase = None
 
 if GEMINI_API_KEY:
 gemini_client = genai.Client(
@@ -81,46 +74,55 @@ SUPABASE_KEY
 # =========================================================
 
 @app.get("/")
-def home():
+def root():
+
+```
 return {
-"success": True,
-"message": "Text2Test AI backend is running!"
+    "success": True,
+    "message": "Text2Test AI backend is running!"
 }
+```
 
 # =========================================================
 
-# HEALTH CHECK
+# HEALTH
 
 # =========================================================
 
 @app.get("/health")
 def health():
+
+```
 return {
-"success": True,
-"gemini_configured": bool(GEMINI_API_KEY),
-"supabase_configured": bool(
-SUPABASE_URL and SUPABASE_KEY
-),
-"gemini_model": GEMINI_MODEL
+    "success": True,
+    "gemini": bool(GEMINI_API_KEY),
+    "supabase": bool(
+        SUPABASE_URL and SUPABASE_KEY
+    ),
+    "model": GEMINI_MODEL
 }
+```
 
 # =========================================================
 
-# SUPABASE TEST
+# TEST SUPABASE
 
 # =========================================================
 
 @app.get("/test-supabase")
 def test_supabase():
-try:
-if not supabase:
-return {
-"success": False,
-"error": "Supabase is not configured."
-}
 
 ```
-    response = (
+try:
+
+    if not supabase:
+
+        return {
+            "success": False,
+            "error": "Supabase is not configured."
+        }
+
+    result = (
         supabase
         .table("subjects")
         .select("id, Name")
@@ -130,168 +132,25 @@ return {
 
     return {
         "success": True,
-        "subjects": response.data or []
+        "subjects": result.data or []
     }
 
-except Exception as error:
+except Exception as e:
+
     print(
-        "SUPABASE TEST ERROR:",
-        repr(error)
+        "TEST SUPABASE ERROR:",
+        repr(e)
     )
 
     return {
         "success": False,
-        "error": str(error)
+        "error": str(e)
     }
-```
-
-# =========================================================
-
-# DEBUG ROLE
-
-# =========================================================
-
-@app.get("/debug-role")
-def debug_role():
-try:
-if not supabase:
-return {
-"success": False,
-"error": "Supabase is not configured."
-}
-
-```
-    response = (
-        supabase
-        .table("subjects")
-        .select("id")
-        .limit(1)
-        .execute()
-    )
-
-    return {
-        "success": True,
-        "role": "backend",
-        "test": response.data or []
-    }
-
-except Exception as error:
-    return {
-        "success": False,
-        "error": str(error)
-    }
-```
-
-# =========================================================
-
-# CHECK SUPABASE
-
-# =========================================================
-
-@app.get("/check-supabase")
-def check_supabase():
-
-```
-result = {
-    "success": True,
-    "supabase_configured": bool(
-        SUPABASE_URL and SUPABASE_KEY
-    ),
-    "subjects": False,
-    "exams": False,
-    "questions": False,
-    "errors": []
-}
-
-if not supabase:
-    result["success"] = False
-    result["errors"].append(
-        "Supabase client is not configured."
-    )
-    return result
-
-# Check subjects
-try:
-    supabase \
-        .table("subjects") \
-        .select("id, Name") \
-        .limit(1) \
-        .execute()
-
-    result["subjects"] = True
-
-except Exception as error:
-    result["success"] = False
-    result["errors"].append(
-        "subjects: " + str(error)
-    )
-
-# Check exams
-try:
-    supabase \
-        .table("exams") \
-        .select("id") \
-        .limit(1) \
-        .execute()
-
-    result["exams"] = True
-
-except Exception as error:
-    result["success"] = False
-    result["errors"].append(
-        "exams: " + str(error)
-    )
-
-# Check questions
-try:
-    supabase \
-        .table("questions") \
-        .select("id") \
-        .limit(1) \
-        .execute()
-
-    result["questions"] = True
-
-except Exception as error:
-    result["success"] = False
-    result["errors"].append(
-        "questions: " + str(error)
-    )
-
-return result
 ```
 
 # =========================================================
 
 # GET SUBJECTS
-
-# =========================================================
-
-#
-
-# IMPORTANT:
-
-# Your database uses:
-
-#
-
-# subjects.id
-
-# subjects.Name
-
-#
-
-# NOT:
-
-#
-
-# subjects.name
-
-#
-
-# Therefore this endpoint explicitly uses "Name".
-
-#
 
 # =========================================================
 
@@ -302,12 +161,14 @@ def get_subjects():
 try:
 
     if not supabase:
+
         return {
             "success": False,
             "error": "Supabase is not configured."
         }
 
-    response = (
+
+    result = (
         supabase
         .table("subjects")
         .select("id, Name")
@@ -315,40 +176,43 @@ try:
         .execute()
     )
 
+
     subjects = []
 
-    for row in response.data or []:
+    for item in result.data or []:
 
         subjects.append({
-            "id": row.get("id"),
-            "name": row.get("Name")
+            "id": item.get("id"),
+            "name": item.get("Name")
         })
+
 
     return {
         "success": True,
         "subjects": subjects
     }
 
-except Exception as error:
+
+except Exception as e:
 
     print(
         "GET SUBJECTS ERROR:",
-        repr(error)
+        repr(e)
     )
 
     return {
         "success": False,
-        "error": str(error)
+        "error": str(e)
     }
 ```
 
 # =========================================================
 
-# EXTRACT PDF TEXT
+# EXTRACT PDF
 
 # =========================================================
 
-def extract_pdf_text(pdf_data: bytes):
+def extract_pdf_text(pdf_data):
 
 ```
 document = fitz.open(
@@ -358,33 +222,28 @@ document = fitz.open(
 
 pages = len(document)
 
-text_parts = []
+text = ""
 
 for page in document:
 
     page_text = page.get_text()
 
     if page_text:
-        text_parts.append(
-            page_text
-        )
+        text += page_text + "\n"
+
 
 document.close()
 
-full_text = "\n".join(
-    text_parts
-).strip()
-
-return full_text, pages
+return text.strip(), pages
 ```
 
 # =========================================================
 
-# CLEAN GEMINI RESPONSE
+# CLEAN GEMINI JSON
 
 # =========================================================
 
-def clean_ai_response(text: str):
+def clean_json(text):
 
 ````
 if not text:
@@ -392,12 +251,19 @@ if not text:
 
 text = text.strip()
 
-# Remove Markdown code fences
+# Remove ```json
 text = re.sub(
-    r"^```(?:json)?\s*",
+    r"^```json\s*",
     "",
     text,
     flags=re.IGNORECASE
+)
+
+# Remove ```
+text = re.sub(
+    r"^```\s*",
+    "",
+    text
 )
 
 text = re.sub(
@@ -408,17 +274,17 @@ text = re.sub(
 
 text = text.strip()
 
-# Find first JSON object
-first_brace = text.find("{")
 
-if first_brace > 0:
-    text = text[first_brace:]
+# Find JSON object
+start = text.find("{")
+end = text.rfind("}")
 
-# Find final JSON object
-last_brace = text.rfind("}")
+if start >= 0 and end >= start:
 
-if last_brace >= 0:
-    text = text[:last_brace + 1]
+    text = text[
+        start:end + 1
+    ]
+
 
 return text.strip()
 ````
@@ -429,101 +295,41 @@ return text.strip()
 
 # =========================================================
 
-def normalize_question(question):
+def normalize_question(item):
 
 ```
-if not isinstance(question, dict):
+if not isinstance(item, dict):
     return None
 
-question_text = str(
-    question.get(
+
+question = str(
+    item.get(
         "question",
         ""
     )
 ).strip()
 
-if not question_text:
+
+if not question:
     return None
 
+
 answer = str(
-    question.get(
+    item.get(
         "answer",
         ""
     )
 ).strip()
 
-question_type = str(
-    question.get(
-        "question_type",
-        ""
-    )
-).strip().lower()
 
 difficulty = str(
-    question.get(
+    item.get(
         "difficulty",
         "medium"
     )
 ).strip().lower()
 
-topic = str(
-    question.get(
-        "topic",
-        ""
-    )
-).strip()
 
-options = question.get(
-    "options",
-    {}
-)
-
-# Gemini may occasionally return options as a JSON string
-if isinstance(options, str):
-
-    try:
-        options = json.loads(options)
-
-    except Exception:
-        options = {}
-
-if not isinstance(options, dict):
-    options = {}
-
-normalized_options = {}
-
-for key, value in options.items():
-
-    letter = str(
-        key
-    ).strip().upper()
-
-    if letter in [
-        "A",
-        "B",
-        "C",
-        "D",
-        "E"
-    ]:
-
-        normalized_options[letter] = str(
-            value
-        ).strip()
-
-# Detect question type automatically
-if question_type not in [
-    "multiple_choice",
-    "true_false",
-    "short_answer"
-]:
-
-    if len(normalized_options) >= 2:
-        question_type = "multiple_choice"
-
-    else:
-        question_type = "short_answer"
-
-# Validate difficulty
 if difficulty not in [
     "easy",
     "medium",
@@ -532,27 +338,90 @@ if difficulty not in [
 
     difficulty = "medium"
 
+
+question_type = str(
+    item.get(
+        "question_type",
+        "multiple_choice"
+    )
+).strip().lower()
+
+
+if question_type not in [
+    "multiple_choice",
+    "true_false",
+    "short_answer"
+]:
+
+    question_type = "multiple_choice"
+
+
+options = item.get(
+    "options",
+    {}
+)
+
+
+if isinstance(options, str):
+
+    try:
+
+        options = json.loads(
+            options
+        )
+
+    except Exception:
+
+        options = {}
+
+
+if not isinstance(options, dict):
+
+    options = {}
+
+
+clean_options = {}
+
+
+for key, value in options.items():
+
+    key = str(
+        key
+    ).strip().upper()
+
+
+    if key in [
+        "A",
+        "B",
+        "C",
+        "D"
+    ]:
+
+        clean_options[key] = str(
+            value
+        ).strip()
+
+
 return {
-    "question": question_text,
-    "options": normalized_options,
+    "question": question,
+    "options": clean_options,
     "answer": answer,
-    "question_type": question_type,
     "difficulty": difficulty,
-    "topic": topic
+    "question_type": question_type
 }
 ```
 
 # =========================================================
 
-# GENERATE QUESTIONS WITH GEMINI
+# GENERATE QUESTIONS
 
 # =========================================================
 
 def generate_questions(
-textbook_text: str,
-question_count: int,
-difficulty: str,
-question_type: str
+textbook_text,
+question_count,
+difficulty,
+question_type
 ):
 
 ```
@@ -562,77 +431,62 @@ if not gemini_client:
         "GEMINI_API_KEY is not configured."
     )
 
-# Prevent an extremely large request
-max_chars = 100000
 
-if len(textbook_text) > max_chars:
-    textbook_text = textbook_text[:max_chars]
+# Limit extremely large PDFs
+textbook_text = textbook_text[:100000]
 
-
-# -----------------------------------------------------
-# Question type instructions
-# -----------------------------------------------------
 
 if question_type == "multiple_choice":
 
-    type_instruction = """
+    instructions = """
 ```
 
 Create multiple-choice questions.
 
-Each question must contain exactly four options:
+Each question must have exactly four options:
+A, B, C, D.
 
-A
-B
-C
-D
-
-The answer field must contain only:
-A, B, C, or D.
+The answer must be exactly one of:
+A, B, C, D.
 """
 
 ```
 elif question_type == "true_false":
 
-    type_instruction = """
+    instructions = """
 ```
 
 Create True/False questions.
 
-Use exactly these options:
+Use exactly:
 
-A: True
-B: False
+A = True
+B = False
 
-The answer field must contain only:
-A or B.
+The answer must be A or B.
 """
 
 ```
 else:
 
-    type_instruction = """
+    instructions = """
 ```
 
 Create short-answer questions.
 
-The options object must be empty.
+Use an empty options object.
 
-The answer field must contain the correct short answer.
+The answer must contain the correct short answer.
 """
 
 ```
-# -----------------------------------------------------
-# Prompt
-# -----------------------------------------------------
-
 prompt = f"""
 ```
 
 You are an expert educational test generator.
 
-Create exactly {question_count} high-quality questions
-based ONLY on the textbook content provided below.
+Generate exactly {question_count} questions
+from the textbook content below.
 
 Difficulty:
 {difficulty}
@@ -640,22 +494,19 @@ Difficulty:
 Question type:
 {question_type}
 
-{type_instruction}
+{instructions}
 
-IMPORTANT RULES:
+IMPORTANT:
 
-1. Use only information found in the textbook.
-2. Do not invent facts.
-3. Do not repeat questions.
-4. Cover different sections and topics where possible.
-5. Make questions clear and educational.
-6. Do not provide explanations.
-7. Do not include introductory text.
-8. Return ONLY valid JSON.
-9. Do not use Markdown.
-10. Use English for all generated content.
+* Use only information from the textbook.
+* Do not invent facts.
+* Do not repeat questions.
+* Write everything in English.
+* Do not include explanations.
+* Return ONLY valid JSON.
+* Do not use Markdown.
 
-Return this exact JSON structure:
+Return this structure:
 
 {{
 "questions": [
@@ -668,72 +519,59 @@ Return this exact JSON structure:
 "D": "Option D"
 }},
 "answer": "A",
-"question_type": "multiple_choice",
 "difficulty": "{difficulty}",
-"topic": "Topic name"
+"question_type": "{question_type}"
 }}
 ]
 }}
 
-TEXTBOOK CONTENT:
+TEXTBOOK:
 
 {textbook_text}
 """
 
 ```
-# -----------------------------------------------------
-# Gemini request
-# -----------------------------------------------------
-
 response = gemini_client.models.generate_content(
     model=GEMINI_MODEL,
     contents=prompt
 )
 
-raw_text = getattr(
+
+raw = getattr(
     response,
     "text",
     ""
 )
 
-cleaned_text = clean_ai_response(
-    raw_text
+
+cleaned = clean_json(
+    raw
 )
 
-if not cleaned_text:
+
+if not cleaned:
 
     raise Exception(
         "Gemini returned an empty response."
     )
 
 
-# -----------------------------------------------------
-# Parse JSON
-# -----------------------------------------------------
-
 try:
 
     data = json.loads(
-        cleaned_text
+        cleaned
     )
 
-except Exception as error:
+except Exception as e:
 
     print(
-        "GEMINI RAW RESPONSE:",
-        raw_text
+        "GEMINI RESPONSE:",
+        raw
     )
 
     raise Exception(
-        "Could not parse Gemini response as JSON: "
-        + str(error)
-    )
-
-
-if not isinstance(data, dict):
-
-    raise Exception(
-        "Gemini returned an invalid JSON object."
+        "Could not parse Gemini response: "
+        + str(e)
     )
 
 
@@ -742,47 +580,46 @@ raw_questions = data.get(
     []
 )
 
+
 if not isinstance(
     raw_questions,
     list
 ):
 
     raise Exception(
-        "Gemini response does not contain a valid questions list."
+        "Gemini did not return a questions list."
     )
 
 
-# -----------------------------------------------------
-# Normalize
-# -----------------------------------------------------
+questions = []
 
-final_questions = []
 
-for question in raw_questions:
+for item in raw_questions:
 
     normalized = normalize_question(
-        question
+        item
     )
 
     if normalized:
-        final_questions.append(
+
+        questions.append(
             normalized
         )
 
 
-if not final_questions:
+if not questions:
 
     raise Exception(
-        "Gemini did not generate valid questions."
+        "No valid questions were generated."
     )
 
 
-return final_questions
+return questions
 ```
 
 # =========================================================
 
-# UPLOAD PDF + GENERATE TEST
+# UPLOAD PDF
 
 # =========================================================
 
@@ -798,14 +635,14 @@ question_type: str = Form("multiple_choice")
 try:
 
     # -------------------------------------------------
-    # Validate PDF
+    # File validation
     # -------------------------------------------------
 
     if not pdf.filename:
 
         return {
             "success": False,
-            "error": "No PDF file was uploaded."
+            "error": "No PDF file uploaded."
         }
 
 
@@ -842,6 +679,7 @@ try:
         .lower()
     )
 
+
     if difficulty not in [
         "easy",
         "medium",
@@ -861,6 +699,7 @@ try:
         .lower()
     )
 
+
     if question_type not in [
         "multiple_choice",
         "true_false",
@@ -876,11 +715,12 @@ try:
 
     pdf_data = await pdf.read()
 
+
     if not pdf_data:
 
         return {
             "success": False,
-            "error": "The uploaded PDF is empty."
+            "error": "The PDF is empty."
         }
 
 
@@ -892,19 +732,19 @@ try:
         pdf_data
     )
 
+
     if not textbook_text:
 
         return {
             "success": False,
             "error": (
-                "Could not extract text from the PDF. "
-                "The PDF may contain scanned images only."
+                "Could not extract text from the PDF."
             )
         }
 
 
     # -------------------------------------------------
-    # Generate questions
+    # Generate
     # -------------------------------------------------
 
     questions = generate_questions(
@@ -916,7 +756,7 @@ try:
 
 
     # -------------------------------------------------
-    # Return result
+    # Response
     # -------------------------------------------------
 
     return {
@@ -931,16 +771,16 @@ try:
     }
 
 
-except Exception as error:
+except Exception as e:
 
     print(
-        "UPLOAD PDF ERROR:",
-        repr(error)
+        "UPLOAD ERROR:",
+        repr(e)
     )
 
     return {
         "success": False,
-        "error": str(error)
+        "error": str(e)
     }
 ```
 
@@ -961,14 +801,13 @@ try:
         return {
             "success": False,
             "error": (
-                "Supabase is not configured. "
-                "Check SUPABASE_URL and SUPABASE_KEY."
+                "Supabase is not configured."
             )
         }
 
 
     # -------------------------------------------------
-    # Read frontend data
+    # Read data
     # -------------------------------------------------
 
     title = str(
@@ -978,13 +817,16 @@ try:
         )
     ).strip()
 
+
     subject_id = data.get(
         "subject_id"
     )
 
+
     grade = data.get(
         "grade"
     )
+
 
     topic = str(
         data.get(
@@ -993,6 +835,7 @@ try:
         )
     ).strip()
 
+
     exam_type = str(
         data.get(
             "exam_type",
@@ -1000,9 +843,11 @@ try:
         )
     ).strip()
 
+
     year = data.get(
         "year"
     )
+
 
     description = str(
         data.get(
@@ -1011,12 +856,14 @@ try:
         )
     ).strip()
 
+
     file_url = str(
         data.get(
             "file_url",
             ""
         )
     ).strip()
+
 
     answer_url = str(
         data.get(
@@ -1025,6 +872,7 @@ try:
         )
     ).strip()
 
+
     questions = data.get(
         "questions",
         []
@@ -1032,7 +880,7 @@ try:
 
 
     # -------------------------------------------------
-    # Validate title
+    # Validation
     # -------------------------------------------------
 
     if not title:
@@ -1043,16 +891,13 @@ try:
         }
 
 
-    # -------------------------------------------------
-    # Validate subject
-    # -------------------------------------------------
-
     if subject_id is None:
 
         return {
             "success": False,
             "error": "Subject is required."
         }
+
 
     try:
 
@@ -1064,40 +909,9 @@ try:
 
         return {
             "success": False,
-            "error": "Invalid subject_id."
+            "error": "Invalid subject ID."
         }
 
-
-    # -------------------------------------------------
-    # Check subject
-    # -------------------------------------------------
-
-    subject_response = (
-        supabase
-        .table("subjects")
-        .select("id")
-        .eq(
-            "id",
-            subject_id
-        )
-        .limit(1)
-        .execute()
-    )
-
-
-    if not subject_response.data:
-
-        return {
-            "success": False,
-            "error": (
-                "The selected subject does not exist."
-            )
-        }
-
-
-    # -------------------------------------------------
-    # Validate questions
-    # -------------------------------------------------
 
     if not isinstance(
         questions,
@@ -1114,8 +928,33 @@ try:
 
         return {
             "success": False,
+            "error": "There are no questions to save."
+        }
+
+
+    # -------------------------------------------------
+    # Check subject
+    # -------------------------------------------------
+
+    subject_check = (
+        supabase
+        .table("subjects")
+        .select("id")
+        .eq(
+            "id",
+            subject_id
+        )
+        .limit(1)
+        .execute()
+    )
+
+
+    if not subject_check.data:
+
+        return {
+            "success": False,
             "error": (
-                "There are no questions to save."
+                "The selected subject does not exist."
             )
         }
 
@@ -1123,7 +962,7 @@ try:
     # -------------------------------------------------
     # Prepare exam
     #
-    # Only use columns that belong to the exams table.
+    # ONLY columns confirmed in your database.
     # -------------------------------------------------
 
     exam_row = {
@@ -1156,10 +995,10 @@ try:
 
 
     # -------------------------------------------------
-    # Insert exam
+    # INSERT EXAM
     # -------------------------------------------------
 
-    exam_response = (
+    exam_result = (
         supabase
         .table("exams")
         .insert(exam_row)
@@ -1167,19 +1006,18 @@ try:
     )
 
 
-    if not exam_response.data:
+    if not exam_result.data:
 
         return {
             "success": False,
             "error": (
-                "The exam could not be created."
+                "Supabase did not return "
+                "the created exam."
             )
         }
 
 
-    exam = exam_response.data[0]
-
-    exam_id = exam.get(
+    exam_id = exam_result.data[0].get(
         "id"
     )
 
@@ -1189,8 +1027,8 @@ try:
         return {
             "success": False,
             "error": (
-                "The exam was created, "
-                "but no exam ID was returned."
+                "Exam was created but "
+                "no exam ID was returned."
             )
         }
 
@@ -1204,11 +1042,12 @@ try:
 
     for item in questions:
 
-        normalized = normalize_question(
+        q = normalize_question(
             item
         )
 
-        if not normalized:
+
+        if not q:
             continue
 
 
@@ -1217,19 +1056,19 @@ try:
             "exam_id": exam_id,
 
             "question":
-                normalized["question"],
+                q["question"],
 
             "options":
-                normalized["options"],
+                q["options"],
 
             "answer":
-                normalized["answer"],
-
-            "question_type":
-                normalized["question_type"],
+                q["answer"],
 
             "difficulty":
-                normalized["difficulty"]
+                q["difficulty"],
+
+            "question_type":
+                q["question_type"]
 
         })
 
@@ -1239,17 +1078,17 @@ try:
         return {
             "success": False,
             "error": (
-                "No valid questions were found."
+                "No valid questions to save."
             ),
             "exam_id": exam_id
         }
 
 
     # -------------------------------------------------
-    # Insert questions
+    # INSERT QUESTIONS
     # -------------------------------------------------
 
-    questions_response = (
+    question_result = (
         supabase
         .table("questions")
         .insert(question_rows)
@@ -1257,44 +1096,44 @@ try:
     )
 
 
-    if not questions_response.data:
+    if not question_result.data:
 
         return {
             "success": False,
             "error": (
-                "The exam was created, "
-                "but the questions could not be saved."
+                "Exam was created, "
+                "but questions could not be saved."
             ),
             "exam_id": exam_id
         }
 
 
     # -------------------------------------------------
-    # Success
+    # SUCCESS
     # -------------------------------------------------
 
     return {
         "success": True,
-        "exam_id": exam_id,
-        "questions_saved": len(
-            questions_response.data
-        ),
         "message": (
             "Exam and questions saved successfully!"
+        ),
+        "exam_id": exam_id,
+        "questions_saved": len(
+            question_result.data
         )
     }
 
 
-except Exception as error:
+except Exception as e:
 
     print(
         "SAVE EXAM ERROR:",
-        repr(error)
+        repr(e)
     )
 
     return {
         "success": False,
-        "error": str(error)
+        "error": str(e)
     }
 ```
 
@@ -1322,7 +1161,7 @@ try:
         }
 
 
-    response = (
+    result = (
         supabase
         .table("questions")
         .select(
@@ -1342,20 +1181,20 @@ try:
 
     return {
         "success": True,
-        "questions": response.data or []
+        "questions": result.data or []
     }
 
 
-except Exception as error:
+except Exception as e:
 
     print(
         "GET QUESTIONS ERROR:",
-        repr(error)
+        repr(e)
     )
 
     return {
         "success": False,
-        "error": str(error)
+        "error": str(e)
     }
 ```
 
@@ -1384,19 +1223,6 @@ try:
             )
         }
 
-
-    # -------------------------------------------------
-    # IMPORTANT:
-    #
-    # Do NOT use:
-    #
-    # subjects(name)
-    #
-    # because your database column is "Name".
-    #
-    # Instead, get exams first and load subjects
-    # separately.
-    # -------------------------------------------------
 
     query = (
         supabase
@@ -1427,39 +1253,42 @@ try:
 
     if search:
 
-        search_value = (
-            search
-            .strip()
-        )
+        search = search.strip()
 
-        if search_value:
+        if search:
 
             query = query.ilike(
                 "title",
-                f"%{search_value}%"
+                "%" + search + "%"
             )
 
 
-    response = query.execute()
+    result = query.execute()
 
-    exams = response.data or []
+    exams = result.data or []
 
 
     # -------------------------------------------------
-    # Load subjects
+    # Load subjects separately
+    #
+    # This avoids the old:
+    # subjects_1.name does not exist
+    # error.
     # -------------------------------------------------
 
-    subjects_response = (
+    subjects_result = (
         supabase
         .table("subjects")
         .select("id, Name")
         .execute()
     )
 
+
     subject_map = {}
 
+
     for subject in (
-        subjects_response.data or []
+        subjects_result.data or []
     ):
 
         subject_map[
@@ -1469,15 +1298,12 @@ try:
         )
 
 
-    # -------------------------------------------------
-    # Add subject information
-    # -------------------------------------------------
-
     for exam in exams:
 
         sid = exam.get(
             "subject_id"
         )
+
 
         exam["subject"] = {
             "id": sid,
@@ -1494,16 +1320,16 @@ try:
     }
 
 
-except Exception as error:
+except Exception as e:
 
     print(
         "GET EXAMS ERROR:",
-        repr(error)
+        repr(e)
     )
 
     return {
         "success": False,
-        "error": str(error)
+        "error": str(e)
     }
 ```
 
@@ -1532,10 +1358,10 @@ try:
 
 
     # -------------------------------------------------
-    # Get exam
+    # Exam
     # -------------------------------------------------
 
-    exam_response = (
+    exam_result = (
         supabase
         .table("exams")
         .select("*")
@@ -1548,7 +1374,7 @@ try:
     )
 
 
-    if not exam_response.data:
+    if not exam_result.data:
 
         return {
             "success": False,
@@ -1556,20 +1382,21 @@ try:
         }
 
 
-    exam = exam_response.data[0]
+    exam = exam_result.data[0]
 
 
     # -------------------------------------------------
-    # Get subject
+    # Subject
     # -------------------------------------------------
 
     subject_id = exam.get(
         "subject_id"
     )
 
+
     if subject_id is not None:
 
-        subject_response = (
+        subject_result = (
             supabase
             .table("subjects")
             .select("id, Name")
@@ -1581,9 +1408,13 @@ try:
             .execute()
         )
 
-        if subject_response.data:
 
-            subject = subject_response.data[0]
+        if subject_result.data:
+
+            subject = (
+                subject_result.data[0]
+            )
+
 
             exam["subject"] = {
                 "id": subject.get("id"),
@@ -1592,10 +1423,10 @@ try:
 
 
     # -------------------------------------------------
-    # Get questions
+    # Questions
     # -------------------------------------------------
 
-    questions_response = (
+    questions_result = (
         supabase
         .table("questions")
         .select(
@@ -1613,34 +1444,24 @@ try:
     )
 
 
-    questions = (
-        questions_response.data
-        or []
-    )
-
-
     return {
         "success": True,
         "exam": exam,
-        "questions": questions
+        "questions": (
+            questions_result.data or []
+        )
     }
 
 
-except Exception as error:
+except Exception as e:
 
     print(
         "GET EXAM ERROR:",
-        repr(error)
+        repr(e)
     )
 
     return {
         "success": False,
-        "error": str(error)
+        "error": str(e)
     }
 ```
-
-# =========================================================
-
-# END
-
-# =========================================================
