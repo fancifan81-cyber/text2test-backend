@@ -78,7 +78,7 @@ def home():
 
 
 # =========================================================
-# HEALTH CHECK
+# HEALTH
 # =========================================================
 
 @app.get("/health")
@@ -91,7 +91,7 @@ def health():
 
 
 # =========================================================
-# TEST SUPABASE CONNECTION
+# TEST SUPABASE
 # =========================================================
 
 @app.get("/test-supabase")
@@ -182,7 +182,7 @@ def get_subjects():
 
 
 # =========================================================
-# GEMINI GENERATION HELPER
+# GEMINI GENERATION
 # =========================================================
 
 def generate_with_gemini(prompt):
@@ -593,9 +593,37 @@ async def save_exam(
             .execute()
         )
 
+        saved_exams = (
+            response.data or []
+        )
+
+        if not saved_exams:
+
+            raise Exception(
+                "Supabase created no exam record."
+            )
+
+        saved_exam = saved_exams[0]
+
+        exam_id = saved_exam.get("id")
+
+        if exam_id is None:
+
+            raise Exception(
+                "Supabase created the exam "
+                "but returned no ID."
+            )
+
+        print(
+            f"EXAM SAVED SUCCESSFULLY: "
+            f"id={exam_id}"
+        )
+
         return {
             "success": True,
-            "exam": response.data
+            "id": exam_id,
+            "exam_id": exam_id,
+            "exam": saved_exam
         }
 
     except Exception as error:
@@ -664,16 +692,20 @@ async def save_questions(
                     ""
                 ),
                 "options": item.get(
-                    "options"
+                    "options",
+                    []
                 ),
                 "answer": item.get(
-                    "answer"
+                    "answer",
+                    ""
                 ),
                 "difficulty": item.get(
-                    "difficulty"
+                    "difficulty",
+                    "medium"
                 ),
                 "question_type": item.get(
-                    "question_type"
+                    "question_type",
+                    "multiple_choice"
                 )
             })
 
@@ -693,10 +725,17 @@ async def save_questions(
             .execute()
         )
 
+        print(
+            f"QUESTIONS SAVED: "
+            f"exam_id={exam_id}, "
+            f"count={len(rows)}"
+        )
+
         return {
             "success": True,
+            "exam_id": exam_id,
             "count": len(rows),
-            "questions": response.data
+            "questions": response.data or []
         }
 
     except json.JSONDecodeError:
@@ -851,10 +890,6 @@ def get_exam(
         )
 
         exam = exam_response.data
-
-        # -------------------------------------------------
-        # SUBJECT NAME
-        # -------------------------------------------------
 
         if exam:
 
