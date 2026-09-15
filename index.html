@@ -2469,9 +2469,134 @@
     }
 
 
-    // ============================================================
-    // SAVE QUESTIONS
-    // ============================================================
+// ============================================================
+// SAVE QUESTIONS
+// ============================================================
+
+async function saveQuestions(examId, questionList) {
+
+    const form = new FormData();
+
+    form.append(
+        "exam_id",
+        String(examId)
+    );
+
+    const cleanQuestions = questionList.map(q => ({
+        question: q.question || "",
+        options: Array.isArray(q.options)
+            ? q.options
+            : [],
+        answer: q.answer || "",
+        difficulty: q.difficulty || "medium",
+        question_type:
+            q.question_type ||
+            "multiple_choice"
+    }));
+
+    form.append(
+        "questions",
+        JSON.stringify(cleanQuestions)
+    );
+
+    let response;
+
+    try {
+
+        response = await fetch(
+            `${BACKEND_URL}/questions`,
+            {
+                method: "POST",
+                body: form
+            }
+        );
+
+    } catch (networkError) {
+
+        throw new Error(
+            "Network error while saving questions."
+        );
+    }
+
+    const raw = await response.text();
+
+    let data;
+
+    try {
+
+        data = JSON.parse(raw);
+
+    } catch {
+
+        throw new Error(
+            `Server returned an invalid response (${response.status}): ${raw}`
+        );
+    }
+
+    if (!response.ok) {
+
+        let detail = "";
+
+        if (Array.isArray(data.detail)) {
+
+            detail = data.detail
+                .map(item => {
+
+                    if (typeof item === "string") {
+                        return item;
+                    }
+
+                    const location =
+                        Array.isArray(item.loc)
+                            ? item.loc.join(" → ")
+                            : "";
+
+                    return `${location}: ${
+                        item.msg ||
+                        JSON.stringify(item)
+                    }`;
+
+                })
+                .join("\n");
+
+        } else if (
+            typeof data.detail === "string"
+        ) {
+
+            detail = data.detail;
+
+        } else if (data.error) {
+
+            detail =
+                typeof data.error === "string"
+                    ? data.error
+                    : JSON.stringify(data.error);
+
+        } else {
+
+            detail = JSON.stringify(data);
+        }
+
+        throw new Error(
+            `Could not save questions (${response.status}): ${detail}`
+        );
+    }
+
+    if (data.success === false) {
+
+        throw new Error(
+            typeof data.error === "string"
+                ? data.error
+                : JSON.stringify(data)
+        );
+    }
+
+    console.log(
+        `✓ ${questionList.length} questions saved successfully.`
+    );
+
+    return data;
+}
 
     async function saveQuestions(
         examId,
