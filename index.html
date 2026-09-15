@@ -2378,7 +2378,12 @@
                     "answer_url",
                     ""
                 );
+const visibility = document.getElementById("visibility").value;
 
+formData.append(
+    "is_public",
+    visibility === "public" ? "true" : "false"
+);
 
                 const response =
                     await fetch(
