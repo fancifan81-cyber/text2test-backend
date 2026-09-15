@@ -21,7 +21,7 @@
         header {
             background: #2563eb;
             color: white;
-            padding: 25px 20px;
+            padding: 28px 20px;
             text-align: center;
         }
 
@@ -32,7 +32,6 @@
 
         header p {
             margin: 8px 0 0;
-            opacity: 0.95;
         }
 
         .container {
@@ -58,6 +57,7 @@
             display: grid;
             grid-template-columns: repeat(2, 1fr);
             gap: 18px;
+            margin-top: 20px;
         }
 
         .form-group {
@@ -104,7 +104,6 @@
             text-align: center;
             background: #eff6ff;
             cursor: pointer;
-            transition: 0.2s;
         }
 
         .upload-box:hover {
@@ -182,10 +181,6 @@
         .danger-btn {
             background: #dc2626;
             color: white;
-        }
-
-        .danger-btn:hover {
-            background: #b91c1c;
         }
 
         .status {
@@ -304,6 +299,7 @@
         .exam-list {
             display: grid;
             gap: 15px;
+            margin-top: 20px;
         }
 
         .exam-card {
@@ -418,11 +414,12 @@
     <p>Upload your textbook PDF to create an intelligent test.</p>
 </header>
 
+
 <div class="container">
 
-    <!-- ========================= -->
+    <!-- ===================================================== -->
     <!-- CREATE TEST -->
-    <!-- ========================= -->
+    <!-- ===================================================== -->
 
     <section class="card" id="createSection">
 
@@ -443,66 +440,151 @@
             >
         </div>
 
-        <div id="fileName" style="margin-top:10px; font-weight:bold;"></div>
+        <div
+            id="fileName"
+            style="margin-top:10px; font-weight:bold;"
+        ></div>
 
-        <div class="form-grid" style="margin-top:20px;">
+
+        <div class="form-grid">
+
+            <!-- SUBJECT -->
 
             <div class="form-group">
-                <label for="subject">Subject</label>
+
+                <label for="subject">
+                    Subject
+                </label>
 
                 <select id="subject">
-                    <option value="">Select a subject</option>
+                    <option value="">
+                        Select a subject
+                    </option>
                 </select>
+
             </div>
 
+
+            <!-- GRADE -->
+
             <div class="form-group">
-                <label for="grade">Grade</label>
+
+                <label for="grade">
+                    Grade
+                </label>
 
                 <select id="grade">
-                    <option value="">Select a grade</option>
-                    <option value="Grade 6">Grade 6</option>
-                    <option value="Grade 7">Grade 7</option>
-                    <option value="Grade 8">Grade 8</option>
-                    <option value="Grade 9">Grade 9</option>
-                    <option value="Grade 10">Grade 10</option>
-                    <option value="Grade 11">Grade 11</option>
-                    <option value="Grade 12">Grade 12</option>
+
+                    <option value="">
+                        Select a grade
+                    </option>
+
+                    <option value="Grade 6">
+                        Grade 6
+                    </option>
+
+                    <option value="Grade 7">
+                        Grade 7
+                    </option>
+
+                    <option value="Grade 8">
+                        Grade 8
+                    </option>
+
+                    <option value="Grade 9">
+                        Grade 9
+                    </option>
+
+                    <option value="Grade 10">
+                        Grade 10
+                    </option>
+
+                    <option value="Grade 11">
+                        Grade 11
+                    </option>
+
+                    <option value="Grade 12">
+                        Grade 12
+                    </option>
+
                 </select>
+
             </div>
 
+
+            <!-- TOPIC -->
+
             <div class="form-group">
-                <label for="topic">Topic</label>
+
+                <label for="topic">
+                    Topic
+                </label>
 
                 <input
                     type="text"
                     id="topic"
                     placeholder="Example: Cell Biology"
                 >
+
             </div>
 
+
+            <!-- EXAM TYPE -->
+
             <div class="form-group">
-                <label for="examType">Exam Type</label>
+
+                <label for="examType">
+                    Exam Type
+                </label>
 
                 <select id="examType">
-                    <option value="Practice">Practice</option>
-                    <option value="Quiz">Quiz</option>
-                    <option value="Midterm">Midterm</option>
-                    <option value="Final">Final</option>
-                    <option value="Review">Review</option>
+
+                    <option value="Practice">
+                        Practice
+                    </option>
+
+                    <option value="Quiz">
+                        Quiz
+                    </option>
+
+                    <option value="Midterm">
+                        Midterm
+                    </option>
+
+                    <option value="Final">
+                        Final
+                    </option>
+
+                    <option value="Review">
+                        Review
+                    </option>
+
                 </select>
+
             </div>
 
+
+            <!-- YEAR -->
+
             <div class="form-group">
-                <label for="year">Year</label>
+
+                <label for="year">
+                    Year
+                </label>
 
                 <input
                     type="text"
                     id="year"
                     placeholder="Example: 2026"
                 >
+
             </div>
 
+
+            <!-- QUESTION COUNT -->
+
             <div class="form-group">
+
                 <label for="questionCount">
                     Number of Questions
                 </label>
@@ -514,22 +596,47 @@
                     max="40"
                     value="20"
                 >
+
             </div>
 
+
+            <!-- DIFFICULTY -->
+
             <div class="form-group">
-                <label for="difficulty">Difficulty</label>
+
+                <label for="difficulty">
+                    Difficulty
+                </label>
 
                 <select id="difficulty">
-                    <option value="easy">Easy</option>
-                    <option value="medium" selected>Medium</option>
-                    <option value="hard">Hard</option>
+
+                    <option value="easy">
+                        Easy
+                    </option>
+
+                    <option value="medium" selected>
+                        Medium
+                    </option>
+
+                    <option value="hard">
+                        Hard
+                    </option>
+
                 </select>
+
             </div>
 
+
+            <!-- QUESTION TYPE -->
+
             <div class="form-group">
-                <label for="questionType">Question Type</label>
+
+                <label for="questionType">
+                    Question Type
+                </label>
 
                 <select id="questionType">
+
                     <option value="multiple_choice">
                         Multiple Choice
                     </option>
@@ -541,10 +648,16 @@
                     <option value="short_answer">
                         Short Answer
                     </option>
+
                 </select>
+
             </div>
 
+
+            <!-- DESCRIPTION -->
+
             <div class="form-group full">
+
                 <label for="description">
                     Description
                 </label>
@@ -553,9 +666,11 @@
                     id="description"
                     placeholder="Optional description for this test..."
                 ></textarea>
+
             </div>
 
         </div>
+
 
         <div class="button-row">
 
@@ -575,6 +690,7 @@
 
         </div>
 
+
         <div
             id="status"
             class="status"
@@ -583,9 +699,9 @@
     </section>
 
 
-    <!-- ========================= -->
+    <!-- ===================================================== -->
     <!-- GENERATED TEST -->
-    <!-- ========================= -->
+    <!-- ===================================================== -->
 
     <section
         class="card hidden"
@@ -597,6 +713,7 @@
         </h2>
 
         <div id="questionsContainer"></div>
+
 
         <div class="button-row">
 
@@ -623,11 +740,17 @@
 
         </div>
 
+
+        <!-- SCORE -->
+
         <div
             class="score-box"
             id="scoreBox"
         >
-            <h2>Test Result</h2>
+
+            <h2>
+                Test Result
+            </h2>
 
             <div
                 class="score-number"
@@ -637,23 +760,29 @@
             </div>
 
             <p id="scoreDetails"></p>
+
         </div>
 
     </section>
 
 
-    <!-- ========================= -->
+    <!-- ===================================================== -->
     <!-- SAVE EXAM -->
-    <!-- ========================= -->
+    <!-- ===================================================== -->
 
     <section
         class="card hidden"
         id="saveSection"
     >
 
-        <h2>Save Exam</h2>
+        <h2>
+            Save Exam
+        </h2>
+
 
         <div class="form-grid">
+
+            <!-- TITLE -->
 
             <div class="form-group full">
 
@@ -668,6 +797,9 @@
                 >
 
             </div>
+
+
+            <!-- VISIBILITY -->
 
             <div class="form-group">
 
@@ -691,6 +823,7 @@
 
         </div>
 
+
         <div class="button-row">
 
             <button
@@ -709,6 +842,7 @@
 
         </div>
 
+
         <div
             id="saveStatus"
             class="status"
@@ -717,17 +851,20 @@
     </section>
 
 
-    <!-- ========================= -->
+    <!-- ===================================================== -->
     <!-- TEST LIBRARY -->
-    <!-- ========================= -->
+    <!-- ===================================================== -->
 
     <section class="card">
 
-        <h2>Test Library</h2>
+        <h2>
+            Test Library
+        </h2>
 
         <p style="color:#64748b;">
             Browse public tests created by the community and use them for practice.
         </p>
+
 
         <div class="button-row">
 
@@ -740,10 +877,10 @@
 
         </div>
 
+
         <div
             id="examList"
             class="exam-list"
-            style="margin-top:20px;"
         >
 
             <div class="loading">
@@ -757,9 +894,9 @@
 </div>
 
 
-<!-- ========================= -->
-<!-- OPEN SAVED TEST MODAL -->
-<!-- ========================= -->
+<!-- ========================================================= -->
+<!-- OPEN TEST MODAL -->
+<!-- ========================================================= -->
 
 <div
     class="modal"
@@ -783,7 +920,9 @@
 
         </div>
 
+
         <div id="modalExamInfo"></div>
+
 
         <div class="button-row">
 
@@ -811,7 +950,7 @@
 <script>
 
     // =========================================================
-    // CONFIGURATION
+    // BACKEND
     // =========================================================
 
     const BACKEND_URL =
@@ -832,7 +971,7 @@
 
 
     // =========================================================
-    // DOM ELEMENTS
+    // DOM
     // =========================================================
 
     const fileInput =
@@ -915,37 +1054,51 @@
     // FILE SELECTION
     // =========================================================
 
-    fileInput.addEventListener("change", function () {
+    fileInput.addEventListener(
+        "change",
+        function () {
 
-        if (!this.files || this.files.length === 0) {
+            if (
+                !this.files ||
+                this.files.length === 0
+            ) {
 
-            selectedFile = null;
+                selectedFile = null;
 
-            fileName.textContent = "";
+                fileName.textContent = "";
 
-            return;
+                return;
+            }
+
+
+            selectedFile =
+                this.files[0];
+
+
+            fileName.textContent =
+                `Selected file: ${selectedFile.name}`;
+
+
+            showStatus(
+                "PDF selected successfully.",
+                "success"
+            );
+
         }
-
-        selectedFile = this.files[0];
-
-        fileName.textContent =
-            `Selected file: ${selectedFile.name}`;
-
-        showStatus(
-            "PDF selected successfully.",
-            "success"
-        );
-
-    });
+    );
 
 
     // =========================================================
     // STATUS
     // =========================================================
 
-    function showStatus(message, type = "info") {
+    function showStatus(
+        message,
+        type = "info"
+    ) {
 
-        status.textContent = message;
+        status.textContent =
+            message;
 
         status.className =
             `status show ${type}`;
@@ -953,9 +1106,13 @@
     }
 
 
-    function showSaveStatus(message, type = "info") {
+    function showSaveStatus(
+        message,
+        type = "info"
+    ) {
 
-        saveStatus.textContent = message;
+        saveStatus.textContent =
+            message;
 
         saveStatus.className =
             `status show ${type}`;
@@ -972,6 +1129,7 @@
         const subjectSelect =
             document.getElementById("subject");
 
+
         try {
 
             const response =
@@ -979,44 +1137,63 @@
                     `${BACKEND_URL}/subjects`
                 );
 
+
             if (!response.ok) {
+
                 throw new Error(
                     `HTTP ${response.status}`
                 );
+
             }
+
 
             const data =
                 await response.json();
 
-            subjectSelect.innerHTML =
-                `<option value="">Select a subject</option>`;
 
             const subjects =
                 Array.isArray(data)
                     ? data
                     : data.subjects || [];
 
-            subjects.forEach(item => {
 
-                const option =
-                    document.createElement("option");
+            subjectSelect.innerHTML =
+                `<option value="">
+                    Select a subject
+                </option>`;
 
-                const id =
-                    item.id;
 
-                const name =
-                    item.Name ||
-                    item.name ||
-                    item.subject_name ||
-                    "Unnamed Subject";
+            subjects.forEach(
+                item => {
 
-                option.value = id;
+                    const option =
+                        document.createElement(
+                            "option"
+                        );
 
-                option.textContent = name;
 
-                subjectSelect.appendChild(option);
+                    const name =
+                        item.Name ||
+                        item.name ||
+                        item.subject_name ||
+                        "Unnamed Subject";
 
-            });
+
+                    option.value =
+                        item.id;
+
+
+                    option.textContent =
+                        name;
+
+
+                    subjectSelect.appendChild(
+                        option
+                    );
+
+                }
+            );
+
 
         } catch (error) {
 
@@ -1025,12 +1202,14 @@
                 error
             );
 
-            subjectSelect.innerHTML = `
-                <option value="">
+
+            subjectSelect.innerHTML =
+                `<option value="">
                     Could not load subjects
-                </option>
-            `;
+                </option>`;
+
         }
+
     }
 
 
@@ -1053,15 +1232,11 @@
             }
 
 
-            const questionCountInput =
-                document.getElementById(
-                    "questionCount"
-                );
-
-
             let questionCount =
                 parseInt(
-                    questionCountInput.value,
+                    document.getElementById(
+                        "questionCount"
+                    ).value,
                     10
                 );
 
@@ -1070,16 +1245,22 @@
                 isNaN(questionCount) ||
                 questionCount < 10
             ) {
+
                 questionCount = 10;
+
             }
 
 
             if (questionCount > 40) {
+
                 questionCount = 40;
+
             }
 
 
-            questionCountInput.value =
+            document.getElementById(
+                "questionCount"
+            ).value =
                 questionCount;
 
 
@@ -1094,6 +1275,14 @@
                     "questionType"
                 ).value;
 
+
+            /*
+             * IMPORTANT:
+             *
+             * This FormData is ONLY for /upload-pdf.
+             *
+             * Do NOT put is_public here.
+             */
 
             const formData =
                 new FormData();
@@ -1123,7 +1312,9 @@
             );
 
 
-            generateBtn.disabled = true;
+            generateBtn.disabled =
+                true;
+
 
             generateBtn.textContent =
                 "Generating...";
@@ -1158,11 +1349,12 @@
                         data.message ||
                         `HTTP ${response.status}`
                     );
+
                 }
 
 
                 console.log(
-                    "Backend response:",
+                    "Generate response:",
                     data
                 );
 
@@ -1184,6 +1376,7 @@
                         JSON.stringify(
                             generatedText
                         );
+
                 }
 
 
@@ -1201,16 +1394,25 @@
                     throw new Error(
                         "Could not read the questions from the AI response."
                     );
+
                 }
 
 
                 renderQuestions();
 
 
+                const topic =
+                    document.getElementById(
+                        "topic"
+                    ).value.trim();
+
+
                 document.getElementById(
                     "generatedTitle"
                 ).textContent =
-                    `${document.getElementById("topic").value || "Generated"} Test`;
+                    topic
+                        ? `${topic} Test`
+                        : "Generated Test";
 
 
                 testSection.classList.remove(
@@ -1234,10 +1436,9 @@
                 );
 
 
-                window.scrollTo({
-                    top:
-                        testSection.offsetTop - 20,
-                    behavior: "smooth"
+                testSection.scrollIntoView({
+                    behavior: "smooth",
+                    block: "start"
                 });
 
 
@@ -1257,7 +1458,9 @@
 
             } finally {
 
-                generateBtn.disabled = false;
+                generateBtn.disabled =
+                    false;
+
 
                 generateBtn.textContent =
                     "Generate Test";
@@ -1280,56 +1483,76 @@
 
 
         let cleanText =
-            text.trim();
+            String(text).trim();
 
 
-        // Remove markdown code fences
         cleanText =
             cleanText
-                .replace(/^```json\s*/i, "")
-                .replace(/^```\s*/i, "")
-                .replace(/\s*```$/i, "")
+                .replace(
+                    /^```json\s*/i,
+                    ""
+                )
+                .replace(
+                    /^```\s*/i,
+                    ""
+                )
+                .replace(
+                    /\s*```$/i,
+                    ""
+                )
                 .trim();
 
 
-        // Try JSON first
+        // ---------------------------------------------
+        // Try direct JSON
+        // ---------------------------------------------
+
         try {
 
             const parsed =
                 JSON.parse(cleanText);
 
 
-            if (Array.isArray(parsed)) {
+            if (
+                Array.isArray(parsed)
+            ) {
 
-                return parsed.map(
-                    normalizeQuestion
-                );
+                return parsed
+                    .map(normalizeQuestion)
+                    .filter(Boolean);
 
             }
 
 
             if (
                 parsed.questions &&
-                Array.isArray(parsed.questions)
+                Array.isArray(
+                    parsed.questions
+                )
             ) {
 
-                return parsed.questions.map(
-                    normalizeQuestion
-                );
+                return parsed.questions
+                    .map(normalizeQuestion)
+                    .filter(Boolean);
 
             }
 
         } catch (error) {
 
             console.log(
-                "Response is not direct JSON. Trying text parser..."
+                "Direct JSON parsing failed."
             );
+
         }
 
 
-        // Find JSON array inside text
+        // ---------------------------------------------
+        // Try JSON array inside text
+        // ---------------------------------------------
+
         const start =
             cleanText.indexOf("[");
+
 
         const end =
             cleanText.lastIndexOf("]");
@@ -1341,7 +1564,7 @@
             end > start
         ) {
 
-            const possibleJson =
+            const jsonText =
                 cleanText.substring(
                     start,
                     end + 1
@@ -1351,16 +1574,18 @@
             try {
 
                 const parsed =
-                    JSON.parse(
-                        possibleJson
-                    );
+                    JSON.parse(jsonText);
 
 
-                if (Array.isArray(parsed)) {
+                if (
+                    Array.isArray(parsed)
+                ) {
 
-                    return parsed.map(
-                        normalizeQuestion
-                    );
+                    return parsed
+                        .map(
+                            normalizeQuestion
+                        )
+                        .filter(Boolean);
 
                 }
 
@@ -1369,19 +1594,25 @@
                 console.log(
                     "Embedded JSON parsing failed."
                 );
+
             }
+
         }
 
 
-        // Text format parser
+        // ---------------------------------------------
+        // Fallback text parser
+        // ---------------------------------------------
+
         return parseTextQuestions(
             cleanText
         );
+
     }
 
 
     // =========================================================
-    // TEXT QUESTION PARSER
+    // TEXT PARSER
     // =========================================================
 
     function parseTextQuestions(text) {
@@ -1395,93 +1626,112 @@
             );
 
 
-        blocks.forEach(block => {
+        blocks.forEach(
+            block => {
 
-            const lines =
-                block
-                    .split("\n")
-                    .map(line => line.trim())
-                    .filter(Boolean);
-
-
-            if (lines.length < 2) {
-                return;
-            }
-
-
-            let questionText =
-                lines[0]
-                    .replace(
-                        /^(?:Question\s*)?\d+[\.\):]\s*/i,
-                        ""
-                    )
-                    .trim();
+                const lines =
+                    block
+                        .split("\n")
+                        .map(
+                            line =>
+                                line.trim()
+                        )
+                        .filter(Boolean);
 
 
-            let options = [];
-
-            let answer = "";
-
-
-            lines.slice(1).forEach(line => {
-
-                const optionMatch =
-                    line.match(
-                        /^([A-D])[\.\):]\s*(.+)$/i
-                    );
-
-
-                if (optionMatch) {
-
-                    options.push(
-                        `${optionMatch[1].toUpperCase()}. ${optionMatch[2]}`
-                    );
+                if (
+                    lines.length < 2
+                ) {
 
                     return;
+
                 }
 
 
-                const answerMatch =
-                    line.match(
-                        /^(?:Answer|Correct Answer)\s*[:\-]\s*(.+)$/i
+                const questionText =
+                    lines[0]
+                        .replace(
+                            /^(?:Question\s*)?\d+[\.\):]\s*/i,
+                            ""
+                        )
+                        .trim();
+
+
+                const options = [];
+
+                let answer = "";
+
+
+                lines
+                    .slice(1)
+                    .forEach(
+                        line => {
+
+                            const optionMatch =
+                                line.match(
+                                    /^([A-D])[\.\):]\s*(.+)$/i
+                                );
+
+
+                            if (
+                                optionMatch
+                            ) {
+
+                                options.push(
+                                    `${optionMatch[1].toUpperCase()}. ${optionMatch[2]}`
+                                );
+
+                                return;
+
+                            }
+
+
+                            const answerMatch =
+                                line.match(
+                                    /^(?:Answer|Correct Answer)\s*[:\-]\s*(.+)$/i
+                                );
+
+
+                            if (
+                                answerMatch
+                            ) {
+
+                                answer =
+                                    answerMatch[1]
+                                        .trim();
+
+                            }
+
+                        }
                     );
 
 
-                if (answerMatch) {
+                if (
+                    questionText
+                ) {
 
-                    answer =
-                        answerMatch[1].trim();
+                    result.push(
+                        normalizeQuestion({
+                            question:
+                                questionText,
+
+                            options:
+                                options,
+
+                            answer:
+                                answer
+                        })
+                    );
 
                 }
 
-            });
-
-
-            if (
-                questionText &&
-                (
-                    options.length > 0 ||
-                    answer
-                )
-            ) {
-
-                result.push(
-                    normalizeQuestion({
-                        question:
-                            questionText,
-                        options:
-                            options,
-                        answer:
-                            answer
-                    })
-                );
-
             }
+        );
 
-        });
 
+        return result
+            .filter(Boolean);
 
-        return result;
     }
 
 
@@ -1502,40 +1752,55 @@
             [];
 
 
-        if (typeof options === "string") {
+        if (
+            typeof options ===
+            "string"
+        ) {
 
             try {
 
                 const parsed =
-                    JSON.parse(options);
+                    JSON.parse(
+                        options
+                    );
 
-                if (Array.isArray(parsed)) {
-                    options = parsed;
+
+                if (
+                    Array.isArray(
+                        parsed
+                    )
+                ) {
+
+                    options =
+                        parsed;
+
                 }
 
             } catch (error) {
 
                 options =
                     options
-                        .split(/\n|;/)
+                        .split(
+                            /\n|;/
+                        )
                         .map(
-                            x => x.trim()
+                            x =>
+                                x.trim()
                         )
                         .filter(Boolean);
+
             }
+
         }
 
 
-        if (!Array.isArray(options)) {
+        if (
+            !Array.isArray(options)
+        ) {
+
             options = [];
+
         }
-
-
-        const answer =
-            q.answer ??
-            q.correct_answer ??
-            q.correctAnswer ??
-            "";
 
 
         return {
@@ -1550,11 +1815,18 @@
             options:
                 options.map(
                     option =>
-                        String(option).trim()
+                        String(
+                            option
+                        ).trim()
                 ),
 
             answer:
-                String(answer).trim(),
+                String(
+                    q.answer ??
+                    q.correct_answer ??
+                    q.correctAnswer ??
+                    ""
+                ).trim(),
 
             difficulty:
                 q.difficulty ||
@@ -1565,11 +1837,14 @@
                 q.type ||
                 "multiple_choice",
 
-            checked: false,
+            checked:
+                false,
 
-            isCorrect: false
+            isCorrect:
+                false
 
         };
+
     }
 
 
@@ -1579,7 +1854,8 @@
 
     function renderQuestions() {
 
-        questionsContainer.innerHTML = "";
+        questionsContainer.innerHTML =
+            "";
 
 
         questions.forEach(
@@ -1609,7 +1885,9 @@
                     `Question ${index + 1}`;
 
 
-                card.appendChild(number);
+                card.appendChild(
+                    number
+                );
 
 
                 const questionText =
@@ -1667,7 +1945,7 @@
                 ) {
 
                     q.options.forEach(
-                        (option, optionIndex) => {
+                        option => {
 
                             const label =
                                 document.createElement(
@@ -1736,16 +2014,12 @@
                         "text";
 
 
-                    input.placeholder =
-                        "Enter your answer";
-
-
                     input.className =
                         "short-answer-input";
 
 
-                    input.dataset.question =
-                        index;
+                    input.placeholder =
+                        "Enter your answer";
 
 
                     optionsDiv.appendChild(
@@ -1779,7 +2053,13 @@
 
 
                 checkButton.onclick =
-                    () => checkQuestion(index);
+                    function () {
+
+                        checkQuestion(
+                            index
+                        );
+
+                    };
 
 
                 card.appendChild(
@@ -1812,11 +2092,12 @@
 
             }
         );
+
     }
 
 
     // =========================================================
-    // CHECK INDIVIDUAL QUESTION
+    // CHECK QUESTION
     // =========================================================
 
     function checkQuestion(index) {
@@ -1825,15 +2106,20 @@
             questions[index];
 
 
-        if (!q) {
-            return;
-        }
-
-
         const card =
             questionsContainer.children[
                 index
             ];
+
+
+        if (
+            !q ||
+            !card
+        ) {
+
+            return;
+
+        }
 
 
         const feedback =
@@ -1890,6 +2176,7 @@
                 "Please answer this question first.";
 
             return;
+
         }
 
 
@@ -1899,24 +2186,23 @@
             ).trim();
 
 
-        const normalizedUser =
+        const userNormalized =
             normalizeAnswer(
                 userAnswer
             );
 
 
-        const normalizedCorrect =
+        const correctNormalized =
             normalizeAnswer(
                 correctAnswer
             );
 
 
         let isCorrect =
-            normalizedUser ===
-            normalizedCorrect;
+            userNormalized ===
+            correctNormalized;
 
 
-        // Also support answer letters such as A/B/C/D
         if (!isCorrect) {
 
             const userLetter =
@@ -1934,7 +2220,8 @@
             if (
                 userLetter &&
                 correctLetter &&
-                userLetter === correctLetter
+                userLetter ===
+                correctLetter
             ) {
 
                 isCorrect = true;
@@ -1944,7 +2231,9 @@
         }
 
 
-        q.checked = true;
+        q.checked =
+            true;
+
 
         q.isCorrect =
             isCorrect;
@@ -1972,29 +2261,43 @@
         }
 
 
-        checkButton.disabled = true;
+        checkButton.disabled =
+            true;
 
     }
 
 
     // =========================================================
-    // ANSWER NORMALIZATION
+    // NORMALIZE ANSWER
     // =========================================================
 
-    function normalizeAnswer(answer) {
+    function normalizeAnswer(
+        answer
+    ) {
 
         return String(answer)
             .trim()
             .toLowerCase()
-            .replace(/\s+/g, " ")
-            .replace(/^[a-d][\.\):]\s*/i, "")
-            .replace(/[.,!?]+$/g, "")
+            .replace(
+                /\s+/g,
+                " "
+            )
+            .replace(
+                /^[a-d][\.\):]\s*/i,
+                ""
+            )
+            .replace(
+                /[.,!?]+$/g,
+                ""
+            )
             .trim();
 
     }
 
 
-    function extractAnswerLetter(answer) {
+    function extractAnswerLetter(
+        answer
+    ) {
 
         const match =
             String(answer)
@@ -2006,12 +2309,14 @@
 
         if (match) {
 
-            return match[1].toUpperCase();
+            return match[1]
+                .toUpperCase();
 
         }
 
 
         return null;
+
     }
 
 
@@ -2035,7 +2340,8 @@
 
             const unchecked =
                 questions.filter(
-                    q => !q.checked
+                    q =>
+                        !q.checked
                 );
 
 
@@ -2048,12 +2354,14 @@
                 );
 
                 return;
+
             }
 
 
             const correct =
                 questions.filter(
-                    q => q.isCorrect
+                    q =>
+                        q.isCorrect
                 ).length;
 
 
@@ -2063,7 +2371,10 @@
 
             const percentage =
                 Math.round(
-                    (correct / total) * 100
+                    (
+                        correct /
+                        total
+                    ) * 100
                 );
 
 
@@ -2107,6 +2418,7 @@
                 );
 
                 return;
+
             }
 
 
@@ -2127,24 +2439,31 @@
                 );
 
 
-            const subjectName =
+            const selectedOption =
                 subjectSelect.options[
                     subjectSelect.selectedIndex
-                ]?.text ||
-                "";
+                ];
 
 
-            const examTitle =
+            const subjectName =
+                selectedOption
+                    ? selectedOption.text
+                    : "";
+
+
+            const titleInput =
                 document.getElementById(
                     "examTitle"
                 );
 
 
-            if (!examTitle.value.trim()) {
+            if (
+                !titleInput.value.trim()
+            ) {
 
                 if (topic) {
 
-                    examTitle.value =
+                    titleInput.value =
                         `${topic} Practice Test`;
 
                 } else if (
@@ -2153,12 +2472,12 @@
                     "Select a subject"
                 ) {
 
-                    examTitle.value =
+                    titleInput.value =
                         `${subjectName} Practice Test`;
 
                 } else {
 
-                    examTitle.value =
+                    titleInput.value =
                         "AI Generated Test";
 
                 }
@@ -2176,7 +2495,7 @@
 
 
     // =========================================================
-    // CONFIRM SAVE EXAM
+    // SAVE EXAM
     // =========================================================
 
     confirmSaveBtn.addEventListener(
@@ -2229,7 +2548,11 @@
                 document.getElementById(
                     "visibility"
                 ).value;
-examForm.append( "is_public", visibility === "public" ? "true" : "false" );
+
+
+            // ---------------------------------------------
+            // Validation
+            // ---------------------------------------------
 
             if (!title) {
 
@@ -2239,6 +2562,7 @@ examForm.append( "is_public", visibility === "public" ? "true" : "false" );
                 );
 
                 return;
+
             }
 
 
@@ -2250,6 +2574,7 @@ examForm.append( "is_public", visibility === "public" ? "true" : "false" );
                 );
 
                 return;
+
             }
 
 
@@ -2261,6 +2586,7 @@ examForm.append( "is_public", visibility === "public" ? "true" : "false" );
                 );
 
                 return;
+
             }
 
 
@@ -2275,8 +2601,27 @@ examForm.append( "is_public", visibility === "public" ? "true" : "false" );
                 );
 
                 return;
+
             }
 
+
+            /*
+             * =================================================
+             * IMPORTANT FIX
+             * =================================================
+             *
+             * This variable is called examForm.
+             *
+             * The old error happened because the code tried:
+             *
+             * formData.append(...)
+             *
+             * here.
+             *
+             * That was wrong.
+             *
+             * We use examForm for /save-exam.
+             */
 
             const examForm =
                 new FormData();
@@ -2336,9 +2681,12 @@ examForm.append( "is_public", visibility === "public" ? "true" : "false" );
             );
 
 
-            // IMPORTANT:
-            // is_public belongs to /save-exam,
-            // not /upload-pdf.
+            /*
+             * PUBLIC / PRIVATE
+             *
+             * This is the ONLY place where
+             * is_public is sent.
+             */
 
             examForm.append(
                 "is_public",
@@ -2364,6 +2712,10 @@ examForm.append( "is_public", visibility === "public" ? "true" : "false" );
 
             try {
 
+                // ---------------------------------------------
+                // STEP 1: Save exam
+                // ---------------------------------------------
+
                 const response =
                     await fetch(
                         `${BACKEND_URL}/save-exam`,
@@ -2378,6 +2730,12 @@ examForm.append( "is_public", visibility === "public" ? "true" : "false" );
                     await response.json();
 
 
+                console.log(
+                    "Save exam response:",
+                    data
+                );
+
+
                 if (!response.ok) {
 
                     throw new Error(
@@ -2385,47 +2743,74 @@ examForm.append( "is_public", visibility === "public" ? "true" : "false" );
                         data.message ||
                         JSON.stringify(data)
                     );
+
                 }
 
 
-                console.log(
-                    "Save exam response:",
-                    data
-                );
-
+                /*
+                 * Get the newly created exam ID.
+                 */
 
                 const examId =
                     data.exam_id ||
                     data.id ||
-                    data.exam?.id;
+                    (
+                        data.exam &&
+                        data.exam.id
+                    );
 
 
-                // Save questions if backend returned exam ID
-                if (examId) {
+                if (!examId) {
 
-                    await saveQuestions(
-                        examId,
-                        questions
+                    throw new Error(
+                        "The exam was saved, but the backend did not return an exam ID."
                     );
 
                 }
 
 
-                showSaveStatus(
-                    visibility === "public"
-                        ? "Test saved successfully and published to the public library!"
-                        : "Test saved successfully!",
-                    "success"
+                // ---------------------------------------------
+                // STEP 2: Save questions
+                // ---------------------------------------------
+
+                await saveQuestions(
+                    examId,
+                    questions
                 );
 
 
+                // ---------------------------------------------
+                // SUCCESS
+                // ---------------------------------------------
+
+                if (
+                    visibility ===
+                    "public"
+                ) {
+
+                    showSaveStatus(
+                        "Test saved successfully and published to the public library!",
+                        "success"
+                    );
+
+                } else {
+
+                    showSaveStatus(
+                        "Test saved successfully!",
+                        "success"
+                    );
+
+                }
+
+
+                // Refresh library
                 await loadPublicExams();
 
 
             } catch (error) {
 
                 console.error(
-                    "Save error:",
+                    "Save exam error:",
                     error
                 );
 
@@ -2487,7 +2872,7 @@ examForm.append( "is_public", visibility === "public" ? "true" : "false" );
 
             questionForm.append(
                 "exam_id",
-                examId
+                String(examId)
             );
 
 
@@ -2513,7 +2898,8 @@ examForm.append( "is_public", visibility === "public" ? "true" : "false" );
 
             questionForm.append(
                 "difficulty",
-                q.difficulty || "medium"
+                q.difficulty ||
+                "medium"
             );
 
 
@@ -2536,28 +2922,42 @@ examForm.append( "is_public", visibility === "public" ? "true" : "false" );
                     );
 
 
+                const result =
+                    await response.json()
+                        .catch(
+                            () => ({})
+                        );
+
+
                 if (!response.ok) {
 
-                    const errorData =
-                        await response.json()
-                            .catch(
-                                () => ({})
-                            );
-
-
-                    console.error(
-                        "Could not save question:",
-                        errorData
+                    throw new Error(
+                        result.detail ||
+                        result.message ||
+                        JSON.stringify(result)
                     );
 
                 }
 
+
+                console.log(
+                    `Question ${i + 1} saved.`,
+                    result
+                );
+
+
             } catch (error) {
 
                 console.error(
-                    "Question save error:",
+                    `Question ${i + 1} could not be saved:`,
                     error
                 );
+
+
+                /*
+                 * Do not stop the entire process
+                 * if one question fails.
+                 */
 
             }
 
@@ -2578,8 +2978,10 @@ examForm.append( "is_public", visibility === "public" ? "true" : "false" );
                 "hidden"
             );
 
+
             saveStatus.className =
                 "status";
+
 
             saveStatus.textContent =
                 "";
@@ -2589,15 +2991,17 @@ examForm.append( "is_public", visibility === "public" ? "true" : "false" );
 
 
     // =========================================================
-    // LOAD PUBLIC EXAMS
+    // LOAD PUBLIC TESTS
     // =========================================================
 
     async function loadPublicExams() {
 
         examList.innerHTML =
-            `<div class="loading">
+            `
+            <div class="loading">
                 Loading public tests...
-            </div>`;
+            </div>
+            `;
 
 
         try {
@@ -2629,10 +3033,9 @@ examForm.append( "is_public", visibility === "public" ? "true" : "false" );
                     : data.exams || [];
 
 
-            // =================================================
-            // IMPORTANT:
-            // Only PUBLIC exams are displayed.
-            // =================================================
+            /*
+             * ONLY PUBLIC EXAMS
+             */
 
             const publicExams =
                 exams.filter(
@@ -2656,12 +3059,15 @@ examForm.append( "is_public", visibility === "public" ? "true" : "false" );
             );
 
 
-            examList.innerHTML = `
+            examList.innerHTML =
+                `
                 <div class="status show error">
                     Could not load public tests:
-                    ${escapeHtml(error.message)}
+                    ${escapeHtml(
+                        error.message
+                    )}
                 </div>
-            `;
+                `;
 
         }
 
@@ -2672,9 +3078,12 @@ examForm.append( "is_public", visibility === "public" ? "true" : "false" );
     // RENDER EXAM LIST
     // =========================================================
 
-    function renderExamList(exams) {
+    function renderExamList(
+        exams
+    ) {
 
-        examList.innerHTML = "";
+        examList.innerHTML =
+            "";
 
 
         if (
@@ -2682,13 +3091,15 @@ examForm.append( "is_public", visibility === "public" ? "true" : "false" );
             exams.length === 0
         ) {
 
-            examList.innerHTML = `
+            examList.innerHTML =
+                `
                 <div class="status show info">
                     No public tests available yet.
                 </div>
-            `;
+                `;
 
             return;
+
         }
 
 
@@ -2755,8 +3166,8 @@ examForm.append( "is_public", visibility === "public" ? "true" : "false" );
                     );
 
 
-                card.innerHTML = `
-
+                card.innerHTML =
+                    `
                     <div class="public-badge">
                         PUBLIC
                     </div>
@@ -2772,31 +3183,51 @@ examForm.append( "is_public", visibility === "public" ? "true" : "false" );
 
                         ${
                             grade
-                                ? `<br><strong>Grade:</strong> ${grade}`
+                                ? `
+                                    <br>
+                                    <strong>Grade:</strong>
+                                    ${grade}
+                                  `
                                 : ""
                         }
 
                         ${
                             topic
-                                ? `<br><strong>Topic:</strong> ${topic}`
+                                ? `
+                                    <br>
+                                    <strong>Topic:</strong>
+                                    ${topic}
+                                  `
                                 : ""
                         }
 
                         ${
                             examType
-                                ? `<br><strong>Type:</strong> ${examType}`
+                                ? `
+                                    <br>
+                                    <strong>Type:</strong>
+                                    ${examType}
+                                  `
                                 : ""
                         }
 
                         ${
                             year
-                                ? `<br><strong>Year:</strong> ${year}`
+                                ? `
+                                    <br>
+                                    <strong>Year:</strong>
+                                    ${year}
+                                  `
                                 : ""
                         }
 
                         ${
                             description
-                                ? `<br><strong>Description:</strong> ${description}`
+                                ? `
+                                    <br>
+                                    <strong>Description:</strong>
+                                    ${description}
+                                  `
                                 : ""
                         }
 
@@ -2808,8 +3239,7 @@ examForm.append( "is_public", visibility === "public" ? "true" : "false" );
                     >
                         Open Test
                     </button>
-
-                `;
+                    `;
 
 
                 examList.appendChild(
@@ -2823,10 +3253,12 @@ examForm.append( "is_public", visibility === "public" ? "true" : "false" );
 
 
     // =========================================================
-    // OPEN EXAM
+    // OPEN PUBLIC TEST
     // =========================================================
 
-    async function openExam(examId) {
+    async function openExam(
+        examId
+    ) {
 
         try {
 
@@ -2872,8 +3304,8 @@ examForm.append( "is_public", visibility === "public" ? "true" : "false" );
                 "Unknown";
 
 
-            modalExamInfo.innerHTML = `
-
+            modalExamInfo.innerHTML =
+                `
                 <div class="exam-card">
 
                     <div class="public-badge">
@@ -2890,47 +3322,82 @@ examForm.append( "is_public", visibility === "public" ? "true" : "false" );
                     <div class="exam-meta">
 
                         <strong>Subject:</strong>
-                        ${escapeHtml(subject)}
+                        ${escapeHtml(
+                            subject
+                        )}
 
                         ${
                             currentExam.grade
-                                ? `<br><strong>Grade:</strong> ${escapeHtml(currentExam.grade)}`
+                                ? `
+                                    <br>
+                                    <strong>Grade:</strong>
+                                    ${escapeHtml(
+                                        currentExam.grade
+                                    )}
+                                  `
                                 : ""
                         }
 
                         ${
                             currentExam.topic
-                                ? `<br><strong>Topic:</strong> ${escapeHtml(currentExam.topic)}`
+                                ? `
+                                    <br>
+                                    <strong>Topic:</strong>
+                                    ${escapeHtml(
+                                        currentExam.topic
+                                    )}
+                                  `
                                 : ""
                         }
 
                         ${
                             currentExam.exam_type
-                                ? `<br><strong>Exam Type:</strong> ${escapeHtml(currentExam.exam_type)}`
+                                ? `
+                                    <br>
+                                    <strong>Exam Type:</strong>
+                                    ${escapeHtml(
+                                        currentExam.exam_type
+                                    )}
+                                  `
                                 : ""
                         }
 
                         ${
                             currentExam.year
-                                ? `<br><strong>Year:</strong> ${escapeHtml(currentExam.year)}`
+                                ? `
+                                    <br>
+                                    <strong>Year:</strong>
+                                    ${escapeHtml(
+                                        currentExam.year
+                                    )}
+                                  `
                                 : ""
                         }
 
                         ${
                             currentExam.description
-                                ? `<br><strong>Description:</strong> ${escapeHtml(currentExam.description)}`
+                                ? `
+                                    <br>
+                                    <strong>Description:</strong>
+                                    ${escapeHtml(
+                                        currentExam.description
+                                    )}
+                                  `
                                 : ""
                         }
 
                         <br>
-                        <strong>Questions:</strong>
+
+                        <strong>
+                            Questions:
+                        </strong>
+
                         ${currentExamQuestions.length}
 
                     </div>
 
                 </div>
-
-            `;
+                `;
 
 
             examModal.classList.add(
@@ -2956,7 +3423,7 @@ examForm.append( "is_public", visibility === "public" ? "true" : "false" );
 
 
     // =========================================================
-    // USE THIS TEST
+    // USE PUBLIC TEST
     // =========================================================
 
     reuseBtn.addEventListener(
@@ -2973,14 +3440,17 @@ examForm.append( "is_public", visibility === "public" ? "true" : "false" );
                 );
 
                 return;
+
             }
 
 
             questions =
-                currentExamQuestions.map(
-                    q =>
-                        normalizeQuestion(q)
-                );
+                currentExamQuestions
+                    .map(
+                        q =>
+                            normalizeQuestion(q)
+                    )
+                    .filter(Boolean);
 
 
             renderQuestions();
@@ -3029,7 +3499,7 @@ examForm.append( "is_public", visibility === "public" ? "true" : "false" );
 
 
     // =========================================================
-    // MODAL CLOSE
+    // CLOSE MODAL
     // =========================================================
 
     closeModalBtn.addEventListener(
@@ -3076,7 +3546,7 @@ examForm.append( "is_public", visibility === "public" ? "true" : "false" );
 
 
     // =========================================================
-    // NEW TEST
+    // RESET / NEW TEST
     // =========================================================
 
     function resetTest() {
@@ -3090,44 +3560,54 @@ examForm.append( "is_public", visibility === "public" ? "true" : "false" );
         currentExamQuestions = [];
 
 
-        fileInput.value = "";
+        fileInput.value =
+            "";
 
-        fileName.textContent = "";
+
+        fileName.textContent =
+            "";
 
 
         document.getElementById(
             "subject"
-        ).value = "";
+        ).value =
+            "";
 
 
         document.getElementById(
             "grade"
-        ).value = "";
+        ).value =
+            "";
 
 
         document.getElementById(
             "topic"
-        ).value = "";
+        ).value =
+            "";
 
 
         document.getElementById(
             "examType"
-        ).value = "Practice";
+        ).value =
+            "Practice";
 
 
         document.getElementById(
             "year"
-        ).value = "";
+        ).value =
+            "";
 
 
         document.getElementById(
             "questionCount"
-        ).value = 20;
+        ).value =
+            "20";
 
 
         document.getElementById(
             "difficulty"
-        ).value = "medium";
+        ).value =
+            "medium";
 
 
         document.getElementById(
@@ -3138,17 +3618,20 @@ examForm.append( "is_public", visibility === "public" ? "true" : "false" );
 
         document.getElementById(
             "description"
-        ).value = "";
+        ).value =
+            "";
 
 
         document.getElementById(
             "examTitle"
-        ).value = "";
+        ).value =
+            "";
 
 
         document.getElementById(
             "visibility"
-        ).value = "private";
+        ).value =
+            "private";
 
 
         questionsContainer.innerHTML =
@@ -3220,24 +3703,43 @@ examForm.append( "is_public", visibility === "public" ? "true" : "false" );
     // ESCAPE HTML
     // =========================================================
 
-    function escapeHtml(value) {
+    function escapeHtml(
+        value
+    ) {
 
-        return String(value ?? "")
-            .replace(/&/g, "&amp;")
-            .replace(/</g, "&lt;")
-            .replace(/>/g, "&gt;")
-            .replace(/"/g, "&quot;")
-            .replace(/'/g, "&#039;");
+        return String(
+            value ?? ""
+        )
+            .replace(
+                /&/g,
+                "&amp;"
+            )
+            .replace(
+                /</g,
+                "&lt;"
+            )
+            .replace(
+                />/g,
+                "&gt;"
+            )
+            .replace(
+                /"/g,
+                "&quot;"
+            )
+            .replace(
+                /'/g,
+                "&#039;"
+            );
 
     }
 
 
     // =========================================================
-    // INITIALIZATION
+    // INITIALIZE
     // =========================================================
 
-    document.addEventListener(
-        "DOMContentLoaded",
+    window.addEventListener(
+        "load",
         async function () {
 
             await loadSubjects();
@@ -3251,3 +3753,4 @@ examForm.append( "is_public", visibility === "public" ? "true" : "false" );
 
 </body>
 </html>
+
