@@ -186,20 +186,12 @@ def get_subjects():
 # =========================================================
 
 def generate_with_gemini(prompt):
-    """
-    Try several Gemini models.
-
-    If one model is temporarily unavailable (503),
-    wait briefly and try again, then move to another model.
-    """
 
     if gemini_client is None:
         raise Exception(
             "GEMINI_API_KEY is not configured."
         )
 
-    # Current production-capable Flash models.
-    # Put the newest model first, followed by fallbacks.
     models = [
         "gemini-3.8-flash",
         "gemini-3.7-flash",
@@ -212,13 +204,14 @@ def generate_with_gemini(prompt):
 
     for model in models:
 
-        # Try each model up to 2 times.
         for attempt in range(2):
 
             try:
 
                 print(
-                    f"GEMINI ATTEMPT: model={model}, attempt={attempt + 1}"
+                    f"GEMINI ATTEMPT: "
+                    f"model={model}, "
+                    f"attempt={attempt + 1}"
                 )
 
                 response = (
@@ -230,15 +223,14 @@ def generate_with_gemini(prompt):
                     )
                 )
 
-                generated_text = (
-                    getattr(
-                        response,
-                        "text",
-                        None
-                    )
+                generated_text = getattr(
+                    response,
+                    "text",
+                    None
                 )
 
                 if generated_text:
+
                     print(
                         f"GEMINI SUCCESS: {model}"
                     )
@@ -253,27 +245,20 @@ def generate_with_gemini(prompt):
 
                 last_error = error
 
-                error_text = str(error)
-
                 print(
-                    f"GEMINI ERROR: model={model}, "
+                    f"GEMINI ERROR: "
+                    f"model={model}, "
                     f"attempt={attempt + 1}, "
-                    f"error={error_text}"
+                    f"error={str(error)}"
                 )
 
-                # If this is the first attempt,
-                # wait before trying the same model again.
                 if attempt == 0:
-
                     time.sleep(2)
 
-        # After two failed attempts,
-        # move to the next model.
-
         print(
-            f"GEMINI FALLBACK: moving away from {model}"
+            f"GEMINI FALLBACK: "
+            f"moving away from {model}"
         )
-
 
     raise Exception(
         "All Gemini models failed. "
@@ -293,19 +278,15 @@ async def upload_pdf(
     question_type: str = Form("multiple_choice")
 ):
 
-    # -----------------------------------------------------
-    # Check Gemini
-    # -----------------------------------------------------
-
     if gemini_client is None:
+
         return {
             "success": False,
             "error": "GEMINI_API_KEY is not configured."
         }
 
-
     # -----------------------------------------------------
-    # Validate question count
+    # QUESTION COUNT
     # -----------------------------------------------------
 
     try:
@@ -318,7 +299,6 @@ async def upload_pdf(
 
         question_count = 20
 
-
     question_count = max(
         10,
         min(
@@ -327,9 +307,8 @@ async def upload_pdf(
         )
     )
 
-
     # -----------------------------------------------------
-    # Validate difficulty
+    # DIFFICULTY
     # -----------------------------------------------------
 
     allowed_difficulties = {
@@ -341,9 +320,8 @@ async def upload_pdf(
     if difficulty not in allowed_difficulties:
         difficulty = "medium"
 
-
     # -----------------------------------------------------
-    # Validate question type
+    # QUESTION TYPE
     # -----------------------------------------------------
 
     allowed_question_types = {
@@ -355,9 +333,8 @@ async def upload_pdf(
     if question_type not in allowed_question_types:
         question_type = "multiple_choice"
 
-
     # -----------------------------------------------------
-    # Read PDF
+    # READ PDF
     # -----------------------------------------------------
 
     try:
@@ -399,9 +376,8 @@ async def upload_pdf(
             )
         }
 
-
     # -----------------------------------------------------
-    # Check extracted text
+    # CHECK TEXT
     # -----------------------------------------------------
 
     if not full_text.strip():
@@ -414,16 +390,14 @@ async def upload_pdf(
             )
         }
 
-
     # -----------------------------------------------------
-    # Limit text sent to Gemini
+    # LIMIT TEXT
     # -----------------------------------------------------
 
     text_for_ai = full_text[:50000]
 
-
     # -----------------------------------------------------
-    # Question format
+    # QUESTION FORMAT
     # -----------------------------------------------------
 
     if question_type == "true_false":
@@ -442,7 +416,6 @@ Answer: False
 Do not add A, B, C, or D options.
 """
 
-
     elif question_type == "short_answer":
 
         format_instruction = """
@@ -458,7 +431,6 @@ Answer: ...
 
 Do not add A, B, C, or D options.
 """
-
 
     else:
 
@@ -484,9 +456,8 @@ D. ...
 Answer: B
 """
 
-
     # -----------------------------------------------------
-    # Gemini prompt
+    # PROMPT
     # -----------------------------------------------------
 
     prompt = f"""
@@ -521,9 +492,8 @@ TEXTBOOK CONTENT:
 {text_for_ai}
 """
 
-
     # -----------------------------------------------------
-    # Generate with Gemini + retry/fallback
+    # GENERATE
     # -----------------------------------------------------
 
     try:
@@ -559,9 +529,8 @@ TEXTBOOK CONTENT:
             )
         }
 
-
     # -----------------------------------------------------
-    # Return result
+    # RETURN
     # -----------------------------------------------------
 
     return {
@@ -591,7 +560,8 @@ async def save_exam(
     year: str = Form(""),
     description: str = Form(""),
     file_url: str = Form(""),
-    answer_url: str = Form("")
+    answer_url: str = Form(""),
+    is_public: bool = Form(False)
 ):
 
     if supabase is None:
@@ -612,7 +582,8 @@ async def save_exam(
             "year": year,
             "description": description,
             "file_url": file_url,
-            "answer_url": answer_url
+            "answer_url": answer_url,
+            "is_public": is_public
         }
 
         response = (
@@ -676,9 +647,7 @@ async def save_questions(
                 )
             }
 
-
         rows = []
-
 
         for item in question_list:
 
@@ -687,7 +656,6 @@ async def save_questions(
                 dict
             ):
                 continue
-
 
             rows.append({
                 "exam_id": exam_id,
@@ -709,7 +677,6 @@ async def save_questions(
                 )
             })
 
-
         if not rows:
 
             return {
@@ -719,7 +686,6 @@ async def save_questions(
                 )
             }
 
-
         response = (
             supabase
             .table("questions")
@@ -727,13 +693,11 @@ async def save_questions(
             .execute()
         )
 
-
         return {
             "success": True,
             "count": len(rows),
             "questions": response.data
         }
-
 
     except json.JSONDecodeError:
 
@@ -741,7 +705,6 @@ async def save_questions(
             "success": False,
             "error": "Invalid questions JSON."
         }
-
 
     except Exception as error:
 
@@ -778,7 +741,7 @@ def get_exams():
             .select(
                 "id, title, subject_id, grade, topic, "
                 "exam_type, year, description, file_url, "
-                "answer_url, created_at"
+                "answer_url, is_public, created_at"
             )
             .order(
                 "created_at",
@@ -786,7 +749,6 @@ def get_exams():
             )
             .execute()
         )
-
 
         subjects_response = (
             supabase
@@ -797,9 +759,7 @@ def get_exams():
             .execute()
         )
 
-
         subject_map = {}
-
 
         for subject_row in (
             subjects_response.data or []
@@ -809,9 +769,7 @@ def get_exams():
                 subject_row["id"]
             ] = subject_row["Name"]
 
-
         exams = []
-
 
         for exam in (
             exams_response.data or []
@@ -830,12 +788,10 @@ def get_exams():
                 exam
             )
 
-
         return {
             "success": True,
             "exams": exams
         }
-
 
     except Exception as error:
 
@@ -880,7 +836,6 @@ def get_exam(
             .execute()
         )
 
-
         questions_response = (
             supabase
             .table("questions")
@@ -895,11 +850,12 @@ def get_exam(
             .execute()
         )
 
-
         exam = exam_response.data
 
+        # -------------------------------------------------
+        # SUBJECT NAME
+        # -------------------------------------------------
 
-        # Add subject name for the frontend.
         if exam:
 
             subject_response = (
@@ -926,7 +882,6 @@ def get_exam(
                     .get("Name")
                 )
 
-
         return {
             "success": True,
             "exam": exam,
@@ -935,7 +890,6 @@ def get_exam(
                 or []
             )
         }
-
 
     except Exception as error:
 
@@ -948,4 +902,3 @@ def get_exam(
             "success": False,
             "error": str(error)
         }
-
