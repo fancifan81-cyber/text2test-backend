@@ -14,12 +14,12 @@
         body {
             margin: 0;
             font-family: Arial, Helvetica, sans-serif;
-            background: #f4f7fb;
+            background: #f5f7fb;
             color: #1f2937;
         }
 
         header {
-            background: #2563eb;
+            background: #111827;
             color: white;
             padding: 28px 20px;
             text-align: center;
@@ -27,37 +27,36 @@
 
         header h1 {
             margin: 0 0 8px;
-            font-size: 32px;
+            font-size: 34px;
         }
 
         header p {
             margin: 0;
-            opacity: 0.95;
+            color: #d1d5db;
         }
 
-        main {
-            max-width: 1100px;
+        .container {
+            width: min(1100px, 94%);
             margin: 30px auto;
-            padding: 0 18px 60px;
         }
 
-        section {
+        .card {
             background: white;
             border-radius: 14px;
             padding: 24px;
             margin-bottom: 24px;
-            box-shadow: 0 4px 18px rgba(0, 0, 0, 0.06);
+            box-shadow: 0 4px 18px rgba(0,0,0,0.06);
         }
 
-        h2 {
+        .card h2 {
             margin-top: 0;
-            color: #1d4ed8;
+            margin-bottom: 20px;
         }
 
         .form-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: 16px;
+            gap: 18px;
         }
 
         .form-group {
@@ -78,17 +77,11 @@
         select,
         textarea {
             width: 100%;
-            padding: 11px 12px;
+            padding: 11px 13px;
             border: 1px solid #d1d5db;
             border-radius: 8px;
             font-size: 15px;
-            outline: none;
-        }
-
-        input:focus,
-        select:focus,
-        textarea:focus {
-            border-color: #2563eb;
+            background: white;
         }
 
         textarea {
@@ -96,18 +89,26 @@
             resize: vertical;
         }
 
+        input:focus,
+        select:focus,
+        textarea:focus {
+            outline: none;
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37,99,235,0.12);
+        }
+
         .upload-box {
-            border: 2px dashed #93c5fd;
-            background: #eff6ff;
-            padding: 30px;
-            text-align: center;
+            border: 2px dashed #9ca3af;
             border-radius: 12px;
+            padding: 35px 20px;
+            text-align: center;
             cursor: pointer;
-            margin-bottom: 20px;
+            transition: 0.2s;
         }
 
         .upload-box:hover {
-            background: #dbeafe;
+            border-color: #2563eb;
+            background: #eff6ff;
         }
 
         .upload-box strong {
@@ -116,10 +117,19 @@
             margin-bottom: 8px;
         }
 
-        #fileName {
-            margin-top: 10px;
-            color: #2563eb;
-            font-weight: 600;
+        .upload-box span {
+            color: #6b7280;
+        }
+
+        #fileInput {
+            display: none;
+        }
+
+        .buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 20px;
         }
 
         button {
@@ -132,28 +142,27 @@
             transition: 0.2s;
         }
 
-        button:hover {
-            transform: translateY(-1px);
-        }
-
         button:disabled {
-            opacity: 0.55;
+            opacity: 0.6;
             cursor: not-allowed;
-            transform: none;
         }
 
-        .primary-btn {
+        .primary {
             background: #2563eb;
             color: white;
         }
 
-        .primary-btn:hover {
+        .primary:hover:not(:disabled) {
             background: #1d4ed8;
         }
 
-        .secondary-btn {
+        .secondary {
             background: #e5e7eb;
             color: #111827;
+        }
+
+        .secondary:hover:not(:disabled) {
+            background: #d1d5db;
         }
 
         .success-btn {
@@ -161,32 +170,29 @@
             color: white;
         }
 
-        .success-btn:hover {
-            background: #15803d;
-        }
-
-        .danger-btn {
+        .danger {
             background: #dc2626;
             color: white;
         }
 
-        .button-row {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-            margin-top: 20px;
+        .hidden {
+            display: none !important;
         }
 
         .status {
-            margin-top: 15px;
-            padding: 12px;
+            margin-top: 16px;
+            padding: 12px 15px;
             border-radius: 8px;
             display: none;
-            white-space: pre-wrap;
         }
 
         .status.show {
             display: block;
+        }
+
+        .status.info {
+            background: #dbeafe;
+            color: #1e40af;
         }
 
         .status.success {
@@ -199,27 +205,12 @@
             color: #991b1b;
         }
 
-        .status.info {
-            background: #dbeafe;
-            color: #1e40af;
-        }
-
         .question-card {
             border: 1px solid #e5e7eb;
             border-radius: 12px;
             padding: 20px;
             margin-bottom: 18px;
-            background: #ffffff;
-        }
-
-        .question-card.checked-correct {
-            border-color: #86efac;
-            background: #f0fdf4;
-        }
-
-        .question-card.checked-wrong {
-            border-color: #fca5a5;
-            background: #fef2f2;
+            background: #fff;
         }
 
         .question-title {
@@ -229,76 +220,50 @@
             margin-bottom: 15px;
         }
 
-        .option-label {
-            display: flex;
-            align-items: flex-start;
-            gap: 10px;
+        .option {
+            border: 1px solid #d1d5db;
+            border-radius: 9px;
             padding: 12px 14px;
             margin: 8px 0;
-            border: 1px solid #d1d5db;
-            border-radius: 8px;
             cursor: pointer;
-            font-weight: normal;
+            transition: 0.15s;
             background: white;
-            transition: 0.2s;
         }
 
-        .option-label:hover {
+        .option:hover {
+            background: #f3f4f6;
+        }
+
+        .option.selected {
             border-color: #2563eb;
             background: #eff6ff;
         }
 
-        .option-label.selected {
-            border-color: #2563eb;
-            background: #dbeafe;
-        }
-
-        .option-label.correct-option {
-            border-color: #22c55e;
+        .option.correct {
+            border-color: #16a34a;
             background: #dcfce7;
         }
 
-        .option-label.wrong-option {
-            border-color: #ef4444;
+        .option.incorrect {
+            border-color: #dc2626;
             background: #fee2e2;
         }
 
-        .option-label input {
-            width: auto;
-            margin-top: 3px;
-        }
-
-        .short-answer-input {
-            margin-top: 8px;
-            margin-bottom: 14px;
-        }
-
-        .question-meta {
-            margin-top: 14px;
-            color: #6b7280;
-            font-size: 13px;
-        }
-
-        .check-answer-btn {
-            background: #7c3aed;
-            color: white;
+        .answer-input {
             margin-top: 10px;
         }
 
-        .check-answer-btn:hover {
-            background: #6d28d9;
+        .check-answer-btn {
+            margin-top: 12px;
+            background: #2563eb;
+            color: white;
         }
 
         .feedback {
-            display: none;
-            margin-top: 14px;
-            padding: 13px;
+            margin-top: 12px;
+            padding: 12px;
             border-radius: 8px;
             font-weight: 600;
-        }
-
-        .feedback.show {
-            display: block;
         }
 
         .feedback.correct {
@@ -311,80 +276,66 @@
             color: #991b1b;
         }
 
-        .correct-answer {
-            margin-top: 6px;
-            font-weight: normal;
+        .answer {
+            margin-top: 10px;
+            padding: 12px;
+            border-radius: 8px;
+            background: #f3f4f6;
+            color: #374151;
         }
 
-        .score-box {
-            background: #eff6ff;
-            border: 1px solid #bfdbfe;
+        .question-meta {
+            margin-top: 14px;
+            font-size: 13px;
+            color: #6b7280;
+        }
+
+        .exam-card {
+            border: 1px solid #e5e7eb;
             border-radius: 12px;
-            padding: 20px;
-            margin-top: 20px;
-            text-align: center;
+            padding: 18px;
+            margin-bottom: 15px;
         }
 
-        .score-number {
-            font-size: 38px;
-            font-weight: 800;
-            color: #2563eb;
+        .exam-card h3 {
+            margin-top: 0;
+            margin-bottom: 12px;
+        }
+
+        .exam-card p {
+            margin: 7px 0;
         }
 
         .empty {
-            padding: 30px;
             text-align: center;
             color: #6b7280;
+            padding: 30px;
+        }
+
+        .result-box {
+            text-align: center;
+            padding: 30px;
+            background: #eff6ff;
+            border-radius: 12px;
+        }
+
+        .result-box h2 {
+            font-size: 38px;
+            margin: 0 0 10px;
+            color: #1d4ed8;
+        }
+
+        .library-info {
             background: #f9fafb;
             border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
         }
 
-        .exam-item {
-            border: 1px solid #e5e7eb;
-            padding: 16px;
-            border-radius: 10px;
-            margin-bottom: 12px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 15px;
-        }
-
-        .exam-item-info {
-            flex: 1;
-        }
-
-        .exam-item-title {
-            font-size: 17px;
-            font-weight: 700;
-            margin-bottom: 6px;
-        }
-
-        .exam-item-meta {
-            color: #6b7280;
-            font-size: 13px;
-        }
-
-        .library-question {
-            margin-bottom: 18px;
-        }
-
-        .hidden {
-            display: none !important;
-        }
-
-        .loading {
-            text-align: center;
-            padding: 25px;
-            color: #2563eb;
+        .file-name {
+            margin-top: 10px;
             font-weight: 600;
-        }
-
-        .library-actions {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-            margin-top: 20px;
+            color: #2563eb;
         }
 
         @media (max-width: 700px) {
@@ -396,9 +347,8 @@
                 grid-column: auto;
             }
 
-            .exam-item {
-                flex-direction: column;
-                align-items: flex-start;
+            .container {
+                width: 96%;
             }
         }
     </style>
@@ -411,13 +361,13 @@
     <p>Upload your textbook PDF to create an intelligent test.</p>
 </header>
 
-<main>
+<div class="container">
 
     <!-- =====================================================
          CREATE TEST
          ===================================================== -->
 
-    <section id="createSection">
+    <section class="card" id="createSection">
 
         <h2>Create Test</h2>
 
@@ -432,14 +382,17 @@
                 type="file"
                 id="fileInput"
                 accept=".pdf,application/pdf"
-                hidden
             >
-
-            <div id="fileName"></div>
         </div>
 
-        <div class="form-grid">
+        <div
+            class="file-name"
+            id="fileName"
+        ></div>
 
+        <div class="form-grid" style="margin-top:25px;">
+
+            <!-- SUBJECT -->
             <div class="form-group">
                 <label for="subject">
                     Subject
@@ -447,57 +400,25 @@
 
                 <select id="subject">
                     <option value="">
-                        Select subject
+                        Loading subjects...
                     </option>
                 </select>
             </div>
 
-
+            <!-- GRADE -->
             <div class="form-group">
                 <label for="grade">
                     Grade
                 </label>
 
-                <select id="grade">
-                    <option value="">
-                        Select grade
-                    </option>
-
-                    <option value="Grade 6">
-                        Grade 6
-                    </option>
-
-                    <option value="Grade 7">
-                        Grade 7
-                    </option>
-
-                    <option value="Grade 8">
-                        Grade 8
-                    </option>
-
-                    <option value="Grade 9">
-                        Grade 9
-                    </option>
-
-                    <option value="Grade 10">
-                        Grade 10
-                    </option>
-
-                    <option value="Grade 11">
-                        Grade 11
-                    </option>
-
-                    <option value="Grade 12">
-                        Grade 12
-                    </option>
-
-                    <option value="University">
-                        University
-                    </option>
-                </select>
+                <input
+                    type="text"
+                    id="grade"
+                    placeholder="e.g. Grade 10"
+                >
             </div>
 
-
+            <!-- TOPIC -->
             <div class="form-group">
                 <label for="topic">
                     Topic
@@ -510,14 +431,13 @@
                 >
             </div>
 
-
+            <!-- EXAM TYPE -->
             <div class="form-group">
                 <label for="examType">
                     Exam Type
                 </label>
 
                 <select id="examType">
-
                     <option value="Practice Test">
                         Practice Test
                     </option>
@@ -537,11 +457,10 @@
                     <option value="Review Test">
                         Review Test
                     </option>
-
                 </select>
             </div>
 
-
+            <!-- YEAR -->
             <div class="form-group">
                 <label for="year">
                     Year
@@ -550,13 +469,11 @@
                 <input
                     type="number"
                     id="year"
-                    placeholder="2026"
-                    min="2000"
-                    max="2100"
+                    placeholder="e.g. 2026"
                 >
             </div>
 
-
+            <!-- QUESTION COUNT -->
             <div class="form-group">
                 <label for="questionCount">
                     Number of Questions
@@ -565,20 +482,19 @@
                 <input
                     type="number"
                     id="questionCount"
-                    value="20"
                     min="10"
                     max="40"
+                    value="20"
                 >
             </div>
 
-
+            <!-- DIFFICULTY -->
             <div class="form-group">
                 <label for="difficulty">
                     Difficulty
                 </label>
 
                 <select id="difficulty">
-
                     <option value="easy">
                         Easy
                     </option>
@@ -590,18 +506,16 @@
                     <option value="hard">
                         Hard
                     </option>
-
                 </select>
             </div>
 
-
+            <!-- QUESTION TYPE -->
             <div class="form-group">
                 <label for="questionType">
                     Question Type
                 </label>
 
                 <select id="questionType">
-
                     <option value="multiple_choice">
                         Multiple Choice
                     </option>
@@ -613,13 +527,11 @@
                     <option value="short_answer">
                         Short Answer
                     </option>
-
                 </select>
             </div>
 
-
+            <!-- DESCRIPTION -->
             <div class="form-group full">
-
                 <label for="description">
                     Description
                 </label>
@@ -628,27 +540,31 @@
                     id="description"
                     placeholder="Optional description for this test..."
                 ></textarea>
-
             </div>
 
         </div>
 
-
-        <div class="button-row">
+        <div class="buttons">
 
             <button
+                class="primary"
                 id="generateBtn"
-                class="primary-btn"
             >
                 Generate Test
             </button>
 
+            <button
+                class="secondary"
+                id="clearBtn"
+            >
+                Clear
+            </button>
+
         </div>
 
-
         <div
-            id="status"
             class="status"
+            id="status"
         ></div>
 
     </section>
@@ -659,78 +575,107 @@
          ===================================================== -->
 
     <section
+        class="card hidden"
         id="generatedSection"
-        class="hidden"
     >
 
         <h2>Generated Test</h2>
 
-        <div id="testProgress"></div>
-
         <div id="questionsContainer"></div>
 
-        <div class="button-row">
+        <div class="buttons">
 
             <button
-                id="finishBtn"
                 class="success-btn"
+                id="saveBtn"
+            >
+                Save Exam
+            </button>
+
+            <button
+                class="primary"
+                id="finishBtn"
             >
                 Finish Test
+            </button>
+
+            <button
+                class="secondary"
+                id="newTestBtn"
+            >
+                New Test
+            </button>
+
+        </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         SAVE EXAM
+         ===================================================== -->
+
+    <section
+        class="card hidden"
+        id="saveExamSection"
+    >
+
+        <h2>Save Exam</h2>
+
+        <div class="form-group">
+
+            <label for="saveTitle">
+                Test Title
+            </label>
+
+            <input
+                type="text"
+                id="saveTitle"
+                placeholder="Enter a title for this test"
+            >
+
+        </div>
+
+        <div class="buttons">
+
+            <button
+                class="success-btn"
+                id="confirmSaveBtn"
+            >
+                Save Exam
+            </button>
+
+            <button
+                class="secondary"
+                id="cancelSaveBtn"
+            >
+                Cancel
             </button>
 
         </div>
 
         <div
-            id="scoreBox"
-            class="score-box hidden"
+            class="status"
+            id="saveStatus"
         ></div>
 
     </section>
 
 
     <!-- =====================================================
-         SAVE TEST
+         RESULT
          ===================================================== -->
 
     <section
-        id="saveSection"
-        class="hidden"
+        class="card hidden"
+        id="resultSection"
     >
 
-        <h2>Save Test</h2>
-
-        <div class="form-grid">
-
-            <div class="form-group full">
-
-                <label for="saveTitle">
-                    Test Title
-                </label>
-
-                <input
-                    type="text"
-                    id="saveTitle"
-                    placeholder="e.g. Biology Chapter 1 Practice Test"
-                >
-
-            </div>
-
-        </div>
-
-        <div class="button-row">
-
-            <button
-                id="saveExamBtn"
-                class="success-btn"
-            >
-                Save Exam
-            </button>
-
-        </div>
+        <h2>Test Result</h2>
 
         <div
-            id="saveStatus"
-            class="status"
+            class="result-box"
+            id="scoreBox"
         ></div>
 
     </section>
@@ -740,15 +685,19 @@
          TEST LIBRARY
          ===================================================== -->
 
-    <section id="librarySection">
+    <section class="card">
 
         <h2>Test Library</h2>
 
-        <div class="button-row">
+        <p>
+            Browse saved tests and reuse them whenever you need.
+        </p>
+
+        <div class="buttons">
 
             <button
+                class="secondary"
                 id="refreshLibraryBtn"
-                class="secondary-btn"
             >
                 Refresh Library
             </button>
@@ -756,45 +705,51 @@
         </div>
 
         <div
-            id="examList"
-            style="margin-top: 20px;"
-        ></div>
+            id="libraryContainer"
+            style="margin-top:20px;"
+        >
+            <div class="empty">
+                Loading tests...
+            </div>
+        </div>
 
     </section>
 
 
     <!-- =====================================================
-         OPEN SAVED EXAM
+         OPEN SAVED TEST
          ===================================================== -->
 
     <section
-        id="openExamSection"
-        class="hidden"
+        class="card hidden"
+        id="libraryExamSection"
     >
 
         <h2 id="libraryExamTitle">
             Saved Test
         </h2>
 
-        <div id="libraryExamInfo"></div>
+        <div
+            class="library-info"
+            id="libraryExamInfo"
+        ></div>
 
         <div
             id="libraryQuestionsContainer"
-            style="margin-top: 20px;"
         ></div>
 
-        <div class="library-actions">
+        <div class="buttons">
 
             <button
+                class="primary"
                 id="reuseBtn"
-                class="primary-btn"
             >
-                Reuse This Test
+                Use This Test
             </button>
 
             <button
-                id="closeLibraryBtn"
-                class="secondary-btn"
+                class="secondary"
+                id="closeLibraryExamBtn"
             >
                 Close
             </button>
@@ -803,28 +758,43 @@
 
     </section>
 
-</main>
+</div>
 
 
 <script>
 
-    /* =====================================================
-       CONFIGURATION
-       ===================================================== */
+    /* =========================================================
+       BACKEND CONFIGURATION
+       ========================================================= */
 
     const BACKEND_URL =
         "https://text2test-backend.onrender.com";
 
+    const UPLOAD_URL =
+        BACKEND_URL + "/upload-pdf";
 
-    /* =====================================================
-       DOM ELEMENTS
-       ===================================================== */
+    const SAVE_EXAM_URL =
+        BACKEND_URL + "/save-exam";
 
-    const uploadBox =
-        document.getElementById("uploadBox");
+    const SAVE_QUESTIONS_URL =
+        BACKEND_URL + "/questions";
+
+    const SUBJECTS_URL =
+        BACKEND_URL + "/subjects";
+
+    const EXAMS_URL =
+        BACKEND_URL + "/exams";
+
+
+    /* =========================================================
+       ELEMENTS
+       ========================================================= */
 
     const fileInput =
         document.getElementById("fileInput");
+
+    const uploadBox =
+        document.getElementById("uploadBox");
 
     const fileName =
         document.getElementById("fileName");
@@ -859,6 +829,9 @@
     const generateBtn =
         document.getElementById("generateBtn");
 
+    const clearBtn =
+        document.getElementById("clearBtn");
+
     const status =
         document.getElementById("status");
 
@@ -868,32 +841,44 @@
     const questionsContainer =
         document.getElementById("questionsContainer");
 
+    const saveBtn =
+        document.getElementById("saveBtn");
+
     const finishBtn =
         document.getElementById("finishBtn");
 
-    const scoreBox =
-        document.getElementById("scoreBox");
+    const newTestBtn =
+        document.getElementById("newTestBtn");
 
-    const saveSection =
-        document.getElementById("saveSection");
+    const saveExamSection =
+        document.getElementById("saveExamSection");
 
     const saveTitle =
         document.getElementById("saveTitle");
 
-    const saveExamBtn =
-        document.getElementById("saveExamBtn");
+    const confirmSaveBtn =
+        document.getElementById("confirmSaveBtn");
+
+    const cancelSaveBtn =
+        document.getElementById("cancelSaveBtn");
 
     const saveStatus =
         document.getElementById("saveStatus");
 
-    const examList =
-        document.getElementById("examList");
+    const resultSection =
+        document.getElementById("resultSection");
+
+    const scoreBox =
+        document.getElementById("scoreBox");
+
+    const libraryContainer =
+        document.getElementById("libraryContainer");
 
     const refreshLibraryBtn =
         document.getElementById("refreshLibraryBtn");
 
-    const openExamSection =
-        document.getElementById("openExamSection");
+    const libraryExamSection =
+        document.getElementById("libraryExamSection");
 
     const libraryExamTitle =
         document.getElementById("libraryExamTitle");
@@ -909,16 +894,15 @@
     const reuseBtn =
         document.getElementById("reuseBtn");
 
-    const closeLibraryBtn =
-        document.getElementById("closeLibraryBtn");
+    const closeLibraryExamBtn =
+        document.getElementById(
+            "closeLibraryExamBtn"
+        );
 
-    const testProgress =
-        document.getElementById("testProgress");
 
-
-    /* =====================================================
+    /* =========================================================
        STATE
-       ===================================================== */
+       ========================================================= */
 
     let selectedFile = null;
 
@@ -929,27 +913,50 @@
     let currentLibraryQuestions = [];
 
 
-    /* =====================================================
-       UTILITY
-       ===================================================== */
+    /* =========================================================
+       FILE UPLOAD
+       ========================================================= */
 
-    function escapeHtml(value) {
+    uploadBox.addEventListener(
+        "click",
+        function() {
+            fileInput.click();
+        }
+    );
 
-        return String(value ?? "")
-            .replace(/&/g, "&amp;")
-            .replace(/</g, "&lt;")
-            .replace(/>/g, "&gt;")
-            .replace(/"/g, "&quot;")
-            .replace(/'/g, "&#039;");
-    }
 
+    fileInput.addEventListener(
+        "change",
+        function() {
+
+            if (!fileInput.files.length) {
+                selectedFile = null;
+                fileName.textContent = "";
+                return;
+            }
+
+            selectedFile =
+                fileInput.files[0];
+
+            fileName.textContent =
+                "Selected file: " +
+                selectedFile.name;
+
+        }
+    );
+
+
+    /* =========================================================
+       STATUS
+       ========================================================= */
 
     function showStatus(
         message,
         type = "info"
     ) {
 
-        status.textContent = message;
+        status.textContent =
+            message;
 
         status.className =
             "status show " + type;
@@ -969,49 +976,338 @@
     }
 
 
-    function normalizeAnswer(value) {
+    /* =========================================================
+       ESCAPE HTML
+       ========================================================= */
 
-        return String(value ?? "")
-            .trim()
-            .toLowerCase()
-            .replace(/\s+/g, " ");
+    function escapeHtml(value) {
 
+        return String(
+            value ?? ""
+        )
+        .replace(
+            /&/g,
+            "&amp;"
+        )
+        .replace(
+            /</g,
+            "&lt;"
+        )
+        .replace(
+            />/g,
+            "&gt;"
+        )
+        .replace(
+            /"/g,
+            "&quot;"
+        )
+        .replace(
+            /'/g,
+            "&#039;"
+        );
     }
 
 
-    function normalizeLetter(value) {
+    /* =========================================================
+       LOAD SUBJECTS FROM SUPABASE
+       ========================================================= */
 
-        let answer =
-            normalizeAnswer(value);
+    async function loadSubjects() {
 
-        answer =
-            answer.replace(
-                /^option\s+/i,
-                ""
+        subject.innerHTML =
+            `<option value="">
+                Loading subjects...
+            </option>`;
+
+        try {
+
+            const response =
+                await fetch(
+                    SUBJECTS_URL
+                );
+
+            const rawText =
+                await response.text();
+
+            console.log(
+                "SUBJECTS RESPONSE:",
+                rawText
             );
 
-        answer =
-            answer.replace(
-                /^[\(\[]?([a-z])[\)\].:\-]?\s*.*$/i,
-                "$1"
+            let data;
+
+            try {
+
+                data =
+                    JSON.parse(
+                        rawText
+                    );
+
+            } catch (error) {
+
+                throw new Error(
+                    "Invalid response from /subjects."
+                );
+            }
+
+            const subjects =
+                Array.isArray(data)
+                    ? data
+                    : data.subjects || [];
+
+            subject.innerHTML =
+                `<option value="">
+                    Select a subject
+                </option>`;
+
+            if (!subjects.length) {
+
+                subject.innerHTML =
+                    `<option value="">
+                        No subjects found
+                    </option>`;
+
+                return;
+            }
+
+            subjects.forEach(
+                function(item) {
+
+                    const option =
+                        document.createElement(
+                            "option"
+                        );
+
+                    option.value =
+                        item.id;
+
+                    option.textContent =
+                        item.Name ||
+                        item.name ||
+                        item.subject_name ||
+                        "Unknown Subject";
+
+                    subject.appendChild(
+                        option
+                    );
+                }
             );
 
-        return answer;
+        } catch (error) {
+
+            console.error(
+                "SUBJECT LOAD ERROR:",
+                error
+            );
+
+            subject.innerHTML =
+                `<option value="">
+                    Could not load subjects
+                </option>`;
+        }
     }
 
 
-    function parseOptions(options) {
+    /* =========================================================
+       PARSE AI QUESTIONS
+       ========================================================= */
 
-        if (!options) {
-            return {};
+    function parseAIQuestions(text) {
+
+        if (!text || !text.trim()) {
+            return [];
         }
 
-        if (
-            typeof options ===
-            "object"
+        const cleaned =
+            text
+                .replace(
+                    /```json/gi,
+                    ""
+                )
+                .replace(
+                    /```/g,
+                    ""
+                )
+                .trim();
+
+
+        /* -----------------------------------------------------
+           TRY JSON FIRST
+           ----------------------------------------------------- */
+
+        try {
+
+            const parsed =
+                JSON.parse(cleaned);
+
+            if (Array.isArray(parsed)) {
+
+                return parsed.map(
+                    normalizeQuestion
+                );
+            }
+
+            if (
+                parsed.questions &&
+                Array.isArray(
+                    parsed.questions
+                )
+            ) {
+
+                return parsed.questions.map(
+                    normalizeQuestion
+                );
+            }
+
+        } catch (error) {
+            console.log(
+                "Response is not JSON. Trying text parser."
+            );
+        }
+
+
+        /* -----------------------------------------------------
+           TEXT PARSER
+           ----------------------------------------------------- */
+
+        const lines =
+            cleaned
+                .split("\n")
+                .map(
+                    line =>
+                        line.trim()
+                )
+                .filter(Boolean);
+
+
+        const result = [];
+
+        let current = null;
+
+
+        for (
+            let i = 0;
+            i < lines.length;
+            i++
         ) {
-            return options;
+
+            const line =
+                lines[i];
+
+
+            const questionMatch =
+                line.match(
+                    /^(?:Question\s*)?(\d+)[\.\):\-]\s*(.+)$/i
+                );
+
+
+            if (questionMatch) {
+
+                if (current) {
+                    result.push(
+                        normalizeQuestion(
+                            current
+                        )
+                    );
+                }
+
+                current = {
+
+                    question:
+                        questionMatch[2],
+
+                    options: {},
+
+                    answer: "",
+
+                    difficulty:
+                        difficulty.value,
+
+                    question_type:
+                        questionType.value,
+
+                    topic:
+                        topic.value || "General"
+                };
+
+                continue;
+            }
+
+
+            if (!current) {
+                continue;
+            }
+
+
+            const optionMatch =
+                line.match(
+                    /^([A-D])[\.\):]\s*(.+)$/i
+                );
+
+
+            if (optionMatch) {
+
+                current.options[
+                    optionMatch[1].toUpperCase()
+                ] =
+                    optionMatch[2];
+
+                continue;
+            }
+
+
+            const answerMatch =
+                line.match(
+                    /^(?:Correct\s+Answer|Answer)\s*:\s*(.+)$/i
+                );
+
+
+            if (answerMatch) {
+
+                current.answer =
+                    answerMatch[1].trim();
+
+                continue;
+            }
+
+
+            if (
+                current.question &&
+                !current.answer &&
+                !Object.keys(
+                    current.options
+                ).length
+            ) {
+
+                current.question +=
+                    " " + line;
+            }
         }
+
+
+        if (current) {
+
+            result.push(
+                normalizeQuestion(
+                    current
+                )
+            );
+        }
+
+
+        return result;
+    }
+
+
+    /* =========================================================
+       NORMALIZE QUESTION
+       ========================================================= */
+
+    function normalizeQuestion(q) {
+
+        let options =
+            q.options || {};
+
 
         if (
             typeof options ===
@@ -1020,1112 +1316,140 @@
 
             try {
 
-                return JSON.parse(
-                    options
-                );
+                options =
+                    JSON.parse(
+                        options
+                    );
 
             } catch (error) {
 
-                return {};
+                options = {};
             }
         }
 
-        return {};
+
+        return {
+
+            question:
+                String(
+                    q.question || ""
+                ).trim(),
+
+            options:
+                options || {},
+
+            answer:
+                String(
+                    q.answer || ""
+                ).trim(),
+
+            difficulty:
+                q.difficulty ||
+                difficulty.value ||
+                "medium",
+
+            question_type:
+                q.question_type ||
+                questionType.value ||
+                "multiple_choice",
+
+            topic:
+                q.topic ||
+                topic.value ||
+                "General",
+
+            userAnswer: null,
+
+            checked: false,
+
+            isCorrect: null
+        };
     }
 
 
-    /* =====================================================
-       FILE UPLOAD
-       ===================================================== */
-
-    uploadBox.addEventListener(
-        "click",
-        function() {
-
-            fileInput.click();
-
-        }
-    );
-
-
-    fileInput.addEventListener(
-        "change",
-        function() {
-
-            if (
-                !fileInput.files ||
-                !fileInput.files.length
-            ) {
-
-                selectedFile = null;
-
-                fileName.textContent =
-                    "";
-
-                return;
-            }
-
-            selectedFile =
-                fileInput.files[0];
-
-            fileName.textContent =
-                "Selected file: " +
-                selectedFile.name;
-
-        }
-    );
-
-
-    /* =====================================================
-       LOAD SUBJECTS
-       ===================================================== */
-
-    async function loadSubjects() {
-
-        try {
-
-            const response =
-                await fetch(
-                    BACKEND_URL +
-                    "/subjects"
-                );
-
-            if (!response.ok) {
-
-                throw new Error(
-                    "Could not load subjects."
-                );
-            }
-
-            const data =
-                await response.json();
-
-            subject.innerHTML =
-                `
-                <option value="">
-                    Select subject
-                </option>
-                `;
-
-            if (
-                Array.isArray(data)
-            ) {
-
-                data.forEach(
-                    function(item) {
-
-                        const option =
-                            document.createElement(
-                                "option"
-                            );
-
-                        option.value =
-                            item.id;
-
-                        option.textContent =
-                            item.Name ||
-                            item.name ||
-                            "Unknown Subject";
-
-                        subject.appendChild(
-                            option
-                        );
-
-                    }
-                );
-            }
-
-        } catch (error) {
-
-            console.error(
-                "SUBJECT ERROR:",
-                error
-            );
-
-            subject.innerHTML =
-                `
-                <option value="">
-                    Select subject
-                </option>
-                `;
-
-        }
-    }
-
-
-    /* =====================================================
-       PARSE AI QUESTIONS
-       ===================================================== */
-
-    function parseAIQuestions(
-        text
-    ) {
-
-        const parsed = [];
-
-        if (
-            !text ||
-            typeof text !== "string"
-        ) {
-
-            return parsed;
-        }
-
-
-        /*
-         * Split questions by numbered
-         * blocks such as:
-         *
-         * 1. Question
-         * 2. Question
-         */
-
-        const blocks =
-            text.split(
-                /\n(?=\s*\d+[\.\)]\s+)/
-            );
-
-
-        blocks.forEach(
-            function(block) {
-
-                try {
-
-                    block =
-                        block.trim();
-
-                    if (!block) {
-                        return;
-                    }
-
-
-                    const questionMatch =
-                        block.match(
-                            /^\s*\d+[\.\)]\s*(.+?)(?:\n|$)/
-                        );
-
-
-                    if (!questionMatch) {
-                        return;
-                    }
-
-
-                    const questionText =
-                        questionMatch[1]
-                            .trim();
-
-
-                    /*
-                     * Detect options.
-                     */
-
-                    const optionLines =
-                        block.match(
-                            /(?:^|\n)\s*([A-H])[\.\):\-]\s*(.+?)(?=\n|$)/gim
-                        );
-
-
-                    let options = {};
-
-
-                    if (
-                        optionLines &&
-                        optionLines.length
-                    ) {
-
-                        optionLines.forEach(
-                            function(line) {
-
-                                const match =
-                                    line.match(
-                                        /^\s*([A-H])[\.\):\-]\s*(.+?)\s*$/i
-                                    );
-
-                                if (match) {
-
-                                    options[
-                                        match[1]
-                                            .toUpperCase()
-                                    ] =
-                                        match[2]
-                                            .trim();
-
-                                }
-
-                            }
-                        );
-
-                    }
-
-
-                    /*
-                     * Find answer.
-                     */
-
-                    let answer = "";
-
-
-                    const answerMatch =
-                        block.match(
-                            /(?:correct\s*answer|answer)\s*[:\-]\s*(.+?)(?=\n|$)/i
-                        );
-
-
-                    if (
-                        answerMatch
-                    ) {
-
-                        answer =
-                            answerMatch[1]
-                                .trim();
-
-                    }
-
-
-                    /*
-                     * Remove answer line
-                     * from accidental question
-                     * content.
-                     */
-
-                    let questionType =
-                        "multiple_choice";
-
-
-                    if (
-                        Object.keys(options)
-                            .length === 0
-                    ) {
-
-                        if (
-                            /\btrue\s*\/?\s*false\b/i
-                                .test(block) ||
-                            /\btrue\b.*\bfalse\b/i
-                                .test(block)
-                        ) {
-
-                            questionType =
-                                "true_false";
-
-                            options = {
-                                A: "True",
-                                B: "False"
-                            };
-
-                        } else {
-
-                            questionType =
-                                "short_answer";
-
-                            options = {};
-
-                        }
-
-                    }
-
-
-                    if (
-                        questionType ===
-                        "multiple_choice" &&
-                        Object.keys(options)
-                            .length > 0
-                    ) {
-
-                        /*
-                         * Keep answer as-is.
-                         */
-
-                    }
-
-
-                    if (
-                        questionType ===
-                        "true_false"
-                    ) {
-
-                        if (
-                            /^true$/i.test(
-                                answer
-                            )
-                        ) {
-
-                            answer = "A";
-
-                        } else if (
-                            /^false$/i.test(
-                                answer
-                            )
-                        ) {
-
-                            answer = "B";
-
-                        }
-
-                    }
-
-
-                    if (
-                        questionText &&
-                        answer
-                    ) {
-
-                        parsed.push({
-
-                            question:
-                                questionText,
-
-                            options:
-                                options,
-
-                            answer:
-                                answer,
-
-                            difficulty:
-                                difficulty.value ||
-                                "medium",
-
-                            question_type:
-                                questionType,
-
-                            topic:
-                                topic.value ||
-                                "General",
-
-                            userAnswer:
-                                "",
-
-                            checked:
-                                false,
-
-                            isCorrect:
-                                false
-
-                        });
-
-                    }
-
-                } catch (error) {
-
-                    console.error(
-                        "Question parsing error:",
-                        error,
-                        block
-                    );
-
-                }
-
-            }
-        );
-
-
-        return parsed;
-    }
-
-
-    /* =====================================================
-       CHECK ANSWER
-       ===================================================== */
-
-    function checkQuestionAnswer(
-        question,
-        card,
-        index,
-        containerType
-    ) {
-
-        if (
-            question.checked
-        ) {
-
-            return;
-        }
-
-
-        let userAnswer = "";
-
-
-        if (
-            question.question_type ===
-            "short_answer"
-        ) {
-
-            const input =
-                card.querySelector(
-                    ".short-answer-input"
-                );
-
-            if (!input) {
-                return;
-            }
-
-            userAnswer =
-                input.value.trim();
-
-            if (!userAnswer) {
-
-                alert(
-                    "Please enter your answer first."
-                );
-
-                return;
-            }
-
-        } else {
-
-            const selected =
-                card.querySelector(
-                    'input[type="radio"]:checked'
-                );
-
-            if (!selected) {
-
-                alert(
-                    "Please select an answer first."
-                );
-
-                return;
-            }
-
-            userAnswer =
-                selected.value;
-
-        }
-
-
-        question.userAnswer =
-            userAnswer;
-
-        question.checked =
-            true;
-
-
-        let correct = false;
-
-
-        if (
-            question.question_type ===
-            "short_answer"
-        ) {
-
-            correct =
-                normalizeAnswer(
-                    userAnswer
-                ) ===
-                normalizeAnswer(
-                    question.answer
-                );
-
-        } else {
-
-            const expected =
-                normalizeLetter(
-                    question.answer
-                );
-
-            const actual =
-                normalizeLetter(
-                    userAnswer
-                );
-
-            correct =
-                expected === actual;
-
-        }
-
-
-        question.isCorrect =
-            correct;
-
-
-        const feedback =
-            card.querySelector(
-                ".feedback"
-            );
-
-        const correctAnswer =
-            card.querySelector(
-                ".correct-answer"
-            );
-
-
-        if (correct) {
-
-            feedback.className =
-                "feedback show correct";
-
-            feedback.innerHTML =
-                `
-                <div>Correct!</div>
-                <div class="correct-answer">
-                    Correct Answer:
-                    ${escapeHtml(
-                        question.answer
-                    )}
-                </div>
-                `;
-
-            card.classList.add(
-                "checked-correct"
-            );
-
-        } else {
-
-            feedback.className =
-                "feedback show incorrect";
-
-            feedback.innerHTML =
-                `
-                <div>Incorrect.</div>
-                <div class="correct-answer">
-                    Correct Answer:
-                    ${escapeHtml(
-                        question.answer
-                    )}
-                </div>
-                `;
-
-            card.classList.add(
-                "checked-wrong"
-            );
-
-        }
-
-
-        /*
-         * Highlight correct option.
-         */
-
-        const labels =
-            card.querySelectorAll(
-                ".option-label"
-            );
-
-
-        labels.forEach(
-            function(label) {
-
-                const radio =
-                    label.querySelector(
-                        "input"
-                    );
-
-                if (!radio) {
-                    return;
-                }
-
-
-                const value =
-                    normalizeLetter(
-                        radio.value
-                    );
-
-                const expected =
-                    normalizeLetter(
-                        question.answer
-                    );
-
-
-                if (
-                    value === expected
-                ) {
-
-                    label.classList.add(
-                        "correct-option"
-                    );
-
-                }
-
-
-                if (
-                    radio.checked &&
-                    value !== expected
-                ) {
-
-                    label.classList.add(
-                        "wrong-option"
-                    );
-
-                }
-
-            }
-        );
-
-
-        /*
-         * Disable inputs after checking.
-         */
-
-        const inputs =
-            card.querySelectorAll(
-                "input"
-            );
-
-        inputs.forEach(
-            function(input) {
-
-                input.disabled =
-                    true;
-
-            }
-        );
-
-
-        const checkButton =
-            card.querySelector(
-                ".check-answer-btn"
-            );
-
-        if (checkButton) {
-
-            checkButton.disabled =
-                true;
-
-            checkButton.textContent =
-                "Answer Checked";
-
-        }
-
-
-        updateProgress(
-            containerType
-        );
-
-    }
-
-
-    /* =====================================================
-       RENDER GENERATED QUESTIONS
-       ===================================================== */
-
-    function renderQuestions() {
-
-        questionsContainer.innerHTML =
-            "";
-
-        scoreBox.classList.add(
-            "hidden"
-        );
-
-        if (
-            !Array.isArray(questions) ||
-            questions.length === 0
-        ) {
-
-            questionsContainer.innerHTML =
-                `
-                <div class="empty">
-                    No questions generated.
-                </div>
-                `;
-
-            return;
-        }
-
-
-        questions.forEach(
-            function(q, index) {
-
-                q.userAnswer =
-                    "";
-
-                q.checked =
-                    false;
-
-                q.isCorrect =
-                    false;
-
-
-                const card =
-                    document.createElement(
-                        "div"
-                    );
-
-                card.className =
-                    "question-card";
-
-
-                const title =
-                    document.createElement(
-                        "div"
-                    );
-
-                title.className =
-                    "question-title";
-
-                title.textContent =
-                    `${index + 1}. ${q.question}`;
-
-                card.appendChild(
-                    title
-                );
-
-
-                const options =
-                    parseOptions(
-                        q.options
-                    );
-
-
-                /*
-                 * Multiple Choice / True False
-                 */
-
-                if (
-                    Object.keys(options)
-                        .length > 0
-                ) {
-
-                    Object.entries(
-                        options
-                    ).forEach(
-                        function([
-                            key,
-                            value
-                        ]) {
-
-                            const label =
-                                document.createElement(
-                                    "label"
-                                );
-
-                            label.className =
-                                "option-label";
-
-
-                            const radio =
-                                document.createElement(
-                                    "input"
-                                );
-
-                            radio.type =
-                                "radio";
-
-                            radio.name =
-                                "question_" +
-                                index;
-
-                            radio.value =
-                                key;
-
-
-                            const text =
-                                document.createElement(
-                                    "span"
-                                );
-
-                            text.textContent =
-                                `${key}. ${value}`;
-
-
-                            label.appendChild(
-                                radio
-                            );
-
-                            label.appendChild(
-                                text
-                            );
-
-
-                            radio.addEventListener(
-                                "change",
-                                function() {
-
-                                    document
-                                        .querySelectorAll(
-                                            `input[name="question_${index}"]`
-                                        )
-                                        .forEach(
-                                            function(
-                                                other
-                                            ) {
-
-                                                const parent =
-                                                    other.closest(
-                                                        ".option-label"
-                                                    );
-
-                                                if (
-                                                    parent
-                                                ) {
-
-                                                    parent.classList.remove(
-                                                        "selected"
-                                                    );
-
-                                                }
-
-                                            }
-                                        );
-
-                                    label.classList.add(
-                                        "selected"
-                                    );
-
-                                }
-                            );
-
-
-                            card.appendChild(
-                                label
-                            );
-
-                        }
-                    );
-
-                } else {
-
-                    /*
-                     * Short answer.
-                     */
-
-                    const input =
-                        document.createElement(
-                            "input"
-                        );
-
-                    input.type =
-                        "text";
-
-                    input.className =
-                        "short-answer-input";
-
-                    input.placeholder =
-                        "Type your answer here...";
-
-                    card.appendChild(
-                        input
-                    );
-
-                }
-
-
-                const meta =
-                    document.createElement(
-                        "div"
-                    );
-
-                meta.className =
-                    "question-meta";
-
-                meta.textContent =
-                    `Type: ${q.question_type || "unknown"} | Difficulty: ${q.difficulty || "unknown"}`;
-
-                card.appendChild(
-                    meta
-                );
-
-
-                const checkButton =
-                    document.createElement(
-                        "button"
-                    );
-
-                checkButton.className =
-                    "check-answer-btn";
-
-                checkButton.textContent =
-                    "Check Answer";
-
-
-                checkButton.addEventListener(
-                    "click",
-                    function() {
-
-                        checkQuestionAnswer(
-                            q,
-                            card,
-                            index,
-                            "generated"
-                        );
-
-                    }
-                );
-
-
-                card.appendChild(
-                    checkButton
-                );
-
-
-                const feedback =
-                    document.createElement(
-                        "div"
-                    );
-
-                feedback.className =
-                    "feedback";
-
-
-                card.appendChild(
-                    feedback
-                );
-
-
-                questionsContainer.appendChild(
-                    card
-                );
-
-            }
-        );
-
-
-        updateProgress(
-            "generated"
-        );
-    }
-
-
-    /* =====================================================
-       PROGRESS
-       ===================================================== */
-
-    function updateProgress(
-        type
-    ) {
-
-        const list =
-            type === "generated"
-                ? questions
-                : currentLibraryQuestions;
-
-
-        if (
-            !Array.isArray(list) ||
-            !list.length
-        ) {
-
-            testProgress.textContent =
-                "";
-
-            return;
-        }
-
-
-        const checked =
-            list.filter(
-                function(q) {
-                    return q.checked;
-                }
-            ).length;
-
-
-        if (
-            type === "generated"
-        ) {
-
-            testProgress.innerHTML =
-                `
-                <div
-                    style="
-                        margin-bottom:18px;
-                        color:#6b7280;
-                        font-weight:600;
-                    "
-                >
-                    Answered:
-                    ${checked}
-                    /
-                    ${list.length}
-                </div>
-                `;
-
-        }
-
-    }
-
-
-    /* =====================================================
+    /* =========================================================
        GENERATE TEST
-       ===================================================== */
+       ========================================================= */
 
     generateBtn.addEventListener(
         "click",
         async function() {
 
-            try {
-
-                if (!selectedFile) {
-
-                    showStatus(
-                        "Please select a PDF file first.",
-                        "error"
-                    );
-
-                    return;
-                }
-
-
-                let count =
-                    parseInt(
-                        questionCount.value,
-                        10
-                    );
-
-
-                if (
-                    isNaN(count)
-                ) {
-
-                    count = 20;
-                }
-
-
-                count =
-                    Math.max(
-                        10,
-                        Math.min(
-                            count,
-                            40
-                        )
-                    );
-
-
-                questionCount.value =
-                    count;
-
-
-                generateBtn.disabled =
-                    true;
-
-                generateBtn.textContent =
-                    "Generating...";
-
+            if (!selectedFile) {
 
                 showStatus(
-                    "Uploading PDF and generating your test. Please wait...",
-                    "info"
+                    "Please select a PDF file first.",
+                    "error"
+                );
+
+                return;
+            }
+
+
+            let count =
+                parseInt(
+                    questionCount.value,
+                    10
                 );
 
 
-                const formData =
-                    new FormData();
+            if (
+                isNaN(count) ||
+                count < 10 ||
+                count > 40
+            ) {
 
-
-                formData.append(
-                    "pdf",
-                    selectedFile
+                showStatus(
+                    "Question count must be between 10 and 40.",
+                    "error"
                 );
 
-                formData.append(
-                    "question_count",
-                    count
-                );
+                return;
+            }
 
-                formData.append(
-                    "difficulty",
-                    difficulty.value
-                );
 
-                formData.append(
-                    "question_type",
-                    questionType.value
-                );
+            generateBtn.disabled =
+                true;
 
+            generateBtn.textContent =
+                "Generating...";
+
+
+            showStatus(
+                "Uploading PDF and generating your test. Please wait...",
+                "info"
+            );
+
+
+            const formData =
+                new FormData();
+
+            formData.append(
+                "pdf",
+                selectedFile
+            );
+
+            formData.append(
+                "question_count",
+                String(count)
+            );
+
+            formData.append(
+                "difficulty",
+                difficulty.value
+            );
+
+            formData.append(
+                "question_type",
+                questionType.value
+            );
+
+
+            try {
 
                 const response =
                     await fetch(
-                        BACKEND_URL +
-                        "/upload-pdf",
+                        UPLOAD_URL,
                         {
                             method: "POST",
                             body: formData
@@ -2133,44 +1457,68 @@
                     );
 
 
-                const data =
-                    await response.json();
+                const rawText =
+                    await response.text();
 
 
-                if (
-                    !response.ok ||
-                    !data.success
-                ) {
+                console.log(
+                    "UPLOAD RAW RESPONSE:",
+                    rawText
+                );
+
+
+                let data;
+
+
+                try {
+
+                    data =
+                        JSON.parse(
+                            rawText
+                        );
+
+                } catch (error) {
 
                     throw new Error(
-                        data.error ||
-                        "Test generation failed."
+                        "Invalid JSON returned by the backend."
                     );
                 }
 
 
-                /*
-                 * Parse AI output.
-                 */
+                if (
+                    !response.ok ||
+                    data.success === false
+                ) {
+
+                    throw new Error(
+                        data.error ||
+                        data.message ||
+                        data.detail ||
+                        "Could not generate the test."
+                    );
+                }
+
+
+                const generatedText =
+                    data.test ||
+                    data.generated_text ||
+                    data.questions ||
+                    "";
+
 
                 questions =
                     parseAIQuestions(
-                        data.test
+                        String(
+                            generatedText
+                        )
                     );
 
 
-                /*
-                 * If the normal parser fails,
-                 * show the raw response in console.
-                 */
-
-                if (
-                    questions.length === 0
-                ) {
+                if (!questions.length) {
 
                     console.error(
-                        "RAW AI RESPONSE:",
-                        data.test
+                        "AI TEXT:",
+                        generatedText
                     );
 
                     throw new Error(
@@ -2178,10 +1526,6 @@
                     );
                 }
 
-
-                /*
-                 * Keep only requested amount.
-                 */
 
                 questions =
                     questions.slice(
@@ -2197,23 +1541,17 @@
                     "hidden"
                 );
 
-                saveSection.classList.remove(
+                resultSection.classList.add(
+                    "hidden"
+                );
+
+                saveExamSection.classList.add(
                     "hidden"
                 );
 
 
-                saveTitle.value =
-                    (
-                        subject.options[
-                            subject.selectedIndex
-                        ]?.textContent ||
-                        "Generated"
-                    ) +
-                    " Test";
-
-
                 showStatus(
-                    `Successfully generated ${questions.length} questions. Select an answer and click "Check Answer" to reveal the correct answer.`,
+                    `${questions.length} questions generated successfully.`,
                     "success"
                 );
 
@@ -2243,348 +1581,1019 @@
 
                 generateBtn.textContent =
                     "Generate Test";
-
             }
-
         }
     );
 
 
-    /* =====================================================
-       FINISH TEST
-       ===================================================== */
+    /* =========================================================
+       RENDER QUESTIONS
+       ========================================================= */
 
-    finishBtn.addEventListener(
-        "click",
-        function() {
+    function renderQuestions() {
 
-            if (
-                !questions.length
-            ) {
-
-                return;
-            }
+        questionsContainer.innerHTML =
+            "";
 
 
-            const unanswered =
-                questions.filter(
-                    function(q) {
-                        return !q.checked;
-                    }
-                );
+        if (!questions.length) {
 
+            questionsContainer.innerHTML =
+                `<div class="empty">
+                    No questions available.
+                </div>`;
 
-            if (
-                unanswered.length > 0
-            ) {
-
-                alert(
-                    `Please check all answers before finishing the test.\n\n${unanswered.length} question(s) have not been checked yet.`
-                );
-
-                return;
-            }
-
-
-            const correct =
-                questions.filter(
-                    function(q) {
-                        return q.isCorrect;
-                    }
-                ).length;
-
-
-            const total =
-                questions.length;
-
-
-            const percentage =
-                Math.round(
-                    (
-                        correct /
-                        total
-                    ) *
-                    100
-                );
-
-
-            scoreBox.innerHTML =
-                `
-                <div>
-                    <div class="score-number">
-                        ${percentage}%
-                    </div>
-
-                    <h3>
-                        Test Completed
-                    </h3>
-
-                    <p>
-                        You answered
-                        <strong>
-                            ${correct}
-                        </strong>
-                        out of
-                        <strong>
-                            ${total}
-                        </strong>
-                        questions correctly.
-                    </p>
-                </div>
-                `;
-
-
-            scoreBox.classList.remove(
-                "hidden"
-            );
-
-
-            scoreBox.scrollIntoView({
-                behavior: "smooth"
-            });
-
+            return;
         }
-    );
 
 
-    /* =====================================================
-       SAVE EXAM
-       ===================================================== */
+        questions.forEach(
+            function(q, index) {
 
-    saveExamBtn.addEventListener(
-        "click",
-        async function() {
+                const card =
+                    document.createElement(
+                        "div"
+                    );
 
-            try {
+                card.className =
+                    "question-card";
+
+
+                const questionTitle =
+                    document.createElement(
+                        "div"
+                    );
+
+                questionTitle.className =
+                    "question-title";
+
+                questionTitle.innerHTML =
+                    `${index + 1}. ${
+                        escapeHtml(
+                            q.question
+                        )
+                    }`;
+
+                card.appendChild(
+                    questionTitle
+                );
+
+
+                const type =
+                    String(
+                        q.question_type ||
+                        ""
+                    ).toLowerCase();
+
+
+                /* -------------------------------------------------
+                   SHORT ANSWER
+                   ------------------------------------------------- */
 
                 if (
-                    !questions.length
+                    type ===
+                    "short_answer"
                 ) {
 
-                    showSaveStatus(
-                        "There are no questions to save.",
-                        "error"
+                    const input =
+                        document.createElement(
+                            "input"
+                        );
+
+                    input.type =
+                        "text";
+
+                    input.className =
+                        "answer-input";
+
+                    input.placeholder =
+                        "Type your answer here...";
+
+                    input.dataset.question =
+                        index;
+
+                    input.addEventListener(
+                        "input",
+                        function() {
+
+                            if (
+                                !q.checked
+                            ) {
+
+                                q.userAnswer =
+                                    input.value;
+                            }
+                        }
                     );
 
-                    return;
+                    card.appendChild(
+                        input
+                    );
+
+                }
+
+                /* -------------------------------------------------
+                   TRUE / FALSE
+                   ------------------------------------------------- */
+
+                else if (
+                    type ===
+                    "true_false"
+                ) {
+
+                    const tfOptions = [
+                        "True",
+                        "False"
+                    ];
+
+
+                    tfOptions.forEach(
+                        function(value) {
+
+                            const option =
+                                createInteractiveOption(
+                                    index,
+                                    value,
+                                    value
+                                );
+
+                            card.appendChild(
+                                option
+                            );
+                        }
+                    );
+
+                }
+
+                /* -------------------------------------------------
+                   MULTIPLE CHOICE
+                   ------------------------------------------------- */
+
+                else {
+
+                    Object.entries(
+                        q.options || {}
+                    ).forEach(
+                        function([
+                            key,
+                            value
+                        ]) {
+
+                            const option =
+                                createInteractiveOption(
+                                    index,
+                                    key,
+                                    value
+                                );
+
+                            card.appendChild(
+                                option
+                            );
+                        }
+                    );
                 }
 
 
-                const title =
-                    saveTitle.value.trim();
-
-
-                if (!title) {
-
-                    showSaveStatus(
-                        "Please enter a test title.",
-                        "error"
+                const meta =
+                    document.createElement(
+                        "div"
                     );
 
-                    return;
-                }
+                meta.className =
+                    "question-meta";
 
-
-                if (!subject.value) {
-
-                    showSaveStatus(
-                        "Please select a subject.",
-                        "error"
+                meta.textContent =
+                    "Type: " +
+                    (
+                        q.question_type ||
+                        "unknown"
+                    ) +
+                    " | Difficulty: " +
+                    (
+                        q.difficulty ||
+                        "unknown"
                     );
 
-                    return;
-                }
-
-
-                saveExamBtn.disabled =
-                    true;
-
-                saveExamBtn.textContent =
-                    "Saving...";
-
-
-                showSaveStatus(
-                    "Saving test...",
-                    "info"
+                card.appendChild(
+                    meta
                 );
 
 
-                /*
-                 * Save only backend fields.
-                 * Do not save userAnswer / checked.
-                 */
+                const checkButton =
+                    document.createElement(
+                        "button"
+                    );
 
-                const examPayload = {
+                checkButton.className =
+                    "check-answer-btn";
 
-                    title:
-                        title,
+                checkButton.textContent =
+                    "Check Answer";
 
-                    subject_id:
-                        Number(
-                            subject.value
-                        ),
+                checkButton.addEventListener(
+                    "click",
+                    function() {
 
-                    grade:
-                        grade.value ||
-                        "",
+                        checkQuestion(
+                            index,
+                            card
+                        );
+                    }
+                );
 
-                    topic:
-                        topic.value ||
-                        "General",
-
-                    exam_type:
-                        examType.value ||
-                        "Practice Test",
-
-                    year:
-                        year.value
-                            ? Number(
-                                year.value
-                            )
-                            : null,
-
-                    description:
-                        description.value ||
-                        "",
-
-                    file_url:
-                        "",
-
-                    answer_url:
-                        ""
-
-                };
+                card.appendChild(
+                    checkButton
+                );
 
 
-                const examResponse =
-                    await fetch(
-                        BACKEND_URL +
-                        "/save-exam",
-                        {
-                            method: "POST",
+                const feedback =
+                    document.createElement(
+                        "div"
+                    );
 
-                            headers: {
-                                "Content-Type":
-                                    "application/json"
-                            },
+                feedback.className =
+                    "feedback hidden";
 
-                            body:
-                                JSON.stringify(
-                                    examPayload
-                                )
+                feedback.dataset.feedback =
+                    index;
+
+                card.appendChild(
+                    feedback
+                );
+
+
+                const answer =
+                    document.createElement(
+                        "div"
+                    );
+
+                answer.className =
+                    "answer hidden";
+
+                answer.dataset.correctAnswer =
+                    index;
+
+                answer.innerHTML =
+                    "<strong>Correct Answer:</strong> " +
+                    escapeHtml(
+                        q.answer ||
+                        "Not provided"
+                    );
+
+                card.appendChild(
+                    answer
+                );
+
+
+                questionsContainer.appendChild(
+                    card
+                );
+            }
+        );
+    }
+
+
+    /* =========================================================
+       CREATE INTERACTIVE OPTION
+       ========================================================= */
+
+    function createInteractiveOption(
+        questionIndex,
+        key,
+        value
+    ) {
+
+        const option =
+            document.createElement(
+                "div"
+            );
+
+        option.className =
+            "option";
+
+        option.dataset.key =
+            key;
+
+        option.dataset.question =
+            questionIndex;
+
+        option.innerHTML =
+            `<strong>${escapeHtml(
+                key
+            )}.</strong> ${
+                escapeHtml(
+                    String(value)
+                )
+            }`;
+
+
+        option.addEventListener(
+            "click",
+            function() {
+
+                const q =
+                    questions[
+                        questionIndex
+                    ];
+
+
+                if (
+                    q.checked
+                ) {
+                    return;
+                }
+
+
+                document
+                    .querySelectorAll(
+                        `.option[data-question="${questionIndex}"]`
+                    )
+                    .forEach(
+                        function(item) {
+
+                            item.classList.remove(
+                                "selected"
+                            );
                         }
                     );
 
 
-                const examData =
-                    await examResponse.json();
+                option.classList.add(
+                    "selected"
+                );
 
 
-                if (
-                    !examResponse.ok ||
-                    !examData.success
-                ) {
+                q.userAnswer =
+                    String(
+                        key
+                    );
+            }
+        );
+
+
+        return option;
+    }
+
+
+    /* =========================================================
+       CHECK ONE QUESTION
+       ========================================================= */
+
+    function checkQuestion(
+        index,
+        card
+    ) {
+
+        const q =
+            questions[index];
+
+
+        let userAnswer =
+            q.userAnswer;
+
+
+        const type =
+            String(
+                q.question_type ||
+                ""
+            ).toLowerCase();
+
+
+        /* -----------------------------------------------------
+           SHORT ANSWER
+           ----------------------------------------------------- */
+
+        if (
+            type ===
+            "short_answer"
+        ) {
+
+            const input =
+                card.querySelector(
+                    ".answer-input"
+                );
+
+            if (
+                !input ||
+                !input.value.trim()
+            ) {
+
+                alert(
+                    "Please enter an answer first."
+                );
+
+                return;
+            }
+
+            userAnswer =
+                input.value.trim();
+
+            q.userAnswer =
+                userAnswer;
+        }
+
+
+        /* -----------------------------------------------------
+           MCQ / TRUE FALSE
+           ----------------------------------------------------- */
+
+        else {
+
+            if (
+                userAnswer ===
+                null ||
+                userAnswer ===
+                undefined ||
+                userAnswer === ""
+            ) {
+
+                alert(
+                    "Please select an answer first."
+                );
+
+                return;
+            }
+        }
+
+
+        const correctAnswer =
+            String(
+                q.answer || ""
+            ).trim();
+
+
+        let isCorrect =
+            false;
+
+
+        /* -----------------------------------------------------
+           ACCEPT MULTIPLE ANSWER FORMATS
+           ----------------------------------------------------- */
+
+        const normalizedUser =
+            String(
+                userAnswer
+            )
+            .trim()
+            .toLowerCase();
+
+
+        const normalizedCorrect =
+            correctAnswer
+                .trim()
+                .toLowerCase();
+
+
+        if (
+            normalizedUser ===
+            normalizedCorrect
+        ) {
+
+            isCorrect =
+                true;
+
+        } else {
+
+            /*
+             * If the answer is something like:
+             * A. Mitochondria
+             *
+             * and the user selected:
+             * A
+             *
+             * accept it.
+             */
+
+            if (
+                normalizedCorrect.startsWith(
+                    normalizedUser + "."
+                )
+            ) {
+
+                isCorrect =
+                    true;
+            }
+
+
+            /*
+             * If the answer is:
+             * A) Mitochondria
+             */
+
+            if (
+                normalizedCorrect.startsWith(
+                    normalizedUser + ")"
+                )
+            ) {
+
+                isCorrect =
+                    true;
+            }
+
+
+            /*
+             * If answer contains:
+             * A - Mitochondria
+             */
+
+            if (
+                normalizedCorrect.startsWith(
+                    normalizedUser + " -"
+                )
+            ) {
+
+                isCorrect =
+                    true;
+            }
+        }
+
+
+        q.checked =
+            true;
+
+        q.isCorrect =
+            isCorrect;
+
+
+        /* -----------------------------------------------------
+           MARK OPTIONS
+           ----------------------------------------------------- */
+
+        card
+            .querySelectorAll(
+                ".option"
+            )
+            .forEach(
+                function(option) {
+
+                    const key =
+                        String(
+                            option.dataset.key ||
+                            ""
+                        )
+                        .trim()
+                        .toLowerCase();
+
+
+                    const selected =
+                        key ===
+                        normalizedUser;
+
+
+                    const correct =
+                        key ===
+                        normalizedCorrect;
+
+
+                    if (selected) {
+
+                        option.classList.add(
+                            isCorrect
+                                ? "correct"
+                                : "incorrect"
+                        );
+                    }
+
+
+                    if (
+                        correct &&
+                        !isCorrect
+                    ) {
+
+                        option.classList.add(
+                            "correct"
+                        );
+                    }
+                }
+            );
+
+
+        /* -----------------------------------------------------
+           FEEDBACK
+           ----------------------------------------------------- */
+
+        const feedback =
+            card.querySelector(
+                ".feedback"
+            );
+
+
+        feedback.classList.remove(
+            "hidden",
+            "correct",
+            "incorrect"
+        );
+
+
+        if (isCorrect) {
+
+            feedback.classList.add(
+                "correct"
+            );
+
+            feedback.textContent =
+                "Correct!";
+
+        } else {
+
+            feedback.classList.add(
+                "incorrect"
+            );
+
+            feedback.textContent =
+                "Incorrect.";
+        }
+
+
+        /* -----------------------------------------------------
+           SHOW CORRECT ANSWER
+           ----------------------------------------------------- */
+
+        const answer =
+            card.querySelector(
+                ".answer"
+            );
+
+        answer.classList.remove(
+            "hidden"
+        );
+
+
+        /* -----------------------------------------------------
+           DISABLE CHECK BUTTON
+           ----------------------------------------------------- */
+
+        const button =
+            card.querySelector(
+                ".check-answer-btn"
+            );
+
+        button.disabled =
+            true;
+
+        button.textContent =
+            "Answer Checked";
+    }
+
+
+    /* =========================================================
+       SAVE BUTTON
+       ========================================================= */
+
+    saveBtn.addEventListener(
+        "click",
+        function() {
+
+            if (!questions.length) {
+
+                return;
+            }
+
+            saveExamSection.classList.remove(
+                "hidden"
+            );
+
+            saveStatus.className =
+                "status";
+
+            saveStatus.textContent =
+                "";
+
+            saveExamSection.scrollIntoView({
+                behavior: "smooth"
+            });
+        }
+    );
+
+
+    /* =========================================================
+       CONFIRM SAVE EXAM
+       ========================================================= */
+
+    confirmSaveBtn.addEventListener(
+        "click",
+        async function() {
+
+            const title =
+                saveTitle.value.trim();
+
+
+            if (!title) {
+
+                showSaveStatus(
+                    "Please enter a test title.",
+                    "error"
+                );
+
+                return;
+            }
+
+
+            if (!subject.value) {
+
+                showSaveStatus(
+                    "Please select a subject.",
+                    "error"
+                );
+
+                return;
+            }
+
+
+            confirmSaveBtn.disabled =
+                true;
+
+            confirmSaveBtn.textContent =
+                "Saving...";
+
+
+            try {
+
+                /* ---------------------------------------------
+                   STEP 1: SAVE EXAM
+                   --------------------------------------------- */
+
+                const examForm =
+                    new FormData();
+
+
+                examForm.append(
+                    "title",
+                    title
+                );
+
+
+                examForm.append(
+                    "subject_id",
+                    subject.value
+                );
+
+
+                examForm.append(
+                    "grade",
+                    grade.value.trim()
+                );
+
+
+                examForm.append(
+                    "topic",
+                    topic.value.trim()
+                );
+
+
+                examForm.append(
+                    "exam_type",
+                    examType.value
+                );
+
+
+                examForm.append(
+                    "year",
+                    year.value
+                );
+
+
+                examForm.append(
+                    "description",
+                    description.value.trim()
+                );
+
+
+                examForm.append(
+                    "file_url",
+                    ""
+                );
+
+
+                examForm.append(
+                    "answer_url",
+                    ""
+                );
+
+
+                const response =
+                    await fetch(
+                        SAVE_EXAM_URL,
+                        {
+                            method: "POST",
+                            body: examForm
+                        }
+                    );
+
+
+                const rawText =
+                    await response.text();
+
+
+                console.log(
+                    "SAVE EXAM RESPONSE:",
+                    rawText
+                );
+
+
+                let examData;
+
+
+                try {
+
+                    examData =
+                        JSON.parse(
+                            rawText
+                        );
+
+                } catch (error) {
 
                     throw new Error(
-                        examData.error ||
-                        "Could not save exam."
+                        "Invalid JSON from /save-exam."
                     );
                 }
 
 
-                const examId =
-                    examData.exam_id ||
-                    examData.id ||
-                    (
-                        examData.exam &&
-                        examData.exam.id
+                if (
+                    !response.ok ||
+                    examData.success === false
+                ) {
+
+                    throw new Error(
+                        examData.error ||
+                        examData.message ||
+                        examData.detail ||
+                        "Could not save the exam."
                     );
+                }
+
+
+                let examId =
+                    examData.exam_id ||
+                    null;
+
+
+                if (
+                    !examId &&
+                    examData.exam
+                ) {
+
+                    if (
+                        Array.isArray(
+                            examData.exam
+                        )
+                    ) {
+
+                        examId =
+                            examData.exam[0]?.id;
+
+                    } else {
+
+                        examId =
+                            examData.exam.id;
+                    }
+                }
+
+
+                if (
+                    !examId &&
+                    examData.data
+                ) {
+
+                    if (
+                        Array.isArray(
+                            examData.data
+                        )
+                    ) {
+
+                        examId =
+                            examData.data[0]?.id;
+
+                    } else {
+
+                        examId =
+                            examData.data.id;
+                    }
+                }
 
 
                 if (!examId) {
 
                     throw new Error(
-                        "Exam was created but no exam ID was returned."
+                        "Exam was created, but no exam ID was returned."
                     );
                 }
 
 
-                /*
-                 * Save questions.
-                 */
+                showSaveStatus(
+                    "Exam created. Saving questions...",
+                    "info"
+                );
 
-                const questionPayload =
+
+                /* ---------------------------------------------
+                   STEP 2: SAVE QUESTIONS
+                   --------------------------------------------- */
+
+                const cleanQuestions =
                     questions.map(
                         function(q) {
 
                             return {
 
-                                exam_id:
-                                    examId,
-
                                 question:
                                     q.question,
 
                                 options:
-                                    parseOptions(
-                                        q.options
-                                    ),
+                                    q.options || {},
 
                                 answer:
-                                    q.answer,
+                                    q.answer || "",
 
                                 difficulty:
                                     q.difficulty ||
-                                    difficulty.value,
+                                    "medium",
 
                                 question_type:
                                     q.question_type ||
-                                    questionType.value
+                                    "multiple_choice",
 
+                                topic:
+                                    q.topic ||
+                                    topic.value ||
+                                    "General"
                             };
-
                         }
                     );
 
 
-                const questionsResponse =
+                const questionForm =
+                    new FormData();
+
+
+                questionForm.append(
+                    "exam_id",
+                    String(examId)
+                );
+
+
+                questionForm.append(
+                    "questions",
+                    JSON.stringify(
+                        cleanQuestions
+                    )
+                );
+
+
+                const questionResponse =
                     await fetch(
-                        BACKEND_URL +
-                        "/questions",
+                        SAVE_QUESTIONS_URL,
                         {
                             method: "POST",
-
-                            headers: {
-                                "Content-Type":
-                                    "application/json"
-                            },
-
-                            body:
-                                JSON.stringify(
-                                    questionPayload
-                                )
+                            body: questionForm
                         }
                     );
 
 
-                const questionsData =
-                    await questionsResponse.json();
+                const questionRawText =
+                    await questionResponse.text();
+
+
+                console.log(
+                    "SAVE QUESTIONS RESPONSE:",
+                    questionRawText
+                );
+
+
+                let questionData;
+
+
+                try {
+
+                    questionData =
+                        JSON.parse(
+                            questionRawText
+                        );
+
+                } catch (error) {
+
+                    throw new Error(
+                        "Invalid JSON from /questions."
+                    );
+                }
 
 
                 if (
-                    !questionsResponse.ok ||
-                    !questionsData.success
+                    !questionResponse.ok ||
+                    questionData.success === false
                 ) {
 
                     throw new Error(
-                        questionsData.error ||
+                        questionData.error ||
+                        questionData.message ||
+                        questionData.detail ||
                         "Could not save questions."
                     );
                 }
 
 
                 showSaveStatus(
-                    "Test saved successfully!",
+                    `Exam and ${questions.length} questions saved successfully!`,
                     "success"
                 );
 
@@ -2600,58 +2609,273 @@
                 );
 
                 showSaveStatus(
-                    "Could not save test: " +
-                    error.message,
+                    error.message ||
+                    "Could not save the exam.",
                     "error"
                 );
 
             } finally {
 
-                saveExamBtn.disabled =
+                confirmSaveBtn.disabled =
                     false;
 
-                saveExamBtn.textContent =
+                confirmSaveBtn.textContent =
                     "Save Exam";
-
             }
-
         }
     );
 
 
-    /* =====================================================
+    /* =========================================================
+       CANCEL SAVE
+       ========================================================= */
+
+    cancelSaveBtn.addEventListener(
+        "click",
+        function() {
+
+            saveExamSection.classList.add(
+                "hidden"
+            );
+        }
+    );
+
+
+    /* =========================================================
+       FINISH TEST
+       ========================================================= */
+
+    finishBtn.addEventListener(
+        "click",
+        function() {
+
+            if (!questions.length) {
+                return;
+            }
+
+
+            const unchecked =
+                questions.filter(
+                    q =>
+                        !q.checked
+                );
+
+
+            if (unchecked.length) {
+
+                alert(
+                    `Please check all answers first. ${unchecked.length} question(s) have not been checked yet.`
+                );
+
+                return;
+            }
+
+
+            let correct =
+                0;
+
+
+            questions.forEach(
+                function(q) {
+
+                    if (
+                        q.isCorrect
+                    ) {
+
+                        correct++;
+                    }
+                }
+            );
+
+
+            const percentage =
+                Math.round(
+                    (
+                        correct /
+                        questions.length
+                    ) *
+                    100
+                );
+
+
+            scoreBox.innerHTML = `
+
+                <h2>
+                    ${correct} / ${questions.length}
+                </h2>
+
+                <p>
+                    Score: ${percentage}%
+                </p>
+
+                <p>
+                    All questions have been checked.
+                </p>
+
+            `;
+
+
+            resultSection.classList.remove(
+                "hidden"
+            );
+
+
+            resultSection.scrollIntoView({
+                behavior: "smooth"
+            });
+        }
+    );
+
+
+    /* =========================================================
+       CLEAR
+       ========================================================= */
+
+    clearBtn.addEventListener(
+        "click",
+        function() {
+
+            selectedFile =
+                null;
+
+            fileInput.value =
+                "";
+
+            fileName.textContent =
+                "";
+
+            questions =
+                [];
+
+            questionsContainer.innerHTML =
+                "";
+
+            generatedSection.classList.add(
+                "hidden"
+            );
+
+            saveExamSection.classList.add(
+                "hidden"
+            );
+
+            resultSection.classList.add(
+                "hidden"
+            );
+
+            status.className =
+                "status";
+
+            status.textContent =
+                "";
+
+            saveTitle.value =
+                "";
+
+            showStatus(
+                "Form cleared.",
+                "success"
+            );
+        }
+    );
+
+
+    /* =========================================================
+       NEW TEST
+       ========================================================= */
+
+    newTestBtn.addEventListener(
+        "click",
+        function() {
+
+            selectedFile =
+                null;
+
+            fileInput.value =
+                "";
+
+            fileName.textContent =
+                "";
+
+            questions =
+                [];
+
+            questionsContainer.innerHTML =
+                "";
+
+            generatedSection.classList.add(
+                "hidden"
+            );
+
+            saveExamSection.classList.add(
+                "hidden"
+            );
+
+            resultSection.classList.add(
+                "hidden"
+            );
+
+            window.scrollTo({
+                top: 0,
+                behavior: "smooth"
+            });
+        }
+    );
+
+
+    /* =========================================================
        LOAD LIBRARY
-       ===================================================== */
+       ========================================================= */
 
     async function loadLibrary() {
 
-        examList.innerHTML =
-            `
-            <div class="loading">
-                Loading saved tests...
-            </div>
-            `;
+        libraryContainer.innerHTML =
+            `<div class="empty">
+                Loading tests...
+            </div>`;
 
 
         try {
 
             const response =
                 await fetch(
-                    BACKEND_URL +
-                    "/exams"
+                    EXAMS_URL
                 );
 
 
-            const data =
-                await response.json();
+            const rawText =
+                await response.text();
 
 
-            if (
-                !response.ok
-            ) {
+            console.log(
+                "LIBRARY RESPONSE:",
+                rawText
+            );
+
+
+            let data;
+
+
+            try {
+
+                data =
+                    JSON.parse(
+                        rawText
+                    );
+
+            } catch (error) {
+
+                throw new Error(
+                    "Invalid JSON from /exams."
+                );
+            }
+
+
+            if (!response.ok) {
 
                 throw new Error(
                     data.error ||
+                    data.message ||
+                    data.detail ||
                     "Could not load tests."
                 );
             }
@@ -2660,10 +2884,7 @@
             const exams =
                 Array.isArray(data)
                     ? data
-                    : (
-                        data.exams ||
-                        []
-                    );
+                    : data.exams || [];
 
 
             renderExamList(
@@ -2674,42 +2895,44 @@
         } catch (error) {
 
             console.error(
-                "LIBRARY ERROR:",
+                "LOAD LIBRARY ERROR:",
                 error
             );
 
-            examList.innerHTML =
+
+            libraryContainer.innerHTML =
                 `
-                <div class="status show error">
-                    Could not load Test Library:
+                <div class="empty">
+
+                    Could not load the Test Library.
+
+                    <br><br>
+
                     ${escapeHtml(
                         error.message
                     )}
+
                 </div>
                 `;
-
         }
-
     }
 
 
-    /* =====================================================
+    /* =========================================================
        RENDER EXAM LIST
-       ===================================================== */
+       ========================================================= */
 
     function renderExamList(
         exams
     ) {
 
-        examList.innerHTML =
+        libraryContainer.innerHTML =
             "";
 
 
-        if (
-            !exams.length
-        ) {
+        if (!exams.length) {
 
-            examList.innerHTML =
+            libraryContainer.innerHTML =
                 `
                 <div class="empty">
                     No saved tests yet.
@@ -2723,44 +2946,13 @@
         exams.forEach(
             function(exam) {
 
-                const item =
+                const card =
                     document.createElement(
                         "div"
                     );
 
-                item.className =
-                    "exam-item";
-
-
-                const info =
-                    document.createElement(
-                        "div"
-                    );
-
-                info.className =
-                    "exam-item-info";
-
-
-                const title =
-                    document.createElement(
-                        "div"
-                    );
-
-                title.className =
-                    "exam-item-title";
-
-                title.textContent =
-                    exam.title ||
-                    "Untitled Test";
-
-
-                const meta =
-                    document.createElement(
-                        "div"
-                    );
-
-                meta.className =
-                    "exam-item-meta";
+                card.className =
+                    "exam-card";
 
 
                 const subjectName =
@@ -2775,65 +2967,100 @@
                     "Unknown Subject";
 
 
-                meta.textContent =
-                    `${subjectName} | ${exam.grade || "Grade not specified"} | ${exam.topic || "General"}`;
+                card.innerHTML = `
+
+                    <h3>
+                        ${escapeHtml(
+                            exam.title ||
+                            "Untitled Test"
+                        )}
+                    </h3>
+
+                    <p>
+                        <strong>Subject:</strong>
+                        ${escapeHtml(
+                            subjectName
+                        )}
+                    </p>
+
+                    <p>
+                        <strong>Grade:</strong>
+                        ${escapeHtml(
+                            exam.grade ||
+                            "Not specified"
+                        )}
+                    </p>
+
+                    <p>
+                        <strong>Topic:</strong>
+                        ${escapeHtml(
+                            exam.topic ||
+                            "General"
+                        )}
+                    </p>
+
+                    <p>
+                        <strong>Type:</strong>
+                        ${escapeHtml(
+                            exam.exam_type ||
+                            "Test"
+                        )}
+                    </p>
+
+                    <p>
+                        <strong>Year:</strong>
+                        ${escapeHtml(
+                            String(
+                                exam.year ||
+                                "N/A"
+                            )
+                        )}
+                    </p>
+
+                    <div class="buttons">
+
+                        <button
+                            class="primary open-exam-btn"
+                            data-id="${exam.id}"
+                        >
+                            Open Test
+                        </button>
+
+                    </div>
+                `;
 
 
-                info.appendChild(
-                    title
+                libraryContainer.appendChild(
+                    card
                 );
-
-                info.appendChild(
-                    meta
-                );
-
-
-                const openButton =
-                    document.createElement(
-                        "button"
-                    );
-
-                openButton.className =
-                    "primary-btn";
-
-                openButton.textContent =
-                    "Open";
-
-
-                openButton.addEventListener(
-                    "click",
-                    function() {
-
-                        openLibraryExam(
-                            exam.id
-                        );
-
-                    }
-                );
-
-
-                item.appendChild(
-                    info
-                );
-
-                item.appendChild(
-                    openButton
-                );
-
-
-                examList.appendChild(
-                    item
-                );
-
             }
         );
 
+
+        document
+            .querySelectorAll(
+                ".open-exam-btn"
+            )
+            .forEach(
+                function(button) {
+
+                    button.addEventListener(
+                        "click",
+                        function() {
+
+                            openLibraryExam(
+                                button.dataset.id
+                            );
+                        }
+                    );
+                }
+            );
     }
 
 
-    /* =====================================================
+    /* =========================================================
        OPEN SAVED EXAM
-       ===================================================== */
+       ========================================================= */
 
     async function openLibraryExam(
         examId
@@ -2841,40 +3068,72 @@
 
         try {
 
-            openExamSection.classList.remove(
+            libraryExamSection.classList.remove(
                 "hidden"
             );
 
 
+            libraryExamTitle.textContent =
+                "Loading test...";
+
+
+            libraryExamInfo.innerHTML =
+                "";
+
+
             libraryQuestionsContainer.innerHTML =
                 `
-                <div class="loading">
-                    Loading test...
+                <div class="empty">
+                    Loading questions...
                 </div>
                 `;
 
 
             const response =
                 await fetch(
-                    BACKEND_URL +
-                    "/exams/" +
+                    EXAMS_URL +
+                    "/" +
                     encodeURIComponent(
                         examId
                     )
                 );
 
 
-            const data =
-                await response.json();
+            const rawText =
+                await response.text();
 
 
-            if (
-                !response.ok
-            ) {
+            console.log(
+                "OPEN EXAM RESPONSE:",
+                rawText
+            );
+
+
+            let data;
+
+
+            try {
+
+                data =
+                    JSON.parse(
+                        rawText
+                    );
+
+            } catch (error) {
+
+                throw new Error(
+                    "Invalid JSON from exam endpoint."
+                );
+            }
+
+
+            if (!response.ok) {
 
                 throw new Error(
                     data.error ||
-                    "Could not load test."
+                    data.message ||
+                    data.detail ||
+                    "Could not load this test."
                 );
             }
 
@@ -2906,8 +3165,8 @@
                 "Unknown Subject";
 
 
-            libraryExamInfo.innerHTML =
-                `
+            libraryExamInfo.innerHTML = `
+
                 <p>
                     <strong>Subject:</strong>
                     ${escapeHtml(
@@ -2935,13 +3194,14 @@
                     <strong>Questions:</strong>
                     ${currentLibraryQuestions.length}
                 </p>
-                `;
+
+            `;
 
 
             renderLibraryQuestions();
 
 
-            openExamSection.scrollIntoView({
+            libraryExamSection.scrollIntoView({
                 behavior: "smooth"
             });
 
@@ -2954,24 +3214,27 @@
             );
 
 
+            libraryExamTitle.textContent =
+                "Could not load test";
+
+
             libraryQuestionsContainer.innerHTML =
                 `
-                <div class="status show error">
-                    Could not load test:
+                <div class="empty">
+
                     ${escapeHtml(
                         error.message
                     )}
+
                 </div>
                 `;
-
         }
-
     }
 
 
-    /* =====================================================
-       RENDER LIBRARY QUESTIONS
-       ===================================================== */
+    /* =========================================================
+       RENDER SAVED QUESTIONS
+       ========================================================= */
 
     function renderLibraryQuestions() {
 
@@ -2997,16 +3260,6 @@
         currentLibraryQuestions.forEach(
             function(q, index) {
 
-                q.checked =
-                    false;
-
-                q.userAnswer =
-                    "";
-
-                q.isCorrect =
-                    false;
-
-
                 const card =
                     document.createElement(
                         "div"
@@ -3016,121 +3269,56 @@
                     "question-card";
 
 
-                const title =
-                    document.createElement(
-                        "div"
-                    );
-
-                title.className =
-                    "question-title";
-
-                title.textContent =
-                    `${index + 1}. ${q.question || ""}`;
-
-                card.appendChild(
-                    title
-                );
-
-
-                const options =
-                    parseOptions(
-                        q.options
-                    );
+                let options =
+                    q.options ||
+                    {};
 
 
                 if (
-                    Object.keys(options)
-                        .length > 0
+                    typeof options ===
+                    "string"
                 ) {
 
-                    Object.entries(
-                        options
-                    ).forEach(
-                        function([
-                            key,
-                            value
-                        ]) {
+                    try {
 
-                            const label =
-                                document.createElement(
-                                    "label"
-                                );
-
-                            label.className =
-                                "option-label";
-
-
-                            const radio =
-                                document.createElement(
-                                    "input"
-                                );
-
-                            radio.type =
-                                "radio";
-
-                            radio.name =
-                                "library_question_" +
-                                index;
-
-                            radio.value =
-                                key;
-
-
-                            const text =
-                                document.createElement(
-                                    "span"
-                                );
-
-                            text.textContent =
-                                `${key}. ${value}`;
-
-
-                            label.appendChild(
-                                radio
+                        options =
+                            JSON.parse(
+                                options
                             );
 
-                            label.appendChild(
-                                text
-                            );
+                    } catch (error) {
+
+                        options = {};
+                    }
+                }
 
 
-                            radio.addEventListener(
-                                "change",
-                                function() {
+                card.innerHTML = `
 
-                                    card
-                                        .querySelectorAll(
-                                            ".option-label"
-                                        )
-                                        .forEach(
-                                            function(
-                                                other
-                                            ) {
+                    <div class="question-title">
 
-                                                other.classList.remove(
-                                                    "selected"
-                                                );
+                        ${index + 1}.
+                        ${escapeHtml(
+                            q.question ||
+                            ""
+                        )}
 
-                                            }
-                                        );
+                    </div>
+
+                `;
 
 
-                                    label.classList.add(
-                                        "selected"
-                                    );
+                const type =
+                    String(
+                        q.question_type ||
+                        ""
+                    ).toLowerCase();
 
-                                }
-                            );
 
-
-                            card.appendChild(
-                                label
-                            );
-
-                        }
-                    );
-
-                } else {
+                if (
+                    type ===
+                    "short_answer"
+                ) {
 
                     const input =
                         document.createElement(
@@ -3141,16 +3329,85 @@
                         "text";
 
                     input.className =
-                        "short-answer-input";
+                        "answer-input";
 
                     input.placeholder =
                         "Type your answer here...";
 
+                    input.dataset.libraryQuestion =
+                        index;
 
                     card.appendChild(
                         input
                     );
 
+                } else {
+
+                    Object.entries(
+                        options
+                    ).forEach(
+                        function([
+                            key,
+                            value
+                        ]) {
+
+                            const option =
+                                document.createElement(
+                                    "div"
+                                );
+
+                            option.className =
+                                "option";
+
+                            option.dataset.key =
+                                key;
+
+                            option.innerHTML =
+                                `<strong>${
+                                    escapeHtml(
+                                        key
+                                    )
+                                }.</strong> ${
+                                    escapeHtml(
+                                        String(
+                                            value
+                                        )
+                                    )
+                                }`;
+
+
+                            option.addEventListener(
+                                "click",
+                                function() {
+
+                                    card
+                                        .querySelectorAll(
+                                            ".option"
+                                        )
+                                        .forEach(
+                                            function(
+                                                item
+                                            ) {
+
+                                                item.classList.remove(
+                                                    "selected"
+                                                );
+                                            }
+                                        );
+
+
+                                    option.classList.add(
+                                        "selected"
+                                    );
+                                }
+                            );
+
+
+                            card.appendChild(
+                                option
+                            );
+                        }
+                    );
                 }
 
 
@@ -3163,7 +3420,17 @@
                     "question-meta";
 
                 meta.textContent =
-                    `Type: ${q.question_type || "unknown"} | Difficulty: ${q.difficulty || "unknown"}`;
+                    "Type: " +
+                    (
+                        q.question_type ||
+                        "unknown"
+                    ) +
+                    " | Difficulty: " +
+                    (
+                        q.difficulty ||
+                        "unknown"
+                    );
+
 
                 card.appendChild(
                     meta
@@ -3186,13 +3453,10 @@
                     "click",
                     function() {
 
-                        checkQuestionAnswer(
+                        checkLibraryQuestion(
                             q,
-                            card,
-                            index,
-                            "library"
+                            card
                         );
-
                     }
                 );
 
@@ -3208,7 +3472,7 @@
                     );
 
                 feedback.className =
-                    "feedback";
+                    "feedback hidden";
 
 
                 card.appendChild(
@@ -3216,19 +3480,246 @@
                 );
 
 
+                const answer =
+                    document.createElement(
+                        "div"
+                    );
+
+                answer.className =
+                    "answer hidden";
+
+                answer.innerHTML =
+                    "<strong>Correct Answer:</strong> " +
+                    escapeHtml(
+                        String(
+                            q.answer ||
+                            ""
+                        )
+                    );
+
+
+                card.appendChild(
+                    answer
+                );
+
+
                 libraryQuestionsContainer.appendChild(
                     card
                 );
-
             }
         );
-
     }
 
 
-    /* =====================================================
+    /* =========================================================
+       CHECK SAVED QUESTION
+       ========================================================= */
+
+    function checkLibraryQuestion(
+        q,
+        card
+    ) {
+
+        const type =
+            String(
+                q.question_type ||
+                ""
+            ).toLowerCase();
+
+
+        let userAnswer =
+            "";
+
+
+        if (
+            type ===
+            "short_answer"
+        ) {
+
+            const input =
+                card.querySelector(
+                    ".answer-input"
+                );
+
+
+            if (
+                !input ||
+                !input.value.trim()
+            ) {
+
+                alert(
+                    "Please enter an answer first."
+                );
+
+                return;
+            }
+
+
+            userAnswer =
+                input.value.trim();
+
+        } else {
+
+            const selected =
+                card.querySelector(
+                    ".option.selected"
+                );
+
+
+            if (!selected) {
+
+                alert(
+                    "Please select an answer first."
+                );
+
+                return;
+            }
+
+
+            userAnswer =
+                selected.dataset.key;
+        }
+
+
+        const correctAnswer =
+            String(
+                q.answer ||
+                ""
+            )
+            .trim()
+            .toLowerCase();
+
+
+        const normalizedUser =
+            userAnswer
+                .trim()
+                .toLowerCase();
+
+
+        let isCorrect =
+            normalizedUser ===
+            correctAnswer;
+
+
+        if (
+            correctAnswer.startsWith(
+                normalizedUser + "."
+            ) ||
+            correctAnswer.startsWith(
+                normalizedUser + ")"
+            ) ||
+            correctAnswer.startsWith(
+                normalizedUser + " -"
+            )
+        ) {
+
+            isCorrect =
+                true;
+        }
+
+
+        card
+            .querySelectorAll(
+                ".option"
+            )
+            .forEach(
+                function(option) {
+
+                    const key =
+                        String(
+                            option.dataset.key ||
+                            ""
+                        )
+                        .trim()
+                        .toLowerCase();
+
+
+                    if (
+                        key ===
+                        normalizedUser
+                    ) {
+
+                        option.classList.add(
+                            isCorrect
+                                ? "correct"
+                                : "incorrect"
+                        );
+                    }
+
+
+                    if (
+                        key ===
+                        correctAnswer &&
+                        !isCorrect
+                    ) {
+
+                        option.classList.add(
+                            "correct"
+                        );
+                    }
+                }
+            );
+
+
+        const feedback =
+            card.querySelector(
+                ".feedback"
+            );
+
+
+        feedback.classList.remove(
+            "hidden",
+            "correct",
+            "incorrect"
+        );
+
+
+        if (isCorrect) {
+
+            feedback.classList.add(
+                "correct"
+            );
+
+            feedback.textContent =
+                "Correct!";
+
+        } else {
+
+            feedback.classList.add(
+                "incorrect"
+            );
+
+            feedback.textContent =
+                "Incorrect.";
+        }
+
+
+        card
+            .querySelector(
+                ".answer"
+            )
+            .classList.remove(
+                "hidden"
+            );
+
+
+        const button =
+            card.querySelector(
+                ".check-answer-btn"
+            );
+
+
+        button.disabled =
+            true;
+
+        button.textContent =
+            "Answer Checked";
+    }
+
+
+    /* =========================================================
        REUSE SAVED TEST
-       ===================================================== */
+       ========================================================= */
 
     reuseBtn.addEventListener(
         "click",
@@ -3246,18 +3737,40 @@
                 currentLibraryQuestions.map(
                     function(q) {
 
+                        let options =
+                            q.options ||
+                            {};
+
+
+                        if (
+                            typeof options ===
+                            "string"
+                        ) {
+
+                            try {
+
+                                options =
+                                    JSON.parse(
+                                        options
+                                    );
+
+                            } catch (error) {
+
+                                options = {};
+                            }
+                        }
+
+
                         return {
 
                             question:
                                 q.question,
 
                             options:
-                                parseOptions(
-                                    q.options
-                                ),
+                                options,
 
                             answer:
-                                q.answer,
+                                q.answer || "",
 
                             difficulty:
                                 q.difficulty ||
@@ -3268,20 +3781,19 @@
                                 "multiple_choice",
 
                             topic:
-                                currentLibraryExam.topic ||
+                                q.topic ||
+                                currentLibraryExam?.topic ||
                                 "General",
 
                             userAnswer:
-                                "",
+                                null,
 
                             checked:
                                 false,
 
                             isCorrect:
-                                false
-
+                                null
                         };
-
                     }
                 );
 
@@ -3294,14 +3806,19 @@
             );
 
 
-            saveSection.classList.remove(
+            resultSection.classList.add(
                 "hidden"
             );
 
 
-            saveTitle.value =
-                currentLibraryExam.title ||
-                "Reused Test";
+            saveExamSection.classList.add(
+                "hidden"
+            );
+
+
+            libraryExamSection.classList.add(
+                "hidden"
+            );
 
 
             generatedSection.scrollIntoView({
@@ -3310,59 +3827,78 @@
 
 
             showStatus(
-                "Test loaded. You can now take it again.",
+                "Saved test loaded successfully. You can use it as a new test.",
                 "success"
             );
-
         }
     );
 
 
-    /* =====================================================
+    /* =========================================================
        CLOSE LIBRARY EXAM
-       ===================================================== */
+       ========================================================= */
 
-    closeLibraryBtn.addEventListener(
+    closeLibraryExamBtn.addEventListener(
         "click",
         function() {
 
-            openExamSection.classList.add(
+            libraryExamSection.classList.add(
                 "hidden"
             );
-
         }
     );
 
 
-    /* =====================================================
+    /* =========================================================
        REFRESH LIBRARY
-       ===================================================== */
+       ========================================================= */
 
     refreshLibraryBtn.addEventListener(
         "click",
-        function() {
-
-            loadLibrary();
-
-        }
-    );
-
-
-    /* =====================================================
-       INITIALIZE
-       ===================================================== */
-
-    document.addEventListener(
-        "DOMContentLoaded",
         async function() {
 
-            await loadSubjects();
+            refreshLibraryBtn.disabled =
+                true;
 
-            await loadLibrary();
+            refreshLibraryBtn.textContent =
+                "Loading...";
 
+
+            try {
+
+                await loadLibrary();
+
+            } finally {
+
+                refreshLibraryBtn.disabled =
+                    false;
+
+                refreshLibraryBtn.textContent =
+                    "Refresh Library";
+            }
         }
     );
 
+
+    /* =========================================================
+       INITIALIZATION
+       ========================================================= */
+
+    async function initialize() {
+
+        console.log(
+            "Text2Test AI frontend loaded successfully."
+        );
+
+
+        await loadSubjects();
+
+
+        await loadLibrary();
+    }
+
+
+    initialize();
 
 </script>
 
