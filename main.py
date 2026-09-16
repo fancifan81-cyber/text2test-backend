@@ -977,3 +977,51 @@ def get_exam(
             "success": False,
             "error": str(error)
         }
+
+@app.patch("/exams/{exam_id}/visibility")
+def update_exam_visibility(
+    exam_id: int,
+    is_public: bool
+):
+
+    
+    if supabase is None:
+        return {
+            "success": False,
+            "error": "Supabase is not configured."
+        }
+
+    try:
+
+        response = (
+            supabase
+            .table("exams")
+            .update({
+                "is_public": is_public
+            })
+            .eq("id", exam_id)
+            .execute()
+        )
+
+        if not response.data:
+            return {
+                "success": False,
+                "error": "Exam not found."
+            }
+
+        return {
+            "success": True,
+            "exam": response.data[0]
+        }
+
+    except Exception as error:
+
+        print(
+            "UPDATE VISIBILITY ERROR:",
+            repr(error)
+        )
+
+        return {
+            "success": False,
+            "error": str(error)
+        }
