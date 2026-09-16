@@ -774,21 +774,21 @@ def get_exams():
 
     try:
 
-        exams_response = (
-            supabase
-            .table("exams")
-            .select(
-                "id, title, subject_id, grade, topic, "
-                "exam_type, year, description, file_url, "
-                "answer_url, is_public, created_at"
-            )
-            .order(
-                "created_at",
-                desc=True
-            )
-            .execute()
-        )
-
+exams_response = (
+    supabase
+    .table("exams")
+    .select(
+        "id, title, subject_id, grade, topic, "
+        "exam_type, year, description, file_url, "
+        "answer_url, is_public, created_at"
+    )
+    .eq("is_public", True)
+    .order(
+        "created_at",
+        desc=True
+    )
+    .execute()
+)
         subjects_response = (
             supabase
             .table("subjects")
