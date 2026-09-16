@@ -983,8 +983,6 @@ def update_exam_visibility(
     exam_id: int,
     is_public: bool
 ):
-
-    
     if supabase is None:
         return {
             "success": False,
@@ -992,7 +990,6 @@ def update_exam_visibility(
         }
 
     try:
-
         response = (
             supabase
             .table("exams")
@@ -1015,7 +1012,6 @@ def update_exam_visibility(
         }
 
     except Exception as error:
-
         print(
             "UPDATE VISIBILITY ERROR:",
             repr(error)
