@@ -763,7 +763,7 @@ async def save_questions(
 # =========================================================
 
 @app.get("/exams")
-def get_exams():
+def get_exams(search: str = ""):
 
     if supabase is None:
 
@@ -782,11 +782,48 @@ def get_exams():
                 "exam_type, year, description, file_url, "
                 "answer_url, is_public, created_at"
             )
-            .eq("is_public", True)
-            .order(
-                "created_at",
-                desc=True
-            )
+.eq("is_public", True)
+
+if search.strip():
+    keyword = search.strip()
+
+    exams_response = (
+        supabase
+        .table("exams")
+        .select(
+            "id, title, subject_id, grade, topic, "
+            "exam_type, year, description, file_url, "
+            "answer_url, is_public, created_at"
+        )
+        .eq("is_public", True)
+        .or_(
+            f"title.ilike.%{keyword}%,"
+            f"topic.ilike.%{keyword}%,"
+            f"description.ilike.%{keyword}%"
+        )
+        .order(
+            "created_at",
+            desc=True
+        )
+        .execute()
+    )
+
+else:
+    exams_response = (
+        supabase
+        .table("exams")
+        .select(
+            "id, title, subject_id, grade, topic, "
+            "exam_type, year, description, file_url, "
+            "answer_url, is_public, created_at"
+        )
+        .eq("is_public", True)
+        .order(
+            "created_at",
+            desc=True
+        )
+        .execute()
+    )
             .execute()
         )
 
