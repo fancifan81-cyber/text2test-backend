@@ -774,7 +774,11 @@ def get_exams(search: str = ""):
 
     try:
 
-        exams_response = (
+        # =========================
+        # GET PUBLIC EXAMS
+        # =========================
+
+        exams_query = (
             supabase
             .table("exams")
             .select(
@@ -782,50 +786,39 @@ def get_exams(search: str = ""):
                 "exam_type, year, description, file_url, "
                 "answer_url, is_public, created_at"
             )
-.eq("is_public", True)
+            .eq("is_public", True)
+        )
 
-if search.strip():
-    keyword = search.strip()
+        # =========================
+        # SEARCH
+        # =========================
 
-    exams_response = (
-        supabase
-        .table("exams")
-        .select(
-            "id, title, subject_id, grade, topic, "
-            "exam_type, year, description, file_url, "
-            "answer_url, is_public, created_at"
-        )
-        .eq("is_public", True)
-        .or_(
-            f"title.ilike.%{keyword}%,"
-            f"topic.ilike.%{keyword}%,"
-            f"description.ilike.%{keyword}%"
-        )
-        .order(
-            "created_at",
-            desc=True
-        )
-        .execute()
-    )
+        if search.strip():
 
-else:
-    exams_response = (
-        supabase
-        .table("exams")
-        .select(
-            "id, title, subject_id, grade, topic, "
-            "exam_type, year, description, file_url, "
-            "answer_url, is_public, created_at"
-        )
-        .eq("is_public", True)
-        .order(
-            "created_at",
-            desc=True
-        )
-        .execute()
-    )
+            keyword = search.strip()
+
+            exams_query = exams_query.or_(
+                f"title.ilike.%{keyword}%,"
+                f"topic.ilike.%{keyword}%,"
+                f"description.ilike.%{keyword}%"
+            )
+
+        # =========================
+        # SORT
+        # =========================
+
+        exams_response = (
+            exams_query
+            .order(
+                "created_at",
+                desc=True
+            )
             .execute()
         )
+
+        # =========================
+        # GET SUBJECTS
+        # =========================
 
         subjects_response = (
             supabase
@@ -835,6 +828,10 @@ else:
             )
             .execute()
         )
+
+        # =========================
+        # CREATE SUBJECT MAP
+        # =========================
 
         subject_map = {}
 
@@ -846,6 +843,10 @@ else:
                 subject_row["id"]
             ] = subject_row["Name"]
 
+        # =========================
+        # ADD SUBJECT NAME
+        # =========================
+
         exams = []
 
         for exam in (
@@ -854,9 +855,7 @@ else:
 
             exam["subject_name"] = (
                 subject_map.get(
-                    exam.get(
-                        "subject_id"
-                    ),
+                    exam.get("subject_id"),
                     "Unknown"
                 )
             )
@@ -864,6 +863,10 @@ else:
             exams.append(
                 exam
             )
+
+        # =========================
+        # RETURN
+        # =========================
 
         return {
             "success": True,
@@ -881,7 +884,6 @@ else:
             "success": False,
             "error": str(error)
         }
-
 
 # =========================================================
 # GET ONE EXAM
